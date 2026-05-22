@@ -54,6 +54,22 @@ export function FileVaultView() {
   const [isDragging, setIsDragging] = useState(false);
   const [driveError, setDriveError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDriveConnected, setIsDriveConnected] = useState<boolean | null>(null);
+
+  const checkDriveConnection = useCallback(async () => {
+    try {
+      const res = await fetch("/api/integrations/status");
+      if (res.ok) {
+        const data = await res.json();
+        setIsDriveConnected(data.drive && data.drive.status === "active");
+      } else {
+        setIsDriveConnected(false);
+      }
+    } catch (err) {
+      console.error("Failed to check Google Drive integration status:", err);
+      setIsDriveConnected(false);
+    }
+  }, []);
 
   const loadFiles = useCallback(async () => {
     try {
@@ -67,7 +83,10 @@ export function FileVaultView() {
     }
   }, []);
 
-  useEffect(() => { loadFiles(); }, [loadFiles]);
+  useEffect(() => {
+    checkDriveConnection();
+    loadFiles();
+  }, [loadFiles, checkDriveConnection]);
 
   const handleFiles = async (fileList: FileList) => {
     setDriveError(null); // Reset banner before starting uploads
@@ -150,6 +169,88 @@ export function FileVaultView() {
     { id: "video", label: "Videos" },
     { id: "document", label: "Documents" },
   ];
+
+  if (isDriveConnected === null) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground">
+        <Loader2 className="w-8 h-8 animate-spin text-primary mb-3" />
+        <p className="text-xs uppercase tracking-widest font-mono font-bold">Verifying Connection Integrity...</p>
+      </div>
+    );
+  }
+
+  if (isDriveConnected === false) {
+    return (
+      <div className="space-y-10 animate-in fade-in duration-700 slide-in-from-bottom-4">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border/50 pb-10">
+          <div className="space-y-2">
+            <Badge variant="outline" className="text-primary font-mono bg-primary/5 border-primary/20 tracking-widest px-3 py-1 uppercase text-[9px] font-bold">Files</Badge>
+            <h1 className="text-3xl font-bold tracking-tight">Files</h1>
+            <p className="text-muted-foreground/80 font-medium text-base max-w-2xl leading-relaxed">
+              Secure Personal File Vault (Locked)
+            </p>
+          </div>
+        </div>
+
+        {/* Lock Overlay */}
+        <div className="relative border border-border/20 rounded-[5px] overflow-hidden bg-background/20 p-8 sm:p-16 text-center backdrop-blur-xl min-h-[500px] flex flex-col items-center justify-center space-y-8">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.06),transparent_70%)] pointer-events-none" />
+          
+          <div className="relative group">
+            <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-xl opacity-60 animate-pulse" />
+            <div className="relative w-20 h-20 rounded-2xl bg-secondary/30 border border-border/30 flex items-center justify-center shadow-2xl backdrop-blur-2xl">
+              <FolderOpen className="w-10 h-10 text-primary" />
+            </div>
+          </div>
+
+          <div className="max-w-md space-y-3 relative z-10">
+            <h2 className="text-2xl font-extrabold tracking-tight uppercase bg-gradient-to-r from-foreground via-foreground/90 to-primary bg-clip-text text-transparent">
+              Vault Database Locked
+            </h2>
+            <p className="text-xs text-muted-foreground/80 leading-relaxed font-medium">
+              To secure and structure your personal files database, MyOS links directly with your own Google Drive storage container. This page, database browser, and file upload features are locked because your Google Drive integration is currently inactive or unconfigured.
+            </p>
+          </div>
+
+          <div className="w-full max-w-lg bg-secondary/10 border border-border/10 p-5 rounded-[5px] grid grid-cols-2 gap-4 text-left font-mono text-[10px] text-muted-foreground relative z-10">
+            <div>
+              <p className="uppercase tracking-widest text-muted-foreground/45 font-bold mb-0.5">Database Link</p>
+              <p className="font-semibold text-foreground">Google Drive API v3</p>
+            </div>
+            <div>
+              <p className="uppercase tracking-widest text-muted-foreground/45 font-bold mb-0.5">Link Mode</p>
+              <p className="font-semibold text-foreground">OAuth 2.0 Client</p>
+            </div>
+            <div>
+              <p className="uppercase tracking-widest text-muted-foreground/45 font-bold mb-0.5">Isolation Context</p>
+              <p className="font-semibold text-foreground">User-Sandboxed AppData</p>
+            </div>
+            <div>
+              <p className="uppercase tracking-widest text-muted-foreground/45 font-bold mb-0.5">Connection Status</p>
+              <p className="font-bold text-amber-500 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-ping" /> Unconfigured
+              </p>
+            </div>
+          </div>
+
+          <Button
+            onClick={() => {
+              window.dispatchEvent(
+                new CustomEvent("myos:navigate", {
+                  detail: { page: "settings" }
+                })
+              );
+            }}
+            className="relative z-10 rounded-[5px] shadow-[0_0_25px_rgba(59,130,246,0.25)] bg-primary hover:bg-primary/90 h-12 px-10 font-extrabold text-xs uppercase tracking-[0.2em] transition-all hover:scale-105"
+          >
+            Connect Google Drive
+            <ExternalLink className="w-4 h-4 ml-3" />
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700 slide-in-from-bottom-4">

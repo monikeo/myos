@@ -38,11 +38,21 @@
     <script>
       // Service Worker registration for PWA installation and offline caching
       if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/sw.js")
-            .then((reg) => console.log("[PWA] Service Worker registered successfully:", reg.scope))
-            .catch((err) => console.error("[PWA] Service Worker registration failed:", err));
-        });
+        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+          // Unregister service worker on localhost to prevent caching conflicts during development
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for (var registration of registrations) {
+              registration.unregister();
+              console.log("[PWA] Service Worker unregistered for local development");
+            }
+          });
+        } else {
+          window.addEventListener("load", () => {
+            navigator.serviceWorker.register("/sw.js")
+              .then((reg) => console.log("[PWA] Service Worker registered successfully:", reg.scope))
+              .catch((err) => console.error("[PWA] Service Worker registration failed:", err));
+          });
+        }
       }
     </script>
   </head>

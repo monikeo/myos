@@ -569,6 +569,48 @@ function AppContent() {
     return () => window.removeEventListener("myos:notification" as any, handleCustomNotification);
   }, [notifications]);
 
+  // Unified Custom Event Navigation & Auto Global Error Catcher
+  useEffect(() => {
+    const handleNavigate = (e: Event) => {
+      const customEvent = e as CustomEvent<{ page: string }>;
+      if (customEvent.detail && typeof customEvent.detail.page === "string") {
+        navigateToPage(customEvent.detail.page);
+      }
+    };
+
+    const handleGlobalError = (event: ErrorEvent) => {
+      // Filter out noisy minor browser extension or third party issues
+      if (event.message?.includes("ResizeObserver") || event.message?.includes("Script error")) return;
+      
+      triggerNotification(
+        "Runtime Diagnostic Exception",
+        event.message || "An uncaught runtime script exception has occurred in the client context.",
+        "system"
+      );
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      const reason = event.reason;
+      const message = reason instanceof Error ? reason.message : String(reason);
+      
+      triggerNotification(
+        "Asynchronous Network Exception",
+        message || "An unhandled asynchronous Promise reject event has occurred.",
+        "system"
+      );
+    };
+
+    window.addEventListener("myos:navigate" as any, handleNavigate);
+    window.addEventListener("error", handleGlobalError);
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener("myos:navigate" as any, handleNavigate);
+      window.removeEventListener("error", handleGlobalError);
+      window.removeEventListener("unhandledrejection", handleUnhandledRejection);
+    };
+  }, [notifications]);
+
   const navigateToPage = (page: ActivePage | string) => {
     if (page.startsWith("invitation-modal:")) {
       const id = page.split(":")[1];
