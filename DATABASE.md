@@ -435,4 +435,30 @@ WHERE p.owner_id = :current_user_id
 
 ---
 
+## 💾 5. Decoupled Media Vault & Dynamic Integration Telemetry Schema
+
+MyOS operates on a **Zero-Weight Storage Model** designed to prevent PostgreSQL bloat while maintaining sub-millisecond document query capabilities:
+
+### A. Decoupled Media Storage Schema
+In traditional systems, storing large files (PDFs, images, zip bundles) inside a relational database leads to extreme database slowdown, scaling costs, and binary-to-text base64 network overhead. 
+
+MyOS bypasses this restriction by maintaining an asynchronous relational-to-cloud mapping within the `files` schema:
+- **PostgreSQL Database (`files` table)**: Acts strictly as a **lightweight directory system**. It stores small, indexed text fields:
+  - `drive_file_id`: Unique identifier assigned by Google Drive API.
+  - `drive_url` / `drive_download_url`: Web-native access links.
+  - `size_bytes` & `mime_type`: Categorization and analytical size telemetry.
+  - Structural links (`task_id`, `note_id`, `owner_id`): Creates relations with projects, workspaces, and users.
+- **Google Drive Storage Container**: Hosts the high-weight binary blobs securely. 
+
+This guarantees that a `SELECT * FROM files` query fetches metadata instantly across millions of records, while file downloads/renders bypass PostgreSQL entirely by streaming directly from Google Drive APIs.
+
+### B. Dynamic Integration Telemetry Status
+The active verification of integrations is managed via a dedicated PostgreSQL tool registry:
+- **Integration Engine (`tool_registry` table)**:
+  - Each integration (Supabase, Sheets, Google Drive, Gemini AI) is declared as a structural row.
+  - The `status` field (`Connected`, `Disconnected`, `Warning`) is queried by the Express backend gateway `/api/integrations/status`.
+  - If a service status is marked as `Disconnected` or `Unconfigured`, the frontend immediately intercepts the payload, active shields are enabled, and operations are blocked.
+
+---
+
 🏆 **MyOS Hybrid Database Engine** guarantees strict security integrity, instant lookups, high scaling capabilities, and frictionless dynamic metadata expansions.
