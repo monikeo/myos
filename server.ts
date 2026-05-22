@@ -1556,12 +1556,16 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`\n🚀 MyOS Server running on http://localhost:${PORT}`);
-    console.log(`   Supabase: ${process.env.SUPABASE_URL ? "✅ Connected" : "⚠️  Not configured (set SUPABASE_URL)"}`);
-    console.log(`   Google Sheets: ${process.env.GOOGLE_SHEET_ID ? "✅ Configured" : "⚠️  Not configured (optional)"}`);
-    console.log(`   Google Drive: ${process.env.GOOGLE_DRIVE_FOLDER_ID ? "✅ Configured" : "⚠️  Not configured (file uploads disabled)"}\n`);
-  });
+  if (!process.env.VERCEL) {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`\n🚀 MyOS Server running on http://localhost:${PORT}`);
+      console.log(`   Supabase: ${process.env.SUPABASE_URL ? "✅ Connected" : "⚠️  Not configured (set SUPABASE_URL)"}`);
+      console.log(`   Google Sheets: ${process.env.GOOGLE_SHEET_ID ? "✅ Configured" : "⚠️  Not configured (optional)"}`);
+      console.log(`   Google Drive: ${process.env.GOOGLE_DRIVE_FOLDER_ID ? "✅ Configured" : "⚠️  Not configured (file uploads disabled)"}\n`);
+    });
+  }
+
+  return app;
 }
 
-startServer().catch(console.error);
+export const appPromise = startServer();
