@@ -437,33 +437,42 @@ async function startServer() {
     }));
     const myRoles = roleAssignments.filter((r: any) => r.user_id === user.id && r.status !== "pending");
 
+    const getOrganization = async (orgId: string) => {
+      const { data } = await supabase.from("items").select("*").eq("id", orgId).eq("type", "organization").single();
+      return data ? { ...data.data, id: data.id, user_id: data.data?.user_id } : null;
+    };
+
     const getWorkspace = async (wsId: string) => {
       const { data } = await supabase.from("items").select("*").eq("id", wsId).eq("type", "workspace").single();
-      return data ? { ...data.data, id: data.id } : null;
+      return data ? { ...data.data, id: data.id, user_id: data.data?.user_id, organization_id: data.data?.organization_id } : null;
     };
 
     const getProject = async (projId: string) => {
       const { data } = await supabase.from("items").select("*").eq("id", projId).eq("type", "project").single();
-      return data ? { ...data.data, id: data.id } : null;
+      return data ? { ...data.data, id: data.id, user_id: data.data?.user_id, workspace_id: data.data?.workspace_id } : null;
     };
 
-    const hasOrgAdmin = (orgId: string): boolean => {
-      return myRoles.some(r => r.scope_type === "organization" && r.scope_id === orgId && ["Owner", "Admin"].includes(r.role));
+    const hasOrgAdmin = async (orgId: string): Promise<boolean> => {
+      const org = await getOrganization(orgId);
+      const isCreator = org ? org.user_id === user.id : false;
+      return isCreator || myRoles.some(r => r.scope_type === "organization" && r.scope_id === orgId && ["Owner", "Admin"].includes(r.role));
     };
 
-    const hasOrgOwner = (orgId: string): boolean => {
-      return myRoles.some(r => r.scope_type === "organization" && r.scope_id === orgId && r.role === "Owner");
+    const hasOrgOwner = async (orgId: string): Promise<boolean> => {
+      const org = await getOrganization(orgId);
+      const isCreator = org ? org.user_id === user.id : false;
+      return isCreator || myRoles.some(r => r.scope_type === "organization" && r.scope_id === orgId && r.role === "Owner");
     };
 
     const hasWorkspaceAdmin = async (wsId: string): Promise<boolean> => {
       const ws = await getWorkspace(wsId);
-      if (ws?.organization_id && hasOrgAdmin(ws.organization_id)) return true;
+      if (ws?.organization_id && await hasOrgAdmin(ws.organization_id)) return true;
       return myRoles.some(r => r.scope_type === "workspace" && r.scope_id === wsId && ["Owner", "Admin"].includes(r.role));
     };
 
     const hasWorkspaceWrite = async (wsId: string): Promise<boolean> => {
       const ws = await getWorkspace(wsId);
-      if (ws?.organization_id && hasOrgAdmin(ws.organization_id)) return true;
+      if (ws?.organization_id && await hasOrgAdmin(ws.organization_id)) return true;
       return myRoles.some(
         r => r.scope_type === "workspace" && 
              r.scope_id === wsId && 
@@ -493,7 +502,7 @@ async function startServer() {
       if (itemType === "workspace") {
         const orgId = targetWorkspaceId;
         if (!orgId) return true;
-        return hasOrgAdmin(orgId);
+        return await hasOrgAdmin(orgId);
       }
       if (itemType === "project") {
         const wsId = targetWorkspaceId;
@@ -503,7 +512,7 @@ async function startServer() {
       if (itemType === "role_assignment") {
         const sType = targetWorkspaceId;
         const sId = targetProjectId;
-        if (sType === "organization") return hasOrgAdmin(sId);
+        if (sType === "organization") return await hasOrgAdmin(sId);
         if (sType === "workspace") return await hasWorkspaceAdmin(sId);
         if (sType === "project") {
           const proj = await getProject(sId);
@@ -515,7 +524,7 @@ async function startServer() {
 
       if (itemType === "tool") {
         const orgId = existingItem ? existingItem.organization_id : (targetWorkspaceId || null);
-        if (orgId) return hasOrgAdmin(orgId);
+        if (orgId) return await hasOrgAdmin(orgId);
         return true;
       }
 
@@ -528,17 +537,17 @@ async function startServer() {
     // Existing resource update/delete
     if (itemType === "organization") {
       const orgId = itemId;
-      if (isDelete) return hasOrgOwner(orgId);
-      return hasOrgAdmin(orgId);
+      if (isDelete) return await hasOrgOwner(orgId);
+      return await hasOrgAdmin(orgId);
     }
 
     if (itemType === "workspace") {
       const wsId = itemId;
       const orgId = existingItem?.organization_id;
       if (isDelete) {
-        return orgId ? hasOrgOwner(orgId) : false;
+        return orgId ? await hasOrgOwner(orgId) : false;
       }
-      return await hasWorkspaceAdmin(wsId) || (orgId ? hasOrgAdmin(orgId) : false);
+      return await hasWorkspaceAdmin(wsId) || (orgId ? await hasOrgAdmin(orgId) : false);
     }
 
     if (itemType === "project") {
@@ -555,7 +564,7 @@ async function startServer() {
       const sId = existingItem ? existingItem.scope_id : targetProjectId;
       
       let isScopeAdmin = false;
-      if (sType === "organization") isScopeAdmin = hasOrgAdmin(sId);
+      if (sType === "organization") isScopeAdmin = await hasOrgAdmin(sId);
       if (sType === "workspace") isScopeAdmin = await hasWorkspaceAdmin(sId);
       if (sType === "project") {
         const proj = await getProject(sId);
@@ -589,7 +598,7 @@ async function startServer() {
 
     if (itemType === "tool") {
       const orgId = existingItem?.organization_id;
-      if (orgId) return hasOrgAdmin(orgId);
+      if (orgId) return await hasOrgAdmin(orgId);
       return false; // If not org admin, fallback below will catch it
     }
 
