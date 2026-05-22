@@ -1,0 +1,12 @@
+{
+  "name": "MyOS - Personal Operating System",
+  "description": "A centralized personal productivity and workspace management platform featuring a dashboard, todo list, calendar, finance tracking, notes, and document management.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

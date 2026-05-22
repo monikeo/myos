@@ -1,0 +1,264 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 142.1 76.2% 36.3%;
+    --radius: 0.3rem;
+  }
+
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 142.1 70.6% 45.3%;
+    --primary-foreground: 144.9 80.4% 10%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 142.1 70.6% 45.3%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    transition: background-color 0.5s ease, color 0.5s ease;
+  }
+  
+  /* Smooth theme transition definitions */
+  .bg-card, .bg-background, .bg-muted, .bg-secondary, .bg-popover, .bg-accent, .border-border, .border-input {
+    transition: background-color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+  }
+  
+  h1, h2, h3, h4, h5, h6, p, span, a, label, button, input, textarea, svg {
+    transition: color 0.5s ease, background-color 0.5s ease, border-color 0.5s ease, fill 0.5s ease, stroke 0.5s ease, box-shadow 0.5s ease;
+  }
+}
+
+/* Premium WYSIWYG rich text content formatting styles */
+.prose,
+[contenteditable] {
+  h1 {
+    font-size: 2.25rem !important; /* 36px */
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
+    color: hsl(var(--foreground)) !important;
+    letter-spacing: -0.03em !important;
+  }
+
+  h2 {
+    font-size: 1.625rem !important; /* 26px */
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    margin-top: 1.25rem !important;
+    margin-bottom: 0.5rem !important;
+    color: hsl(var(--foreground)) !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  p {
+    font-size: 1rem !important;
+    line-height: 1.625 !important;
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.75rem !important;
+    color: hsl(var(--foreground) / 0.9) !important;
+  }
+
+  /* --- 3-Level Unordered Bullet Lists --- */
+  /* Level 1: Disc */
+  ul {
+    list-style-type: disc !important;
+    padding-left: 2rem !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  /* Level 2: Circle */
+  ul ul {
+    list-style-type: circle !important;
+    padding-left: 1.5rem !important;
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  /* Level 3: Square */
+  ul ul ul {
+    list-style-type: square !important;
+    padding-left: 1.5rem !important;
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  /* --- 3-Level Ordered Numbered Lists --- */
+  /* Level 1: Decimal Numbers (1, 2, 3...) */
+  ol {
+    list-style-type: decimal !important;
+    padding-left: 2rem !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  /* Level 2: Lowercase Alpha (a, b, c...) */
+  ol ol {
+    list-style-type: lower-alpha !important;
+    padding-left: 1.5rem !important;
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  /* Level 3: Lowercase Roman Numerals (i, ii, iii...) */
+  ol ol ol {
+    list-style-type: lower-roman !important;
+    padding-left: 1.5rem !important;
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  li {
+    margin-bottom: 0.375rem !important;
+    line-height: 1.5 !important;
+    display: list-item !important;
+    color: hsl(var(--foreground) / 0.9) !important;
+  }
+
+  /* Text formatting overrides */
+  strong, b {
+    font-weight: 700 !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  em, i {
+    font-style: italic !important;
+  }
+
+  u {
+    text-decoration: underline !important;
+  }
+
+  strike, s, del {
+    text-decoration: line-through !important;
+  }
+
+  /* Native font size tags formatting */
+  font[size="2"] {
+    font-size: 0.85rem !important; /* Small */
+  }
+
+  font[size="3"] {
+    font-size: 1.0rem !important; /* Normal */
+  }
+
+  font[size="5"] {
+    font-size: 1.5rem !important; /* Large */
+  }
+
+  font[size="7"] {
+    font-size: 2.25rem !important; /* X-Large */
+  }
+
+  /* Custom checkbox for checklists */
+  input[type="checkbox"] {
+    accent-color: hsl(var(--primary)) !important;
+    width: 1rem !important;
+    height: 1rem !important;
+    cursor: pointer !important;
+  }
+}
+
+@keyframes bell-swing {
+  0%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(15deg); }
+  20% { transform: rotate(-10deg); }
+  30% { transform: rotate(8deg); }
+  40% { transform: rotate(-6deg); }
+  50% { transform: rotate(4deg); }
+  65% { transform: rotate(0deg); }
+}
+
+.cyber-grid {
+  background-image: 
+    linear-gradient(to right, rgba(142, 242, 175, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(142, 242, 175, 0.05) 1px, transparent 1px);
+  background-size: var(--grid-size, 32px) var(--grid-size, 32px);
+  background-position: center;
+}
+
+.dark .cyber-grid {
+  background-image: 
+    linear-gradient(to right, rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+  background-size: var(--grid-size, 32px) var(--grid-size, 32px);
+}
+
+.glass-panel {
+  background-color: hsla(var(--secondary) / var(--glass-opacity, 0.1)) !important;
+  backdrop-filter: blur(16px);
+  transition: background-color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+.dark .glass-panel {
+  background-color: hsla(var(--secondary) / var(--glass-opacity, 0.1)) !important;
+}
+
+
