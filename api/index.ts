@@ -1,7 +1,8 @@
+import server from "../dist/server.cjs";
+
 export default async function handler(req: any, res: any) {
   try {
-    const { appPromise } = await import("../server.ts");
-    const app = await appPromise;
+    const app = await server.appPromise;
     return app(req, res);
   } catch (err: any) {
     return res.status(500).json({
