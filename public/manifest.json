@@ -1,0 +1,24 @@
+{
+  "short_name": "MyOS",
+  "name": "MyOS Personal Operating System",
+  "description": "Premium real-time web operating system platform for workspace coordination.",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "192x192 512x512",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#09090b",
+  "theme_color": "#10b981",
+  "display": "standalone",
+  "orientation": "portrait-primary"
+}

@@ -60,6 +60,7 @@ import { QuickLinksView } from "@/src/components/QuickLinksView";
 import { SettingsView } from "@/src/components/SettingsView";
 import { LoginPanel } from "@/src/components/LoginPanel";
 import { OrgSwitcher } from "@/src/components/OrgSwitcher";
+import { SearchPalette } from "@/src/components/SearchPalette";
 import { 
   getStats, 
   getSettings, 
@@ -376,6 +377,7 @@ function AppContent() {
   });
 
   const [notifications, setNotifications] = useState<MyOSNotification[]>([]);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const loadNotifications = async () => {
     try {
@@ -584,6 +586,17 @@ function AppContent() {
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen(prev => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
   // Helper to resolve theme settings safely
@@ -878,10 +891,8 @@ function AppContent() {
           <Sidebar collapsible="icon" className="border-r border-border/50 bg-background shadow-xl">
             <SidebarHeader className="h-20 flex items-center border-b border-border/50 px-6 group-data-[state=collapsed]:px-0 group-data-[state=collapsed]:justify-center relative">
               <div className="flex items-center gap-3 group-data-[state=collapsed]:gap-0 group-data-[state=collapsed]:justify-center">
-                <div className="w-9 h-9 bg-primary flex items-center justify-center rounded-[5px] shadow-[0_0_20px_rgba(59,130,246,0.3)] shrink-0">
-                  <div className="w-1.5 h-4 bg-white rounded-[5px]-full opacity-80" />
-                </div>
-                <span className="font-extrabold text-xl tracking-tight group-data-[state=collapsed]:hidden ml-3 uppercase">{profile.system_name || "MYOS"}</span>
+                <img src="/logo.svg" alt="MyOS Logo" className="w-14 h-14 group-data-[state=collapsed]:w-10 group-data-[state=collapsed]:h-10 object-contain shrink-0 transition-transform duration-300 hover:scale-105" />
+                <span className="font-extrabold text-xl tracking-tight group-data-[state=collapsed]:hidden uppercase">{profile.system_name || "MYOS"}</span>
               </div>
             </SidebarHeader>
             <SidebarContent className="py-6">
@@ -994,6 +1005,13 @@ function AppContent() {
                   <LogOut className="h-4 w-4" />
                 </button>
               </div>
+              
+              {/* Premium Credit Tag for owner Keo Moni */}
+              <div className="text-center group-data-[state=collapsed]:hidden opacity-40 hover:opacity-100 transition-opacity pt-1 select-none">
+                <p className="text-[8px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
+                  MyOS Platform • Designed by Keo Moni
+                </p>
+              </div>
             </div>
           </Sidebar>
 
@@ -1006,12 +1024,16 @@ function AppContent() {
               <div className="flex items-center gap-3 sm:gap-6 flex-1">
                 <SidebarTrigger className="hover:bg-secondary rounded-[5px] h-10 w-10 shrink-0" />
                 <OrgSwitcher />
-                <div className="relative max-w-sm w-full hidden lg:block">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                <div className="relative max-w-sm w-full hidden lg:block cursor-pointer" onClick={() => setSearchOpen(true)}>
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50 pointer-events-none" />
                   <Input 
                     placeholder="Search everything..." 
-                    className="pl-11 bg-secondary/50 border-border/20 focus-visible:ring-primary h-11 rounded-[5px] w-full transition-all duration-500 focus:bg-background focus:shadow-2xl"
+                    readOnly
+                    className="pl-11 pr-12 bg-secondary/50 border-border/20 focus-visible:ring-primary h-11 rounded-[5px] w-full transition-all duration-500 focus:bg-background focus:shadow-2xl cursor-pointer select-none"
                   />
+                  <kbd className="absolute right-4 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-border/30 bg-muted/80 text-[10px] font-mono text-muted-foreground/75 pointer-events-none select-none">
+                    ⌘K
+                  </kbd>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-4">
@@ -1089,6 +1111,12 @@ function AppContent() {
               onClose={() => setPendingInviteId(null)}
             />
           )}
+
+          <SearchPalette
+            isOpen={searchOpen}
+            onClose={() => setSearchOpen(false)}
+            navigateToPage={navigateToPage}
+          />
         </div>
   );
 }

@@ -3,7 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
+    <title>MyOS</title>
+    
+    <!-- PWA & Apple Standalone Meta Tags -->
+    <meta name="theme-color" content="#10b981" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="MyOS" />
+    
+    <!-- Branding Favicons & Icons -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="alternate icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+
     <script>
       (function() {
         try {
@@ -21,6 +34,16 @@
           }
         } catch (e) {}
       })();
+    </script>
+    <script>
+      // Service Worker registration for PWA installation and offline caching
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js")
+            .then((reg) => console.log("[PWA] Service Worker registered successfully:", reg.scope))
+            .catch((err) => console.error("[PWA] Service Worker registration failed:", err));
+        });
+      }
     </script>
   </head>
   <body>

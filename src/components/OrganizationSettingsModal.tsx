@@ -34,7 +34,8 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
 
   const currentUser = getCurrentSession();
   const currentUserMember = members.find(m => m.user?.id === currentUser?.id);
-  const userRole = currentUserMember?.role || ((organization.user_id === currentUser?.id || organization.owner_id === currentUser?.id) ? "Owner" : "Member");
+  const isOwner = organization.user_id === currentUser?.id || organization.owner_id === currentUser?.id;
+  const userRole = isOwner ? "Owner" : (currentUserMember?.role || "Member");
   const isAllowedToEdit = userRole === "Owner" || userRole === "Admin";
 
   useEffect(() => {
