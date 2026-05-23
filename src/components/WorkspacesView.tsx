@@ -35,6 +35,7 @@ interface ExtendedWorkspace extends Workspace {
 const emptyForm = {
   name: "",
   description: "",
+  purpose: "",
   company: "Personal",
   color: "#3b82f6",
   priority: "Medium" as PriorityLevel,
@@ -93,6 +94,45 @@ export function WorkspacesView() {
       console.error("Failed to upload logo:", err);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleBulletKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, fieldName: 'description' | 'purpose') => {
+    if (e.key === "Enter") {
+      const textarea = e.currentTarget;
+      const { selectionStart, selectionEnd, value } = textarea;
+
+      // Find the start of the current line
+      const lastNewline = value.lastIndexOf("\n", selectionStart - 1);
+      const lineStart = lastNewline === -1 ? 0 : lastNewline + 1;
+      const currentLine = value.substring(lineStart, selectionStart);
+
+      // Check if current line starts with "- " (or whitespace and "- ")
+      const match = currentLine.match(/^(\s*-\s)/);
+      if (match) {
+        e.preventDefault();
+        const bulletText = match[1]; // e.g., "- "
+
+        // If the current line is JUST "- " (empty bullet), hitting enter should erase the bullet (to exit the list)
+        if (currentLine.trim() === "-") {
+          const newValue = value.substring(0, lineStart) + value.substring(selectionEnd);
+          setForm(prev => ({ ...prev, [fieldName]: newValue }));
+          
+          // Re-adjust cursor position in next tick
+          setTimeout(() => {
+            textarea.selectionStart = textarea.selectionEnd = lineStart;
+          }, 0);
+          return;
+        }
+
+        // Otherwise, insert newline and pre-populate next line with "- "
+        const newValue = value.substring(0, selectionStart) + "\n" + bulletText + value.substring(selectionEnd);
+        setForm(prev => ({ ...prev, [fieldName]: newValue }));
+
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd = selectionStart + 1 + bulletText.length;
+        }, 0);
+      }
     }
   };
   
@@ -176,6 +216,7 @@ export function WorkspacesView() {
         type: "workspace",
         name: form.name,
         description: form.description || "Workspace to organize your projects and tasks.",
+        purpose: form.purpose || "",
         company: form.company || "Personal",
         color: form.color,
         priority: form.priority,
@@ -210,6 +251,7 @@ export function WorkspacesView() {
         type: "workspace",
         name: form.name,
         description: form.description || "Workspace to organize your projects and tasks.",
+        purpose: form.purpose || "",
         company: form.company || "Personal",
         color: form.color,
         priority: form.priority,
@@ -544,6 +586,7 @@ export function WorkspacesView() {
                     name: ws.name,
                     company: ws.company || "Personal",
                     description: ws.description || "",
+                    purpose: ws.purpose || "",
                     color: ws.color || "#3b82f6",
                     priority: ws.priority || "Medium",
                     logo: ws.logo || "",
@@ -568,7 +611,7 @@ export function WorkspacesView() {
           </div>
           
           <CardTitle className="text-lg font-bold tracking-tight uppercase group-hover:text-primary transition-colors leading-snug line-clamp-1">{ws.name}</CardTitle>
-          <CardDescription className="text-muted-foreground font-medium mt-1 leading-relaxed opacity-80 text-xs line-clamp-2 min-h-[2rem]">{ws.description}</CardDescription>
+          <CardDescription className="text-muted-foreground font-medium mt-1 leading-relaxed opacity-80 text-xs line-clamp-2 min-h-[2rem] whitespace-pre-wrap">{ws.description}</CardDescription>
         </CardHeader>
         
         <CardContent className="p-5 pt-1 space-y-4 flex-1">
@@ -694,16 +737,8 @@ export function WorkspacesView() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground font-mono">Workspace Description</label>
-                <Input 
-                  placeholder="Workspace Description" 
-                  value={form.description} 
-                  onChange={(e) => setForm({ ...form, description: e.target.value })} 
-                  className="bg-background/50 border-border/30 rounded-[5px] h-11" 
-                />
-              </div>
+            {/* Priority & Org Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-1.5 flex flex-col">
                 <label className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground font-mono mb-1.5">Priority</label>
                 <select
@@ -729,6 +764,30 @@ export function WorkspacesView() {
                   ))}
                 </select>
               </div>
+            </div>
+
+            {/* Purpose input (full-width textarea) */}
+            <div className="space-y-1.5">
+              <label className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground font-mono">Workspace Purpose</label>
+              <textarea
+                placeholder="What is the primary purpose of this workspace? (e.g., Host company Taekwondo analytics, secure database sandboxes...)"
+                value={form.purpose || ""}
+                onChange={(e) => setForm({ ...form, purpose: e.target.value })}
+                onKeyDown={(e) => handleBulletKeyDown(e, 'purpose')}
+                className="w-full min-h-[60px] p-3 text-xs bg-background/50 border border-border/30 hover:border-border/50 focus:border-primary focus:outline-none transition-colors rounded-[5px] placeholder:text-muted-foreground/30 text-foreground"
+              />
+            </div>
+
+            {/* Description input (full-width textarea) */}
+            <div className="space-y-1.5">
+              <label className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground font-mono">Workspace Description</label>
+              <textarea
+                placeholder="Write detailed descriptions or bullet lists. Start a line with '- ' and hitting Enter will automatically pre-populate the next bullet point."
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                onKeyDown={(e) => handleBulletKeyDown(e, 'description')}
+                className="w-full min-h-[120px] p-3 text-xs bg-background/50 border border-border/30 hover:border-border/50 focus:border-primary focus:outline-none transition-colors rounded-[5px] placeholder:text-muted-foreground/30 text-foreground"
+              />
             </div>
 
             {/* Curated Color Spectrum Grid & Custom Color Picker */}
@@ -1004,7 +1063,13 @@ export function WorkspacesView() {
                     </Badge>
                   </div>
                   <h2 className="text-xl sm:text-3xl font-extrabold tracking-tighter uppercase truncate">{activeWorkspace.name}</h2>
-                  <p className="text-[11px] sm:text-xs text-muted-foreground font-medium max-w-xl leading-relaxed">{activeWorkspace.description}</p>
+                  <p className="text-[11px] sm:text-xs text-muted-foreground font-medium max-w-xl leading-relaxed whitespace-pre-wrap">{activeWorkspace.description}</p>
+                  {activeWorkspace.purpose && (
+                    <div className="mt-3 text-[10px] sm:text-[11px] text-primary font-mono uppercase tracking-wider flex items-center gap-2 bg-primary/5 px-3 py-1.5 border border-primary/20 w-fit rounded-[5px] shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                      <span className="font-bold text-muted-foreground">Purpose:</span> {activeWorkspace.purpose}
+                    </div>
+                  )}
                 </div>
               </div>
               

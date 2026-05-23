@@ -46,6 +46,7 @@ export interface Workspace extends BaseItem {
   type: 'workspace';
   name: string;
   description?: string;
+  purpose?: string;
   company?: string;
   color?: string;
   icon?: string;
