@@ -90,6 +90,7 @@ export function ProjectsView() {
   const [newTaskAssigneeId, setNewTaskAssigneeId] = useState("");
   const [isAssigneeDropdownOpen, setIsAssigneeDropdownOpen] = useState(false);
   const [isProjCategoryDropdownOpen, setIsProjCategoryDropdownOpen] = useState(false);
+  const [activeReassignTaskId, setActiveReassignTaskId] = useState<string | null>(null);
   
   // Deletion warnings
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
@@ -1116,7 +1117,10 @@ export function ProjectsView() {
                   <CardTitle className="text-xl sm:text-2xl font-extrabold tracking-tight mt-1 truncate">{syncedActiveProject.name}</CardTitle>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:bg-secondary shrink-0 self-end sm:self-auto" onClick={() => setActiveProject(null)}>
+              <Button variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:bg-secondary shrink-0 self-end sm:self-auto" onClick={() => {
+                setActiveProject(null);
+                setActiveReassignTaskId(null);
+              }}>
                 <X className="w-5 h-5" />
               </Button>
             </CardHeader>
@@ -1197,7 +1201,10 @@ export function ProjectsView() {
                     <Button
                       variant={projectModalTab === "tasks" ? "default" : "ghost"}
                       size="sm"
-                      onClick={() => setProjectModalTab("tasks")}
+                      onClick={() => {
+                        setProjectModalTab("tasks");
+                        setActiveReassignTaskId(null);
+                      }}
                       className={cn(
                         "rounded-[5px] text-[9px] uppercase font-bold tracking-widest px-3 h-8 font-mono border border-border/20",
                         projectModalTab === "tasks" ? "bg-primary text-white border-primary" : "text-muted-foreground hover:bg-secondary/40"
@@ -1209,7 +1216,10 @@ export function ProjectsView() {
                     <Button
                       variant={projectModalTab === "access" ? "default" : "ghost"}
                       size="sm"
-                      onClick={() => setProjectModalTab("access")}
+                      onClick={() => {
+                        setProjectModalTab("access");
+                        setActiveReassignTaskId(null);
+                      }}
                       className={cn(
                         "rounded-[5px] text-[9px] uppercase font-bold tracking-widest px-3 h-8 font-mono border border-border/20",
                         projectModalTab === "access" ? "bg-primary text-white border-primary" : "text-muted-foreground hover:bg-secondary/40"
@@ -1227,7 +1237,7 @@ export function ProjectsView() {
                 {projectModalTab === "tasks" ? (
                   <>
                     {/* Sub-Task Insertion Panel */}
-                    <Card className="border border-border/50 bg-secondary/15 rounded-[5px] p-4 mb-6 shrink-0 relative z-20">
+                    <Card className="border border-border/50 bg-secondary/15 rounded-[5px] p-4 mb-6 shrink-0 relative z-30 shadow-lg">
                       <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-muted-foreground/80 font-mono mb-3">Push New Sub-Task Node</p>
                       
                       <div className="flex flex-col md:flex-row gap-3">
@@ -1261,7 +1271,7 @@ export function ProjectsView() {
                           />
                         </div>
 
-                        <div className="w-full md:w-48 relative z-30">
+                        <div className="w-full md:w-48 relative z-40">
                           {/* Trigger Button */}
                           <button
                             type="button"
@@ -1363,7 +1373,7 @@ export function ProjectsView() {
                     </Card>
 
                     {/* Sub-Task Scroll Queue */}
-                    <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2">
+                    <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2 relative z-10">
                       {tasks.filter(t => t.project_id === syncedActiveProject.id).length === 0 ? (
                         <div className="p-16 text-center text-muted-foreground border border-dashed border-border/30 rounded-[5px] bg-secondary/5">
                           <CheckSquare className="w-12 h-12 mx-auto mb-3 opacity-10 text-muted-foreground" />
@@ -1408,31 +1418,100 @@ export function ProjectsView() {
                               <div className="flex items-center gap-3 shrink-0">
                                 {(() => {
                                   const assigneeIds = t.assignee_id ? t.assignee_id.split(",").map(s => s.trim()).filter(Boolean) : [];
-                                  if (assigneeIds.length === 0) {
-                                    return (
-                                      <div className="flex items-center gap-1 bg-background/30 border border-border/20 border-dashed rounded-[5px] px-2 py-1 select-none opacity-40" title="Unassigned">
-                                        <span className="text-[8px] font-bold font-mono uppercase text-muted-foreground tracking-wider">
-                                          UNASSIGNED
-                                        </span>
-                                      </div>
-                                    );
-                                  }
-
                                   return (
-                                    <div className="flex items-center -space-x-1.5 bg-background/50 border border-border/30 rounded-[5px] px-2 py-1 select-none flex-wrap" title={`Assigned to ${assigneeIds.length} members`}>
-                                      {assigneeIds.map(id => {
-                                        const u = allUsers.find(user => user.id === id);
-                                        if (!u) return null;
-                                        return (
-                                          <img 
-                                            key={id}
-                                            src={u.avatar_url ? resolveDriveImage(u.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${u.id}`} 
-                                            className="w-5 h-5 rounded-[5px] border border-background bg-secondary shrink-0" 
-                                            alt="Assignee" 
-                                            title={u.display_name || u.username}
-                                          />
-                                        );
-                                      })}
+                                    <div className="relative">
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          if (activeReassignTaskId === t.id) {
+                                            setActiveReassignTaskId(null);
+                                          } else {
+                                            setActiveReassignTaskId(t.id);
+                                          }
+                                        }}
+                                        className="flex items-center -space-x-1.5 bg-background/50 hover:bg-background/80 border border-border/30 hover:border-primary/50 transition-all rounded-[5px] px-2 py-1 select-none flex-wrap cursor-pointer"
+                                        title="Click to reassign members"
+                                      >
+                                        {assigneeIds.length === 0 ? (
+                                          <span className="text-[8px] font-bold font-mono uppercase text-muted-foreground tracking-wider">
+                                            UNASSIGNED
+                                          </span>
+                                        ) : (
+                                          assigneeIds.map(id => {
+                                            const u = allUsers.find(user => user.id === id);
+                                            if (!u) return null;
+                                            return (
+                                              <img 
+                                                key={id}
+                                                src={u.avatar_url ? resolveDriveImage(u.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${u.id}`} 
+                                                className="w-5 h-5 rounded-[5px] border border-background bg-secondary shrink-0" 
+                                                alt="Assignee" 
+                                                title={u.display_name || u.username}
+                                              />
+                                            );
+                                          })
+                                        )}
+                                      </button>
+
+                                      {/* Inline Reassign Popover */}
+                                      {activeReassignTaskId === t.id && (
+                                        <>
+                                          <div className="fixed inset-0 z-40" onClick={() => setActiveReassignTaskId(null)} />
+                                          <div className="absolute right-0 mt-1.5 z-50 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2 rounded-[5px] animate-in slide-in-from-top-2 fade-in duration-200 w-56 max-h-[180px] overflow-y-auto custom-scrollbar font-mono text-[9px]">
+                                            <div className="border-b border-border/20 pb-1 mb-1.5 flex justify-between items-center text-[8px] font-bold uppercase tracking-wider">
+                                              <span className="text-foreground">REASSIGN TASK</span>
+                                              <span className="text-primary">({assigneeIds.length} SELECTED)</span>
+                                            </div>
+                                            <div className="space-y-1">
+                                              {allowedProjectUsers.map((user) => {
+                                                const isSelected = assigneeIds.includes(user.id);
+                                                return (
+                                                  <button
+                                                    key={user.id}
+                                                    type="button"
+                                                    onClick={async () => {
+                                                      let updatedIds: string[];
+                                                      if (isSelected) {
+                                                        updatedIds = assigneeIds.filter(id => id !== user.id);
+                                                      } else {
+                                                        updatedIds = [...assigneeIds, user.id];
+                                                      }
+                                                      const updatedTask = {
+                                                        ...t,
+                                                        assignee_id: updatedIds.join(",")
+                                                      };
+                                                      try {
+                                                        await updateItem(t.id, updatedTask);
+                                                        loadData();
+                                                      } catch (err) {
+                                                        console.error("Failed to reassign task:", err);
+                                                      }
+                                                    }}
+                                                    className={cn(
+                                                      "w-full text-left px-2 py-1.5 rounded-[5px] transition-all flex items-center justify-between border",
+                                                      isSelected
+                                                        ? "bg-primary/10 border-primary/30 text-primary font-bold"
+                                                        : "bg-background/40 border-border/30 text-muted-foreground hover:bg-secondary/40 hover:text-foreground"
+                                                    )}
+                                                  >
+                                                    <div className="flex items-center gap-1.5 min-w-0">
+                                                      <img 
+                                                        src={user.avatar_url ? resolveDriveImage(user.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${user.id}`} 
+                                                        className="w-4 h-4 rounded-[5px] border border-border/30 bg-secondary shrink-0" 
+                                                        alt="Avatar" 
+                                                      />
+                                                      <span className="truncate">{user.display_name || user.username}</span>
+                                                    </div>
+                                                    {isSelected && (
+                                                      <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                                                    )}
+                                                  </button>
+                                                );
+                                              })}
+                                            </div>
+                                          </div>
+                                        </>
+                                      )}
                                     </div>
                                   );
                                 })()}
