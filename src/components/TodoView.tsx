@@ -28,6 +28,21 @@ const revStatusMapping: Record<Task["status"], TaskStatus> = {
   archived: "Completed",
 };
 
+const AVAILABLE_CATEGORIES = [
+  { name: "Development", color: "bg-blue-500", text: "text-blue-500", border: "border-blue-500/20", bg: "bg-blue-500/10" },
+  { name: "Design", color: "bg-pink-500", text: "text-pink-500", border: "border-pink-500/20", bg: "bg-pink-500/10" },
+  { name: "Marketing", color: "bg-purple-500", text: "text-purple-500", border: "border-purple-500/20", bg: "bg-purple-500/10" },
+  { name: "Finance", color: "bg-emerald-500", text: "text-emerald-500", border: "border-emerald-500/20", bg: "bg-emerald-500/10" },
+  { name: "Research", color: "bg-amber-500", text: "text-amber-500", border: "border-amber-500/20", bg: "bg-amber-500/10" },
+  { name: "Security", color: "bg-red-500", text: "text-red-500", border: "border-red-500/20", bg: "bg-red-500/10" },
+  { name: "Operations", color: "bg-cyan-500", text: "text-cyan-500", border: "border-cyan-500/20", bg: "bg-cyan-500/10" },
+  { name: "Legal", color: "bg-orange-500", text: "text-orange-500", border: "border-orange-500/20", bg: "bg-orange-500/10" },
+  { name: "Personal", color: "bg-teal-500", text: "text-teal-500", border: "border-teal-500/20", bg: "bg-teal-500/10" },
+  { name: "Strategy", color: "bg-violet-500", text: "text-violet-500", border: "border-violet-500/20", bg: "bg-violet-500/10" },
+  { name: "Content", color: "bg-lime-500", text: "text-lime-500", border: "border-lime-500/20", bg: "bg-lime-500/10" },
+  { name: "Other", color: "bg-slate-400", text: "text-slate-400", border: "border-slate-400/20", bg: "bg-slate-400/10" }
+];
+
 export function TodoView() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
@@ -50,6 +65,7 @@ export function TodoView() {
   const [newPriority, setNewPriority] = useState<TaskPriority>("Medium");
   const [newDueDate, setNewDueDate] = useState("");
   const [newCategory, setNewCategory] = useState("Development");
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [newWorkspaceId, setNewWorkspaceId] = useState("");
   const [newProjectId, setNewProjectId] = useState("");
 
@@ -111,6 +127,7 @@ export function TodoView() {
     
     setNewDueDate(task.due_date || "");
     setNewCategory(task.category || "Development");
+    setIsCategoryDropdownOpen(false);
     setNewWorkspaceId(task.workspace_id || "");
     setNewProjectId(task.project_id || "");
     setShowDeployForm(true);
@@ -123,6 +140,7 @@ export function TodoView() {
     setNewPriority("Medium");
     setNewDueDate("");
     setNewCategory("Development");
+    setIsCategoryDropdownOpen(false);
     setNewWorkspaceId("");
     setNewProjectId("");
     setShowDeployForm(false);
@@ -370,6 +388,33 @@ export function TodoView() {
               >
                 TASK_{task.id.slice(0, 4).toUpperCase()}
               </Badge>
+              {(() => {
+                const taskCategories = task.category ? task.category.split(",").map(c => c.trim()).filter(Boolean) : [];
+                return taskCategories.map(catName => {
+                  const catInfo = AVAILABLE_CATEGORIES.find(c => c.name === catName) || {
+                    name: catName,
+                    color: "bg-slate-400",
+                    text: "text-slate-400",
+                    border: "border-slate-400/20",
+                    bg: "bg-slate-400/10"
+                  };
+                  return (
+                    <Badge
+                      key={catName}
+                      variant="outline"
+                      className={cn(
+                        "text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono shrink-0 transition-all border flex items-center gap-1",
+                        catInfo.text,
+                        catInfo.border,
+                        catInfo.bg
+                      )}
+                    >
+                      <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", catInfo.color)} />
+                      {catInfo.name}
+                    </Badge>
+                  );
+                });
+              })()}
               {ws ? (
                 <Badge
                   style={{
@@ -517,14 +562,101 @@ export function TodoView() {
                   className="bg-background/50 border-border/30 rounded-[5px] h-11"
                 />
               </div>
-              <div className="space-y-1.5">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Category</span>
-                <Input
-                  placeholder="Category (e.g. Dev, Marketing, Research)"
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                  className="bg-background/50 border-border/30 rounded-[5px] h-11"
-                />
+              <div className="space-y-1.5 flex flex-col justify-end relative">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Category Protocol</span>
+                <div className="relative">
+                  {/* Trigger Button */}
+                  <button
+                    type="button"
+                    onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                    className="w-full flex items-center justify-between min-h-[44px] px-3 py-2 bg-background/50 border border-border/30 rounded-[5px] text-left hover:border-primary/50 transition-all focus:outline-none focus:ring-1 focus:ring-primary/30"
+                  >
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      {(() => {
+                        const selectedCats = newCategory ? newCategory.split(",").map(c => c.trim()).filter(Boolean) : [];
+                        if (selectedCats.length === 0) {
+                          return <span className="text-xs text-muted-foreground/60 font-medium">Select Categories...</span>;
+                        }
+                        return selectedCats.map(catName => {
+                          const catInfo = AVAILABLE_CATEGORIES.find(c => c.name === catName) || {
+                            name: catName,
+                            color: "bg-slate-400",
+                            text: "text-slate-400",
+                            border: "border-slate-400/20",
+                            bg: "bg-slate-400/10"
+                          };
+                          return (
+                            <Badge
+                              key={catName}
+                              variant="outline"
+                              className={cn(
+                                "text-[9px] uppercase font-extrabold tracking-widest px-2 py-0.5 rounded-[5px] font-mono shrink-0 transition-all border flex items-center gap-1",
+                                catInfo.text,
+                                catInfo.border,
+                                catInfo.bg
+                              )}
+                            >
+                              <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", catInfo.color)} />
+                              {catInfo.name}
+                            </Badge>
+                          );
+                        });
+                      })()}
+                    </div>
+                    <ChevronRight className={cn("w-4 h-4 text-muted-foreground/60 transition-transform shrink-0 ml-2", isCategoryDropdownOpen ? "rotate-90 text-primary" : "")} />
+                  </button>
+
+                  {/* Dropdown Menu Popup */}
+                  {isCategoryDropdownOpen && (
+                    <>
+                      {/* Backdrop for closing */}
+                      <div className="fixed inset-0 z-30" onClick={() => setIsCategoryDropdownOpen(false)} />
+                      
+                      {/* Floating panel */}
+                      <div className="absolute left-0 right-0 mt-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2.5 rounded-[5px] animate-in slide-in-from-top-2 fade-in duration-200 max-h-[220px] overflow-y-auto custom-scrollbar animate-fade-in">
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {AVAILABLE_CATEGORIES.map(cat => {
+                            const selectedCats = newCategory ? newCategory.split(",").map(c => c.trim()).filter(Boolean) : [];
+                            const isSelected = selectedCats.includes(cat.name);
+                            return (
+                              <button
+                                key={cat.name}
+                                type="button"
+                                onClick={() => {
+                                  let updated: string[];
+                                  if (isSelected) {
+                                    updated = selectedCats.filter(c => c !== cat.name);
+                                  } else {
+                                    updated = [...selectedCats, cat.name];
+                                  }
+                                  if (updated.length === 0) {
+                                    setNewCategory("Other");
+                                  } else {
+                                    setNewCategory(updated.join(", "));
+                                  }
+                                }}
+                                className={cn(
+                                  "text-[9px] uppercase font-bold tracking-widest px-2.5 py-2 rounded-[5px] border transition-all flex items-center justify-between gap-1.5 text-left",
+                                  isSelected 
+                                    ? "bg-primary/10 text-primary border-primary/30 font-extrabold shadow-[inset_0_0_10px_rgba(59,130,246,0.05)]" 
+                                    : "bg-background/40 text-muted-foreground/80 border-border/30 hover:border-muted-foreground/40 hover:bg-secondary/40 hover:text-foreground"
+                                )}
+                              >
+                                <div className="flex items-center gap-1.5">
+                                  <span className={cn("w-2 h-2 rounded-full shrink-0", cat.color, isSelected ? "ring-2 ring-primary/20 scale-110" : "")} />
+                                  <span>{cat.name}</span>
+                                </div>
+                                {isSelected && (
+                                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping shrink-0" />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
             

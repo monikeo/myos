@@ -31,7 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Project, Workspace, Task, Organization, RoleAssignment } from "@/src/types";
 import { getItems, createItem, deleteItem, updateItem, getAllUsers, getCurrentSession } from "@/lib/api";
-import { cn } from "@/lib/utils";
+import { cn, resolveDriveImage } from "@/lib/utils";
 
 const SPECTRUM_COLORS = [
   { hex: "#3b82f6", name: "Indigo Protocol" },
@@ -87,6 +87,7 @@ export function ProjectsView() {
   const [newTaskDesc, setNewTaskDesc] = useState("");
   const [newTaskPriority, setNewTaskPriority] = useState<"low" | "medium" | "high">("medium");
   const [newTaskDueDate, setNewTaskDueDate] = useState("");
+  const [newTaskAssigneeId, setNewTaskAssigneeId] = useState("");
   
   // Deletion warnings
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
@@ -435,6 +436,11 @@ export function ProjectsView() {
   const handleAddTaskToProject = async (proj: Project) => {
     if (!newTaskTitle.trim()) return;
 
+    if (projectUserRole === "Viewer") {
+      import("@/lib/utils").then(m => m.emitError("Access Denied", "Viewers do not have permission to deploy tasks in this project context."));
+      return;
+    }
+
     const newTask: Task = {
       id: crypto.randomUUID(),
       type: "task",
@@ -446,7 +452,8 @@ export function ProjectsView() {
       project_id: proj.id,
       workspace_id: proj.workspace_id || undefined,
       tags: [],
-      category: proj.category || "Development"
+      category: proj.category || "Development",
+      assignee_id: newTaskAssigneeId || undefined
     };
 
     try {
@@ -455,6 +462,7 @@ export function ProjectsView() {
       setNewTaskDesc("");
       setNewTaskPriority("medium");
       setNewTaskDueDate("");
+      setNewTaskAssigneeId("");
       loadData();
     } catch (err: any) {
       console.error("Failed to create sub-task:", err);
@@ -464,6 +472,14 @@ export function ProjectsView() {
 
   // Toggle sub-task status instantly
   const handleToggleTaskStatus = async (task: Task) => {
+    const session = getCurrentSession();
+    const currentUserId = session?.id;
+
+    if (projectUserRole === "Viewer" && task.assignee_id !== currentUserId) {
+      import("@/lib/utils").then(m => m.emitError("Access Denied", "You do not have permission to modify this task. Only the assignee or leads may toggle it."));
+      return;
+    }
+
     const updatedTask: Task = {
       ...task,
       status: task.status === "completed" ? "pending" : "completed"
@@ -1188,6 +1204,21 @@ export function ProjectsView() {
                           />
                         </div>
 
+                        <div className="w-full md:w-44">
+                          <select
+                            value={newTaskAssigneeId}
+                            onChange={(e) => setNewTaskAssigneeId(e.target.value)}
+                            className="w-full h-9 px-2 bg-background border border-border/30 text-xs font-semibold rounded-[5px] focus:outline-none focus:border-primary font-mono text-muted-foreground"
+                          >
+                            <option value="">NO ASSIGNEE</option>
+                            {allowedProjectUsers.map((user) => (
+                              <option key={user.id} value={user.id}>
+                                {user.display_name || user.username}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
                         <Button 
                           onClick={() => handleAddTaskToProject(syncedActiveProject)}
                           className="rounded-[5px] bg-foreground text-background hover:bg-foreground/90 font-bold uppercase tracking-widest text-[9px] h-9 px-4 shrink-0 font-mono"
@@ -1206,46 +1237,70 @@ export function ProjectsView() {
                           <p className="text-[9px] text-muted-foreground/60 mt-1 uppercase tracking-wider font-mono">Add tasks to initialize the work stream.</p>
                         </div>
                       ) : (
-                        tasks.filter(t => t.project_id === syncedActiveProject.id).map((t) => (
-                          <div 
-                            key={t.id} 
-                            className="p-4 bg-secondary/20 hover:bg-secondary/30 transition-all border border-border/30 flex items-center justify-between gap-4 rounded-[5px] group/task"
-                          >
-                            <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                              {/* Toggle Checkbox */}
-                              <div 
-                                className="w-7 h-7 rounded-[5px] bg-background border border-border/40 flex items-center justify-center shrink-0 shadow-inner group-hover/task:border-primary transition-colors cursor-pointer"
-                                onClick={() => handleToggleTaskStatus(t)}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={t.status === "completed"}
-                                  onChange={() => {}} // handled by div click
-                                  className="w-3.5 h-3.5 rounded-[5px] accent-primary text-primary focus:ring-0 cursor-pointer pointer-events-none"
-                                />
+                        tasks.filter(t => t.project_id === syncedActiveProject.id).map((t) => {
+                          const assigneeUser = allUsers.find(u => u.id === t.assignee_id);
+                          return (
+                            <div 
+                              key={t.id} 
+                              className="p-4 bg-secondary/20 hover:bg-secondary/30 transition-all border border-border/30 flex items-center justify-between gap-4 rounded-[5px] group/task"
+                            >
+                              <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                                {/* Toggle Checkbox */}
+                                <div 
+                                  className="w-7 h-7 rounded-[5px] bg-background border border-border/40 flex items-center justify-center shrink-0 shadow-inner group-hover/task:border-primary transition-colors cursor-pointer"
+                                  onClick={() => handleToggleTaskStatus(t)}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={t.status === "completed"}
+                                    onChange={() => {}} // handled by div click
+                                    className="w-3.5 h-3.5 rounded-[5px] accent-primary text-primary focus:ring-0 cursor-pointer pointer-events-none"
+                                  />
+                                </div>
+
+                                <div className="min-w-0 flex-1">
+                                  <p className={cn(
+                                    "font-bold text-xs truncate transition-all duration-300",
+                                    t.status === "completed" ? "line-through text-muted-foreground/40 font-medium" : "text-foreground"
+                                  )}>
+                                    {t.title}
+                                  </p>
+                                  <div className="flex items-center gap-3 mt-1.5 text-[8px] font-bold font-mono uppercase text-muted-foreground/60 tracking-wider">
+                                    <Badge variant="outline" className="text-[7px] py-0 px-1 border-border/50 opacity-50 font-bold">{t.priority}</Badge>
+                                    {t.due_date && <span>DUE: {t.due_date}</span>}
+                                  </div>
+                                </div>
                               </div>
 
-                              <div className="min-w-0 flex-1">
-                                <p className={cn(
-                                  "font-bold text-xs truncate transition-all duration-300",
-                                  t.status === "completed" ? "line-through text-muted-foreground/40 font-medium" : "text-foreground"
-                                )}>
-                                  {t.title}
-                                </p>
-                                <div className="flex items-center gap-3 mt-1.5 text-[8px] font-bold font-mono uppercase text-muted-foreground/60 tracking-wider">
-                                  <Badge variant="outline" className="text-[7px] py-0 px-1 border-border/50 opacity-50 font-bold">{t.priority}</Badge>
-                                  {t.due_date && <span>DUE: {t.due_date}</span>}
+                              <div className="flex items-center gap-3 shrink-0">
+                                {assigneeUser ? (
+                                  <div className="flex items-center gap-1.5 bg-background/50 border border-border/30 rounded-[5px] px-2 py-1 select-none" title={`Assigned to: ${assigneeUser.display_name || assigneeUser.username}`}>
+                                    <img 
+                                      src={assigneeUser.avatar_url ? resolveDriveImage(assigneeUser.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${assigneeUser.id}`} 
+                                      className="w-5 h-5 rounded-[5px] border border-border/30 bg-secondary shrink-0" 
+                                      alt="Assignee" 
+                                    />
+                                    <span className="text-[9px] font-bold font-mono uppercase text-muted-foreground/80 tracking-wider hidden sm:inline">
+                                      {assigneeUser.display_name || assigneeUser.username}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-1 bg-background/30 border border-border/20 border-dashed rounded-[5px] px-2 py-1 select-none opacity-40">
+                                    <span className="text-[8px] font-bold font-mono uppercase text-muted-foreground tracking-wider">
+                                      UNASSIGNED
+                                    </span>
+                                  </div>
+                                )}
+
+                                <div className="shrink-0 flex items-center gap-1.5 opacity-40 group-hover/task:opacity-100 transition-opacity">
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => setTaskToDelete(t.id)}>
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </Button>
                                 </div>
                               </div>
                             </div>
-
-                            <div className="shrink-0 flex items-center gap-1.5 opacity-40 group-hover/task:opacity-100 transition-opacity">
-                              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => setTaskToDelete(t.id)}>
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))
+                          );
+                        })
                       )}
                     </div>
                   </>

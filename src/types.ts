@@ -18,6 +18,7 @@ export interface Task extends BaseItem {
   category?: string;
   workspace_id?: string;
   project_id?: string;
+  assignee_id?: string;
 }
 
 export interface Project extends BaseItem {
@@ -31,6 +32,8 @@ export interface Project extends BaseItem {
   workspace_id?: string;
   color?: string;
   category?: string;
+  owner_id?: string;
+  user_id?: string;
 }
 
 export interface Note extends BaseItem {
