@@ -182,6 +182,131 @@ export function ProjectsView() {
     return projects.find(p => p.id === activeProject.id) || activeProject;
   }, [activeProject, projects]);
 
+  const allowedProjectUsers = useMemo(() => {
+    if (!syncedActiveProject) return [];
+    
+    // Find parent workspace
+    const parentWorkspace = workspaces.find(w => w.id === syncedActiveProject.workspace_id);
+    if (!parentWorkspace) {
+      // Standalone project: allow all registered users
+      return allUsers;
+    }
+
+    const orgId = parentWorkspace.organization_id;
+    
+    return allUsers.filter(user => {
+      // Check if user is the workspace owner/creator
+      const isWsOwner = parentWorkspace.user_id === user.id || parentWorkspace.owner_id === user.id;
+
+      // Check if user has explicit workspace role assignment
+      const hasWsRole = roleAssignments.some(
+        ra => ra.scope_type === "workspace" && 
+              ra.scope_id === parentWorkspace.id && 
+              ra.user_id === user.id
+      );
+
+      // Check if user is the organization owner or member
+      let hasOrgRole = false;
+      if (orgId) {
+        const org = organizations.find(o => o.id === orgId);
+        const isOrgOwner = org && (org.user_id === user.id || org.owner_id === user.id);
+        const isOrgMember = roleAssignments.some(
+          ra => ra.scope_type === "organization" && 
+                ra.scope_id === orgId && 
+                ra.user_id === user.id
+        );
+        hasOrgRole = !!(isOrgOwner || isOrgMember);
+      }
+
+      return isWsOwner || hasWsRole || hasOrgRole;
+    });
+  }, [syncedActiveProject, workspaces, allUsers, roleAssignments, organizations]);
+
+  const projectUserRole = useMemo(() => {
+    if (!syncedActiveProject) return null;
+    const session = getCurrentSession();
+    if (!session || !session.id) return null;
+    const currentUserId = session.id;
+
+    // 1. Check if user is explicit owner / creator via fields
+    const isProjOwnerField = syncedActiveProject.user_id === currentUserId || syncedActiveProject.owner_id === currentUserId;
+    
+    // Check if user has explicit project lead role assignment
+    const hasProjLeadRole = roleAssignments.some(
+      ra => ra.scope_type === "project" && 
+            ra.scope_id === syncedActiveProject.id && 
+            ra.user_id === currentUserId && 
+            ra.role === "Project Lead"
+    );
+
+    // Fallback if standalone project with no owner info at all
+    const hasAnyProjOwner = roleAssignments.some(
+      ra => ra.scope_type === "project" && 
+            ra.scope_id === syncedActiveProject.id && 
+            ra.role === "Project Lead"
+    );
+    const hasNoProjOwnerInfo = !syncedActiveProject.user_id && !syncedActiveProject.owner_id && !hasAnyProjOwner;
+
+    if (isProjOwnerField || hasProjLeadRole || hasNoProjOwnerInfo) {
+      return "Project Lead";
+    }
+
+    // 2. Check explicit project assignment
+    const projAssignment = roleAssignments.find(
+      ra => ra.scope_type === "project" && 
+            ra.scope_id === syncedActiveProject.id && 
+            ra.user_id === currentUserId
+    );
+    if (projAssignment) {
+      return projAssignment.role; // e.g. "Project Lead", "Contributor", "Viewer"
+    }
+
+    // 3. Fallback to parent workspace assignment
+    const parentWorkspace = workspaces.find(w => w.id === syncedActiveProject.workspace_id);
+    if (parentWorkspace) {
+      const isWsOwner = parentWorkspace.user_id === currentUserId || parentWorkspace.owner_id === currentUserId;
+      const hasWsOwnerRole = roleAssignments.some(
+        ra => ra.scope_type === "workspace" && 
+              ra.scope_id === parentWorkspace.id && 
+              ra.user_id === currentUserId && 
+              ra.role === "Owner"
+      );
+      if (isWsOwner || hasWsOwnerRole) return "Project Lead";
+
+      const wsAssignment = roleAssignments.find(
+        ra => ra.scope_type === "workspace" && 
+              ra.scope_id === parentWorkspace.id && 
+              ra.user_id === currentUserId
+      );
+      if (wsAssignment) {
+        if (wsAssignment.role === "Admin" || wsAssignment.role === "Owner") return "Project Lead";
+        if (wsAssignment.role === "Editor" || wsAssignment.role === "Member") return "Contributor";
+        if (wsAssignment.role === "Viewer") return "Viewer";
+      }
+
+      // 4. Fallback to parent organization assignment
+      const orgId = parentWorkspace.organization_id;
+      if (orgId) {
+        const org = organizations.find(o => o.id === orgId);
+        const isOrgOwner = org && (org.user_id === currentUserId || org.owner_id === currentUserId);
+        if (isOrgOwner) return "Project Lead";
+
+        const orgAssignment = roleAssignments.find(
+          ra => ra.scope_type === "organization" && 
+                ra.scope_id === orgId && 
+                ra.user_id === currentUserId
+        );
+        if (orgAssignment) {
+          if (orgAssignment.role === "Admin" || orgAssignment.role === "Owner") return "Project Lead";
+          if (orgAssignment.role === "Member") return "Contributor";
+          if (orgAssignment.role === "Guest") return "Viewer";
+        }
+      }
+    }
+
+    return "Viewer"; // Default fallback
+  }, [syncedActiveProject, workspaces, roleAssignments, organizations]);
+
   const handleSaveProject = async () => {
     if (!form.name.trim()) return;
 
@@ -291,6 +416,18 @@ export function ProjectsView() {
     } catch (err: any) {
       console.error("Failed to revoke project role:", err);
       import("@/lib/utils").then(m => m.emitError("Role Revocation Failed", err?.message || "Failed to revoke project role"));
+    }
+  };
+
+  const handleUpdateProjectRole = async (assignmentId: string, newRole: string) => {
+    try {
+      const ra = roleAssignments.find(item => item.id === assignmentId);
+      if (!ra) return;
+      await updateItem(assignmentId, { ...ra, role: newRole });
+      loadData();
+    } catch (err: any) {
+      console.error("Failed to update project role:", err);
+      import("@/lib/utils").then(m => m.emitError("Role Update Failed", err?.message || "Failed to update project role"));
     }
   };
 
@@ -1131,7 +1268,7 @@ export function ProjectsView() {
                             className="w-full h-10 px-2 rounded-[5px] bg-background/70 border border-border/30 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground"
                           >
                             <option value="">-- Choose User --</option>
-                            {allUsers.map(user => (
+                            {allowedProjectUsers.map(user => (
                               <option key={user.id} value={user.id}>
                                 {user.display_name || user.username} (@{user.username})
                               </option>
@@ -1196,17 +1333,28 @@ export function ProjectsView() {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2.5 shrink-0">
-                                  <Badge 
-                                    variant="outline" 
-                                    className={cn(
-                                      "text-[8px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[5px] font-mono border",
-                                      ra.role === "Project Lead" ? "bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.2)]" :
-                                      ra.role === "Contributor" ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
-                                      "bg-secondary/40 text-muted-foreground border-border/20"
-                                    )}
-                                  >
-                                    {ra.role}
-                                  </Badge>
+                                  {projectUserRole === "Project Lead" && ra.role !== "Project Lead" ? (
+                                    <select
+                                      value={ra.role}
+                                      onChange={(e) => handleUpdateProjectRole(ra.id!, e.target.value)}
+                                      className="text-[10px] font-bold font-mono tracking-wider uppercase bg-secondary/50 border border-border/30 rounded-[5px] px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/20"
+                                    >
+                                      <option value="Contributor">Contributor</option>
+                                      <option value="Viewer">Viewer</option>
+                                    </select>
+                                  ) : (
+                                    <Badge 
+                                      variant="outline" 
+                                      className={cn(
+                                        "text-[8px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[5px] font-mono border",
+                                        ra.role === "Project Lead" ? "bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.2)]" :
+                                        ra.role === "Contributor" ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
+                                        "bg-secondary/40 text-muted-foreground border-border/20"
+                                      )}
+                                    >
+                                      {ra.role}
+                                    </Badge>
+                                  )}
                                   <Button
                                     onClick={() => handleRevokeProjectRole(ra.id!)}
                                     variant="ghost"

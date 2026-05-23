@@ -505,6 +505,18 @@ export function WorkspacesView() {
     }
   };
 
+  const handleUpdateWorkspaceRole = async (assignmentId: string, newRole: string) => {
+    try {
+      const ra = roleAssignments.find(item => item.id === assignmentId);
+      if (!ra) return;
+      await updateItem(assignmentId, { ...ra, role: newRole });
+      loadWorkspaces();
+    } catch (err: any) {
+      console.error("Failed to update workspace role:", err);
+      import("@/lib/utils").then(m => m.emitError("Role Update Failed", err?.message || "Failed to update workspace role"));
+    }
+  };
+
   const getProjectStats = useCallback((projectId: string) => {
     const projectTasks = tasks.filter(t => t.project_id === projectId);
     const completed = projectTasks.filter(t => t.status === "completed" || t.status === "archived");
@@ -610,6 +622,88 @@ export function WorkspacesView() {
         return weightB - weightA;
       });
   }, [workspaces, searchQuery, filterCompany, activeOrgId, filterScope, filterOwnership, roleAssignments, organizations]);
+
+  const workspaceUserRole = useMemo(() => {
+    if (!activeWorkspace) return null;
+    const session = getCurrentSession();
+    if (!session || !session.id) return null;
+    const currentUserId = session.id;
+
+    // 1. Is workspace owner?
+    const isWsOwnerField = activeWorkspace.user_id === currentUserId || activeWorkspace.owner_id === currentUserId;
+    const hasWsOwnerRole = roleAssignments.some(
+      ra => ra.scope_type === "workspace" && 
+            ra.scope_id === activeWorkspace.id && 
+            ra.user_id === currentUserId && 
+            ra.role === "Owner"
+    );
+    
+    // Check if the workspace is standalone and has no owner metadata at all
+    const hasAnyOwnerRole = roleAssignments.some(
+      ra => ra.scope_type === "workspace" && 
+            ra.scope_id === activeWorkspace.id && 
+            ra.role === "Owner"
+    );
+    const hasNoOwnerInfo = !activeWorkspace.user_id && !activeWorkspace.owner_id && !hasAnyOwnerRole;
+
+    if (isWsOwnerField || hasWsOwnerRole || hasNoOwnerInfo) {
+      return "Owner";
+    }
+
+    // 2. Is explicit workspace member?
+    const wsAssignment = roleAssignments.find(
+      ra => ra.scope_type === "workspace" && 
+            ra.scope_id === activeWorkspace.id && 
+            ra.user_id === currentUserId
+    );
+    if (wsAssignment) {
+      return wsAssignment.role; // e.g. "Admin", "Editor", "Member", "Viewer"
+    }
+
+    // 3. Fallback to parent organization permission?
+    if (activeWorkspace.organization_id) {
+      const org = organizations.find(o => o.id === activeWorkspace.organization_id);
+      const isOrgOwner = org && (org.user_id === currentUserId || org.owner_id === currentUserId);
+      if (isOrgOwner) return "Owner";
+
+      const orgAssignment = roleAssignments.find(
+        ra => ra.scope_type === "organization" && 
+              ra.scope_id === activeWorkspace.organization_id && 
+              ra.user_id === currentUserId
+      );
+      if (orgAssignment) {
+        if (orgAssignment.role === "Admin") return "Admin";
+        if (orgAssignment.role === "Member") return "Member";
+        if (orgAssignment.role === "Guest") return "Viewer";
+      }
+    }
+
+    return "Viewer"; // Default fallback is view-only access
+  }, [activeWorkspace, roleAssignments, organizations]);
+
+  const allowedWorkspaceUsers = useMemo(() => {
+    if (!activeWorkspace) return [];
+    const parentOrgId = activeWorkspace.organization_id;
+    if (!parentOrgId) {
+      // Standalone workspace: allow all registered users
+      return allUsers;
+    }
+
+    return allUsers.filter(user => {
+      // Check if user is owner of the organization
+      const org = organizations.find(o => o.id === parentOrgId);
+      const isOrgOwner = org && (org.user_id === user.id || org.owner_id === user.id);
+      
+      // Check if user has a role assignment in the organization
+      const hasOrgRole = roleAssignments.some(
+        ra => ra.scope_type === "organization" && 
+              ra.scope_id === parentOrgId && 
+              ra.user_id === user.id
+      );
+
+      return isOrgOwner || hasOrgRole;
+    });
+  }, [activeWorkspace, allUsers, roleAssignments, organizations]);
 
   const renderWorkspaceCard = (ws: ExtendedWorkspace) => {
     return (
@@ -1470,7 +1564,7 @@ export function WorkspacesView() {
                           className="w-full h-10 px-2 rounded-[5px] bg-background/70 border border-border/30 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground"
                         >
                           <option value="">-- Choose User --</option>
-                          {allUsers.map(user => (
+                          {allowedWorkspaceUsers.map(user => (
                             <option key={user.id} value={user.id}>
                               {user.display_name || user.username} (@{user.username})
                             </option>
@@ -1791,19 +1885,35 @@ export function WorkspacesView() {
                                 </div>
                               </div>
                               <div className="flex items-center gap-2.5 shrink-0">
-                                  <Badge 
-                                    variant="outline" 
-                                    className={cn(
-                                      "text-[8px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[5px] font-mono border",
-                                      ra.role === "Owner" ? "bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.2)]" :
-                                      ra.role === "Admin" ? "bg-orange-500/10 text-orange-500 border-orange-500/20" :
-                                      ra.role === "Editor" ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
-                                      ra.role === "Member" ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
-                                      "bg-secondary/40 text-muted-foreground border-border/20"
-                                    )}
-                                  >
-                                  {ra.role}
-                                </Badge>
+                                  {(() => {
+                                    const canManageWorkspaceAccess = workspaceUserRole === "Owner" || workspaceUserRole === "Admin";
+                                    return canManageWorkspaceAccess && ra.role !== "Owner" ? (
+                                      <select
+                                        value={ra.role}
+                                        onChange={(e) => handleUpdateWorkspaceRole(ra.id!, e.target.value)}
+                                        className="text-[10px] font-bold font-mono tracking-wider uppercase bg-secondary/50 border border-border/30 rounded-[5px] px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/20"
+                                      >
+                                        <option value="Admin">Admin</option>
+                                        <option value="Editor">Editor</option>
+                                        <option value="Member">Member</option>
+                                        <option value="Viewer">Viewer</option>
+                                      </select>
+                                    ) : (
+                                      <Badge 
+                                        variant="outline" 
+                                        className={cn(
+                                          "text-[8px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[5px] font-mono border",
+                                          ra.role === "Owner" ? "bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.2)]" :
+                                          ra.role === "Admin" ? "bg-orange-500/10 text-orange-500 border-orange-500/20" :
+                                          ra.role === "Editor" ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
+                                          ra.role === "Member" ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
+                                          "bg-secondary/40 text-muted-foreground border-border/20"
+                                        )}
+                                      >
+                                        {ra.role}
+                                      </Badge>
+                                    );
+                                  })()}
                                 <Button
                                   onClick={() => handleRevokeWorkspaceRole(ra.id!)}
                                   variant="ghost"

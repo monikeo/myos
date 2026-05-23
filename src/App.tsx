@@ -426,35 +426,48 @@ function AppContent() {
     }
   };
 
-  const triggerNotification = async (title: string, message: string, category: MyOSNotification["category"], link_to?: string) => {
-    try {
-      const newItem = await createItem({
-        type: "notification",
-        title,
-        message,
-        category,
-        read: false,
-        link_to,
-        created_at: new Date().toISOString()
-      });
-      setNotifications(prev => [newItem as MyOSNotification, ...prev]);
-      playNotificationSound();
-    } catch (err) {
-      console.error("Failed to trigger notification in DB, falling back to transient state:", err);
-      // Fallback: Add transient notification to UI state so user still gets full visual feedback
-      const transientItem: MyOSNotification = {
-        id: "transient_" + Math.random().toString(36).substring(2, 11),
-        type: "notification",
-        title,
-        message: `${message} (Local Cache Only)`,
-        category,
-        read: false,
-        link_to,
-        created_at: new Date().toISOString()
-      };
-      setNotifications(prev => [transientItem, ...prev]);
-      playNotificationSound();
+  const triggerNotification = async (
+    title: string, 
+    message: string, 
+    category: MyOSNotification["category"], 
+    link_to?: string, 
+    persist?: boolean
+  ) => {
+    // Only persist if explicitly requested, or if it is a critical system/security/invitation warning
+    const shouldPersist = persist || category === "system" || category === "security" || title.toLowerCase().includes("invite") || title.toLowerCase().includes("invitation");
+
+    if (shouldPersist) {
+      try {
+        const newItem = await createItem({
+          type: "notification",
+          title,
+          message,
+          category,
+          read: false,
+          link_to,
+          created_at: new Date().toISOString()
+        });
+        setNotifications(prev => [newItem as MyOSNotification, ...prev]);
+        playNotificationSound();
+        return;
+      } catch (err) {
+        console.error("Failed to trigger notification in DB, falling back to transient state:", err);
+      }
     }
+
+    // Fallback or transient UI alert: Add transient notification to UI state so user still gets instant visual/audible feedback
+    const transientItem: MyOSNotification = {
+      id: "transient_" + Math.random().toString(36).substring(2, 11),
+      type: "notification",
+      title,
+      message,
+      category,
+      read: false,
+      link_to,
+      created_at: new Date().toISOString()
+    };
+    setNotifications(prev => [transientItem, ...prev]);
+    playNotificationSound();
   };
 
   const handleMarkAsRead = async (id: string) => {
@@ -558,10 +571,11 @@ function AppContent() {
         message: string;
         category: MyOSNotification["category"];
         link_to?: string;
+        persist?: boolean;
       }>;
       if (customEvent.detail) {
-        const { title, message, category, link_to } = customEvent.detail;
-        triggerNotification(title, message, category, link_to);
+        const { title, message, category, link_to, persist } = customEvent.detail;
+        triggerNotification(title, message, category, link_to, persist);
       }
     };
 

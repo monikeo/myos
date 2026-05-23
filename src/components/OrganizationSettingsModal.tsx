@@ -189,6 +189,37 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
     }
   };
 
+  const handleChangeMemberRole = async (assignmentId: string, newRole: string) => {
+    try {
+      const assignment = members.find(m => m.assignmentId === assignmentId);
+      if (!assignment) return;
+      
+      const roleAssignments = await getItems<RoleAssignment>("role_assignment");
+      const ra = roleAssignments.find(item => item.id === assignmentId);
+      if (!ra) return;
+
+      await updateItem(assignmentId, {
+        ...ra,
+        role: newRole
+      });
+
+      window.dispatchEvent(
+        new CustomEvent("myos:notification", {
+          detail: { 
+            title: "Role Updated", 
+            message: `Updated role for ${assignment.user.display_name} to ${newRole}.`, 
+            category: "system" 
+          }
+        })
+      );
+      
+      await loadMembersData();
+      onUpdate();
+    } catch (err) {
+      console.error("Failed to update role", err);
+    }
+  };
+
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-300">
@@ -373,15 +404,27 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                             </div>
                           </div>
                           <div className="flex items-center gap-2 sm:gap-4 shrink-0 pl-2">
-                            <span className={`text-[8px] sm:text-[9px] font-bold font-mono tracking-widest uppercase px-2 py-1 rounded-[5px] border ${
-                              m.role === "Owner" ? "bg-amber-500/10 text-amber-500 border-amber-500/30" :
-                              m.role === "Admin" ? "bg-primary/10 text-primary border-primary/30" :
-                              m.role === "Member" ? "bg-blue-500/10 text-blue-500 border-blue-500/30" :
-                              m.role === "Guest" ? "bg-purple-500/10 text-purple-400 border-purple-500/30" :
-                              "bg-secondary/50 text-foreground border-border/30"
-                            }`}>
-                              {m.role}
-                            </span>
+                            {isAllowedToEdit && m.role !== "Owner" ? (
+                              <select
+                                value={m.role}
+                                onChange={(e) => handleChangeMemberRole(m.assignmentId, e.target.value)}
+                                className="text-[10px] font-bold font-mono tracking-wider uppercase bg-secondary/50 border border-border/30 rounded-[5px] px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/20"
+                              >
+                                <option value="Admin">Admin</option>
+                                <option value="Member">Member</option>
+                                <option value="Guest">Guest</option>
+                              </select>
+                            ) : (
+                              <span className={`text-[8px] sm:text-[9px] font-bold font-mono tracking-widest uppercase px-2 py-1 rounded-[5px] border ${
+                                m.role === "Owner" ? "bg-amber-500/10 text-amber-500 border-amber-500/30" :
+                                m.role === "Admin" ? "bg-primary/10 text-primary border-primary/30" :
+                                m.role === "Member" ? "bg-blue-500/10 text-blue-500 border-blue-500/30" :
+                                m.role === "Guest" ? "bg-purple-500/10 text-purple-400 border-purple-500/30" :
+                                "bg-secondary/50 text-foreground border-border/30"
+                              }`}>
+                                {m.role}
+                              </span>
+                            )}
                             <Button 
                               variant="ghost" 
                               size="icon" 
