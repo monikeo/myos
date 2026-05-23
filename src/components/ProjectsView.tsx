@@ -88,6 +88,8 @@ export function ProjectsView() {
   const [newTaskPriority, setNewTaskPriority] = useState<"low" | "medium" | "high">("medium");
   const [newTaskDueDate, setNewTaskDueDate] = useState("");
   const [newTaskAssigneeId, setNewTaskAssigneeId] = useState("");
+  const [isAssigneeDropdownOpen, setIsAssigneeDropdownOpen] = useState(false);
+  const [isProjCategoryDropdownOpen, setIsProjCategoryDropdownOpen] = useState(false);
   
   // Deletion warnings
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
@@ -475,7 +477,8 @@ export function ProjectsView() {
     const session = getCurrentSession();
     const currentUserId = session?.id;
 
-    if (projectUserRole === "Viewer" && task.assignee_id !== currentUserId) {
+    const assignees = task.assignee_id ? task.assignee_id.split(",").map(s => s.trim()).filter(Boolean) : [];
+    if (projectUserRole === "Viewer" && !assignees.includes(currentUserId || "")) {
       import("@/lib/utils").then(m => m.emitError("Access Denied", "You do not have permission to modify this task. Only the assignee or leads may toggle it."));
       return;
     }
@@ -932,13 +935,67 @@ export function ProjectsView() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 relative">
                   <label className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/75 font-mono">Category</label>
-                  <Input 
-                    value={form.category}
-                    onChange={(e) => setForm({...form, category: e.target.value})}
-                    className="bg-secondary/20 border-border/30 h-10 rounded-[5px] text-xs"
-                  />
+                  <div className="relative">
+                    <Input 
+                      value={form.category}
+                      onChange={(e) => setForm({...form, category: e.target.value})}
+                      placeholder="Enter custom category or choose..."
+                      className="bg-secondary/20 border-border/30 h-10 rounded-[5px] text-xs pr-8"
+                      onClick={() => setIsProjCategoryDropdownOpen(true)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setIsProjCategoryDropdownOpen(!isProjCategoryDropdownOpen)}
+                      className="absolute right-0 top-0 bottom-0 px-2.5 flex items-center justify-center text-muted-foreground/50 hover:text-primary transition-colors focus:outline-none"
+                    >
+                      <ChevronRight className={cn("w-3.5 h-3.5 transition-transform", isProjCategoryDropdownOpen ? "rotate-90 text-primary" : "")} />
+                    </button>
+
+                    {isProjCategoryDropdownOpen && (
+                      <>
+                        <div className="fixed inset-0 z-30" onClick={() => setIsProjCategoryDropdownOpen(false)} />
+                        <div className="absolute left-0 right-0 mt-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2.5 rounded-[5px] animate-in slide-in-from-top-2 fade-in duration-200 max-h-[160px] overflow-y-auto custom-scrollbar font-mono text-[9px]">
+                          <div className="grid grid-cols-2 gap-1.5">
+                            {["Development", "Design", "Marketing", "Finance", "Research", "Security", "Operations", "Legal", "Personal", "Strategy", "Content", "Other"].map(cat => (
+                              <button
+                                key={cat}
+                                type="button"
+                                onClick={() => {
+                                  setForm({...form, category: cat});
+                                  setIsProjCategoryDropdownOpen(false);
+                                }}
+                                className={cn(
+                                  "text-[9px] uppercase font-bold tracking-widest px-2.5 py-2 rounded-[5px] border transition-all text-left flex items-center gap-1.5",
+                                  form.category === cat 
+                                    ? "bg-primary/10 text-primary border-primary/30 font-extrabold" 
+                                    : "bg-background/40 text-muted-foreground/80 border-border/30 hover:border-muted-foreground/40 hover:bg-secondary/40 hover:text-foreground"
+                                )}
+                              >
+                                <span className={cn(
+                                  "w-1.5 h-1.5 rounded-full shrink-0",
+                                  cat === "Development" ? "bg-blue-500" :
+                                  cat === "Design" ? "bg-pink-500" :
+                                  cat === "Marketing" ? "bg-purple-500" :
+                                  cat === "Finance" ? "bg-emerald-500" :
+                                  cat === "Research" ? "bg-amber-500" :
+                                  cat === "Security" ? "bg-red-500" :
+                                  cat === "Operations" ? "bg-cyan-500" :
+                                  cat === "Legal" ? "bg-orange-500" :
+                                  cat === "Personal" ? "bg-teal-500" :
+                                  cat === "Strategy" ? "bg-violet-500" :
+                                  cat === "Content" ? "bg-lime-500" :
+                                  "bg-slate-400"
+                                )} />
+                                {cat}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="space-y-1.5">
@@ -1204,19 +1261,96 @@ export function ProjectsView() {
                           />
                         </div>
 
-                        <div className="w-full md:w-44">
-                          <select
-                            value={newTaskAssigneeId}
-                            onChange={(e) => setNewTaskAssigneeId(e.target.value)}
-                            className="w-full h-9 px-2 bg-background border border-border/30 text-xs font-semibold rounded-[5px] focus:outline-none focus:border-primary font-mono text-muted-foreground"
+                        <div className="w-full md:w-48 relative">
+                          {/* Trigger Button */}
+                          <button
+                            type="button"
+                            onClick={() => setIsAssigneeDropdownOpen(!isAssigneeDropdownOpen)}
+                            className="w-full h-9 px-2 flex items-center justify-between bg-background border border-border/30 rounded-[5px] text-left hover:border-primary/50 transition-all focus:outline-none text-[10px]"
                           >
-                            <option value="">NO ASSIGNEE</option>
-                            {allowedProjectUsers.map((user) => (
-                              <option key={user.id} value={user.id}>
-                                {user.display_name || user.username}
-                              </option>
-                            ))}
-                          </select>
+                            <div className="flex items-center gap-1 overflow-hidden truncate max-w-[85%]">
+                              {(() => {
+                                const selectedAssigneeIds = newTaskAssigneeId ? newTaskAssigneeId.split(",").map(s => s.trim()).filter(Boolean) : [];
+                                if (selectedAssigneeIds.length === 0) {
+                                  return <span className="text-[10px] text-muted-foreground/60 font-semibold font-mono uppercase">NO ASSIGNEE</span>;
+                                }
+                                return (
+                                  <div className="flex -space-x-1.5 items-center">
+                                    {selectedAssigneeIds.map(id => {
+                                      const u = allowedProjectUsers.find(user => user.id === id);
+                                      if (!u) return null;
+                                      return (
+                                        <img 
+                                          key={id}
+                                          src={u.avatar_url ? resolveDriveImage(u.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${u.id}`} 
+                                          className="w-5 h-5 rounded-[5px] border border-background bg-secondary shrink-0" 
+                                          alt="Assignee" 
+                                          title={u.display_name || u.username}
+                                        />
+                                      );
+                                    })}
+                                    <span className="text-[9px] font-bold font-mono text-primary uppercase ml-1.5">
+                                      ({selectedAssigneeIds.length})
+                                    </span>
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                            <ChevronRight className={cn("w-3.5 h-3.5 text-muted-foreground/50 transition-transform shrink-0 ml-1", isAssigneeDropdownOpen ? "rotate-90 text-primary" : "")} />
+                          </button>
+
+                          {/* Multi-select Dropdown list */}
+                          {isAssigneeDropdownOpen && (
+                            <>
+                              <div className="fixed inset-0 z-30" onClick={() => setIsAssigneeDropdownOpen(false)} />
+                              <div className="absolute right-0 left-0 md:left-auto md:w-56 mt-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2 rounded-[5px] animate-in slide-in-from-top-2 fade-in duration-200 max-h-[200px] overflow-y-auto custom-scrollbar font-mono text-[9px]">
+                                <div className="space-y-1">
+                                  {allowedProjectUsers.map((user) => {
+                                    const selectedAssigneeIds = newTaskAssigneeId ? newTaskAssigneeId.split(",").map(s => s.trim()).filter(Boolean) : [];
+                                    const isSelected = selectedAssigneeIds.includes(user.id);
+                                    return (
+                                      <button
+                                        key={user.id}
+                                        type="button"
+                                        onClick={() => {
+                                          let updated: string[];
+                                          if (isSelected) {
+                                            updated = selectedAssigneeIds.filter(id => id !== user.id);
+                                          } else {
+                                            updated = [...selectedAssigneeIds, user.id];
+                                          }
+                                          setNewTaskAssigneeId(updated.join(","));
+                                        }}
+                                        className={cn(
+                                          "w-full text-left px-2 py-1.5 rounded-[5px] transition-all flex items-center justify-between border",
+                                          isSelected
+                                            ? "bg-primary/10 border-primary/30 text-primary font-bold"
+                                            : "bg-background/40 border-border/30 text-muted-foreground hover:bg-secondary/40 hover:text-foreground"
+                                        )}
+                                      >
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                          <img 
+                                            src={user.avatar_url ? resolveDriveImage(user.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${user.id}`} 
+                                            className="w-4 h-4 rounded-[5px] border border-border/30 bg-secondary shrink-0" 
+                                            alt="Avatar" 
+                                          />
+                                          <span className="truncate">{user.display_name || user.username}</span>
+                                        </div>
+                                        {isSelected && (
+                                          <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                                        )}
+                                      </button>
+                                    );
+                                  })}
+                                  {allowedProjectUsers.length === 0 && (
+                                    <div className="p-2 text-center text-muted-foreground">
+                                      NO MEMBERS AVAILABLE
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </>
+                          )}
                         </div>
 
                         <Button 
@@ -1238,7 +1372,6 @@ export function ProjectsView() {
                         </div>
                       ) : (
                         tasks.filter(t => t.project_id === syncedActiveProject.id).map((t) => {
-                          const assigneeUser = allUsers.find(u => u.id === t.assignee_id);
                           return (
                             <div 
                               key={t.id} 
@@ -1273,24 +1406,36 @@ export function ProjectsView() {
                               </div>
 
                               <div className="flex items-center gap-3 shrink-0">
-                                {assigneeUser ? (
-                                  <div className="flex items-center gap-1.5 bg-background/50 border border-border/30 rounded-[5px] px-2 py-1 select-none" title={`Assigned to: ${assigneeUser.display_name || assigneeUser.username}`}>
-                                    <img 
-                                      src={assigneeUser.avatar_url ? resolveDriveImage(assigneeUser.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${assigneeUser.id}`} 
-                                      className="w-5 h-5 rounded-[5px] border border-border/30 bg-secondary shrink-0" 
-                                      alt="Assignee" 
-                                    />
-                                    <span className="text-[9px] font-bold font-mono uppercase text-muted-foreground/80 tracking-wider hidden sm:inline">
-                                      {assigneeUser.display_name || assigneeUser.username}
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <div className="flex items-center gap-1 bg-background/30 border border-border/20 border-dashed rounded-[5px] px-2 py-1 select-none opacity-40">
-                                    <span className="text-[8px] font-bold font-mono uppercase text-muted-foreground tracking-wider">
-                                      UNASSIGNED
-                                    </span>
-                                  </div>
-                                )}
+                                {(() => {
+                                  const assigneeIds = t.assignee_id ? t.assignee_id.split(",").map(s => s.trim()).filter(Boolean) : [];
+                                  if (assigneeIds.length === 0) {
+                                    return (
+                                      <div className="flex items-center gap-1 bg-background/30 border border-border/20 border-dashed rounded-[5px] px-2 py-1 select-none opacity-40" title="Unassigned">
+                                        <span className="text-[8px] font-bold font-mono uppercase text-muted-foreground tracking-wider">
+                                          UNASSIGNED
+                                        </span>
+                                      </div>
+                                    );
+                                  }
+
+                                  return (
+                                    <div className="flex items-center -space-x-1.5 bg-background/50 border border-border/30 rounded-[5px] px-2 py-1 select-none flex-wrap" title={`Assigned to ${assigneeIds.length} members`}>
+                                      {assigneeIds.map(id => {
+                                        const u = allUsers.find(user => user.id === id);
+                                        if (!u) return null;
+                                        return (
+                                          <img 
+                                            key={id}
+                                            src={u.avatar_url ? resolveDriveImage(u.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${u.id}`} 
+                                            className="w-5 h-5 rounded-[5px] border border-background bg-secondary shrink-0" 
+                                            alt="Assignee" 
+                                            title={u.display_name || u.username}
+                                          />
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })()}
 
                                 <div className="shrink-0 flex items-center gap-1.5 opacity-40 group-hover/task:opacity-100 transition-opacity">
                                   <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => setTaskToDelete(t.id)}>

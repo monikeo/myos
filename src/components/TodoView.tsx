@@ -614,6 +614,48 @@ export function TodoView() {
                       
                       {/* Floating panel */}
                       <div className="absolute left-0 right-0 mt-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2.5 rounded-[5px] animate-in slide-in-from-top-2 fade-in duration-200 max-h-[220px] overflow-y-auto custom-scrollbar animate-fade-in">
+                        {/* Custom Category Input */}
+                        <div className="flex items-center gap-1.5 mb-2.5 pb-2 border-b border-border/20">
+                          <Input
+                            placeholder="Add custom category..."
+                            className="h-7 text-[10px] bg-secondary/20 border-border/30 rounded-[5px] flex-1 font-mono text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-primary"
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                const val = e.currentTarget.value.trim();
+                                if (val) {
+                                  let updated: string[];
+                                  const selectedCats = newCategory ? newCategory.split(",").map(c => c.trim()).filter(Boolean) : [];
+                                  if (!selectedCats.includes(val)) {
+                                    updated = [...selectedCats, val];
+                                    setNewCategory(updated.join(", "));
+                                  }
+                                  e.currentTarget.value = "";
+                                }
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            size="icon"
+                            className="h-7 w-7 rounded-[5px] bg-primary hover:bg-primary/90 shrink-0"
+                            onClick={(e) => {
+                              const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                              const val = input.value.trim();
+                              if (val) {
+                                let updated: string[];
+                                const selectedCats = newCategory ? newCategory.split(",").map(c => c.trim()).filter(Boolean) : [];
+                                if (!selectedCats.includes(val)) {
+                                  updated = [...selectedCats, val];
+                                  setNewCategory(updated.join(", "));
+                                }
+                                input.value = "";
+                              }
+                            }}
+                          >
+                            <Plus className="w-3.5 h-3.5 text-white" />
+                          </Button>
+                        </div>
                         <div className="grid grid-cols-2 gap-1.5">
                           {AVAILABLE_CATEGORIES.map(cat => {
                             const selectedCats = newCategory ? newCategory.split(",").map(c => c.trim()).filter(Boolean) : [];
