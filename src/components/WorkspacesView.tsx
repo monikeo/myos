@@ -702,8 +702,8 @@ export function WorkspacesView() {
 
       {/* Deployment Form Modal */}
       {showForm && createPortal(
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="bg-background border border-border/60 rounded-[5px] w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative">
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="bg-background border border-border/40 rounded-xl w-full max-w-2xl max-h-[92vh] overflow-y-auto p-6 space-y-5 shadow-[0_0_50px_rgba(0,0,0,0.6)] relative">
             {/* Top Palette Indicator Accent Line */}
             <div className="absolute top-0 left-0 w-full h-1.5" style={{ backgroundColor: form.color || "#3b82f6" }} />
             
@@ -1032,8 +1032,8 @@ export function WorkspacesView() {
       {/* 1. MASSIVE WORKSPACE MODAL OVERLAY */}
       {/* ============================================================ */}
       {activeWorkspace && createPortal(
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 md:p-8 animate-in fade-in duration-300">
-          <div className="bg-background border border-border/60 rounded-[5px] w-full max-w-7xl h-[90vh] max-h-[90vh] lg:h-[85vh] overflow-y-auto lg:overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.8)] relative">
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 sm:p-6 md:p-8 animate-in fade-in duration-300">
+          <div className="bg-background border border-border/40 rounded-xl w-full max-w-7xl h-[92vh] max-h-[92vh] flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.6)] relative overflow-hidden">
             
             {/* Top Palette Indicator Accent Line */}
             <div className="h-2 w-full shrink-0" style={{ backgroundColor: activeWorkspace.color || "#3b82f6" }} />
@@ -1090,7 +1090,7 @@ export function WorkspacesView() {
             <div className="flex-1 overflow-y-auto lg:overflow-hidden p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 bg-secondary/5">
               
               {/* Left Column: Metrics & Information summary */}
-              <div className="lg:col-span-4 flex flex-col gap-6 lg:overflow-y-auto pr-2 lg:shrink-0 lg:max-h-full">
+              <div className="lg:col-span-4 flex flex-col gap-6 lg:overflow-y-auto lg:pr-2 shrink-0 lg:max-h-full scrollbar-thin">
                 <div className="border border-border/20 bg-background/50 p-6 space-y-4">
                   <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary border-b border-border/10 pb-2 font-mono">Workspace Details</h3>
                   <div className="space-y-3 font-mono text-xs">
