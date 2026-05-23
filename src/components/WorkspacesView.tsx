@@ -53,6 +53,8 @@ export function WorkspacesView() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [editingWorkspaceId, setEditingWorkspaceId] = useState<string | null>(null);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
+  const [filterScope, setFilterScope] = useState<'all' | 'personal' | 'org'>('all');
+  const [filterOwnership, setFilterOwnership] = useState<'all' | 'owned' | 'shared'>('all');
 
   // Big workspace modal states
   const [activeWorkspace, setActiveWorkspace] = useState<ExtendedWorkspace | null>(null);
@@ -525,14 +527,18 @@ export function WorkspacesView() {
       "Low": 1
     };
 
+    const session = getCurrentSession();
+    const currentUserId = session?.id;
+
     return workspaces
       .filter(w => {
         const wCompany = w.company || "Unassigned";
         const matchesSearch = w.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                              (w.description && w.description.toLowerCase().includes(searchQuery.toLowerCase()));
+                              (w.description && w.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                              (w.purpose && w.purpose.toLowerCase().includes(searchQuery.toLowerCase()));
         const matchesCompany = filterCompany === "All" || wCompany === filterCompany;
 
-        // Active Org Filtration
+        // Active Org Filtration (from the global switcher / local storage)
         let matchesOrg = true;
         if (activeOrgId === "standalone") {
           matchesOrg = !w.organization_id;
@@ -540,14 +546,70 @@ export function WorkspacesView() {
           matchesOrg = w.organization_id === activeOrgId;
         }
 
-        return matchesSearch && matchesCompany && matchesOrg;
+        // 1. Scope Partition: Personal/Standalone vs Organization Workspaces
+        let matchesScope = true;
+        if (filterScope === "personal") {
+          matchesScope = !w.organization_id;
+        } else if (filterScope === "org") {
+          matchesScope = !!w.organization_id;
+        }
+
+        // 2. Ownership Access: All, Owned, or Shared
+        let matchesOwnership = true;
+        if (currentUserId && (filterOwnership === "owned" || filterOwnership === "shared")) {
+          // Check if user is explicit Owner in role assignments for this workspace
+          const isOwnerAssignment = roleAssignments.some(
+            ra => ra.scope_type === "workspace" && 
+                  ra.scope_id === w.id && 
+                  ra.user_id === currentUserId && 
+                  ra.role === "Owner"
+          );
+
+          // Check if user is owner of the parent organization
+          const parentOrg = w.organization_id ? organizations.find(o => o.id === w.organization_id) : null;
+          const isOrgOwner = parentOrg && (parentOrg.owner_id === currentUserId || parentOrg.user_id === currentUserId);
+
+          // Check fields
+          const isOwnerField = w.user_id === currentUserId || w.owner_id === currentUserId;
+
+          // Default fallback: if a workspace has no registered owners or roles at all, assume owned by current user
+          const hasAnyOwnerRole = roleAssignments.some(
+            ra => ra.scope_type === "workspace" && 
+                  ra.scope_id === w.id && 
+                  ra.role === "Owner"
+          );
+          const hasNoOwnerInfo = !w.user_id && !w.owner_id && !hasAnyOwnerRole;
+
+          const isOwned = isOwnerField || isOwnerAssignment || isOrgOwner || hasNoOwnerInfo;
+
+          if (filterOwnership === "owned") {
+            matchesOwnership = isOwned;
+          } else if (filterOwnership === "shared") {
+            // Shared means you are not the owner, but you are either:
+            // 1. In the workspace role assignments list
+            // 2. In the parent organization role assignments list
+            const hasWorkspaceRole = roleAssignments.some(
+              ra => ra.scope_type === "workspace" && 
+                    ra.scope_id === w.id && 
+                    ra.user_id === currentUserId
+            );
+            const hasOrgRole = w.organization_id && roleAssignments.some(
+              ra => ra.scope_type === "organization" && 
+                    ra.scope_id === w.organization_id && 
+                    ra.user_id === currentUserId
+            );
+            matchesOwnership = !isOwned && (hasWorkspaceRole || hasOrgRole);
+          }
+        }
+
+        return matchesSearch && matchesCompany && matchesOrg && matchesScope && matchesOwnership;
       })
       .sort((a, b) => {
         const weightA = priorityWeights[a.priority || "Medium"] || 2;
         const weightB = priorityWeights[b.priority || "Medium"] || 2;
         return weightB - weightA;
       });
-  }, [workspaces, searchQuery, filterCompany, activeOrgId]);
+  }, [workspaces, searchQuery, filterCompany, activeOrgId, filterScope, filterOwnership, roleAssignments, organizations]);
 
   const renderWorkspaceCard = (ws: ExtendedWorkspace) => {
     return (
@@ -950,33 +1012,121 @@ export function WorkspacesView() {
       )}
 
       {/* Filter and Control Toolbar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0">
-        <div className="flex flex-1 w-full gap-3 sm:max-w-md relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input 
-            placeholder="Search workspaces..." 
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            className="pl-9 h-12 bg-secondary/30 border-border/50 rounded-[5px]"
-          />
+      <div className="space-y-4 shrink-0">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+          <div className="flex-1 relative">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
+            <Input 
+              placeholder="Search workspaces by name, description, or purpose..." 
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="pl-10 h-12 bg-secondary/30 border-border/50 hover:border-border/80 focus:border-primary/50 transition-colors rounded-[5px] text-sm"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+            <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 font-mono hidden sm:inline">Group:</span>
+            <div className="flex p-1 bg-secondary/30 rounded-[5px] border border-border/50 min-w-max">
+              {companies.map(c => (
+                <Button
+                  key={c}
+                  variant={filterCompany === c ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setFilterCompany(c)}
+                  className={cn(
+                    "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-4 h-8 transition-all",
+                    filterCompany === c ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {c}
+                </Button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-          <div className="flex p-1.5 bg-secondary/30 rounded-[5px] border border-border/50 min-w-max">
-            {companies.map(c => (
-              <Button
-                key={c}
-                variant={filterCompany === c ? "secondary" : "ghost"}
-                size="sm"
-                onClick={() => setFilterCompany(c)}
-                className={cn(
-                  "rounded-[5px] font-bold text-[10px] uppercase tracking-widest px-5 h-10",
-                  filterCompany === c ? "bg-background text-primary shadow-sm" : "text-muted-foreground"
-                )}
-              >
-                {c}
-              </Button>
-            ))}
+        {/* Premium Segment Filters for Scope & Ownership Partitioning */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 bg-background/30 p-3 rounded-[5px] border border-border/20 shadow-inner">
+          {/* Scope Segment (All / Personal / Org) */}
+          <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2.5">
+            <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 font-mono flex items-center gap-1.5 shrink-0">
+              <Layers className="w-3.5 h-3.5 text-primary/70" /> Scope Partition:
+            </span>
+            <div className="grid grid-cols-3 p-1 bg-secondary/20 rounded-[5px] border border-border/30 w-full sm:w-auto">
+              {(["all", "personal", "org"] as const).map(scope => {
+                const isActive = filterScope === scope;
+                return (
+                  <Button
+                    key={scope}
+                    variant={isActive ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setFilterScope(scope)}
+                    className={cn(
+                      "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-4 h-8 transition-all flex items-center justify-center gap-1.5",
+                      isActive ? "bg-background text-primary shadow-sm border border-primary/10" : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {scope === "all" && (
+                      <>
+                        <Briefcase className="w-3 h-3" /> All
+                      </>
+                    )}
+                    {scope === "personal" && (
+                      <>
+                        <Terminal className="w-3 h-3" /> Personal
+                      </>
+                    )}
+                    {scope === "org" && (
+                      <>
+                        <Building2 className="w-3 h-3" /> Org
+                      </>
+                    )}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="hidden md:block w-px h-6 bg-border/40 shrink-0" />
+
+          {/* Ownership Segment (All / Owned / Shared) */}
+          <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2.5 justify-end">
+            <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 font-mono flex items-center gap-1.5 shrink-0">
+              <ShieldCheck className="w-3.5 h-3.5 text-primary/70" /> Access & Ownership:
+            </span>
+            <div className="grid grid-cols-3 p-1 bg-secondary/20 rounded-[5px] border border-border/30 w-full sm:w-auto">
+              {(["all", "owned", "shared"] as const).map(ownership => {
+                const isActive = filterOwnership === ownership;
+                return (
+                  <Button
+                    key={ownership}
+                    variant={isActive ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setFilterOwnership(ownership)}
+                    className={cn(
+                      "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-4 h-8 transition-all flex items-center justify-center gap-1.5",
+                      isActive ? "bg-background text-primary shadow-sm border border-primary/10" : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {ownership === "all" && (
+                      <>
+                        <Layers className="w-3 h-3" /> All Access
+                      </>
+                    )}
+                    {ownership === "owned" && (
+                      <>
+                        <UserPlus className="w-3 h-3" /> Owned
+                      </>
+                    )}
+                    {ownership === "shared" && (
+                      <>
+                        <UserMinus className="w-3 h-3" /> Shared
+                      </>
+                    )}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

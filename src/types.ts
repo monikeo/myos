@@ -52,6 +52,8 @@ export interface Workspace extends BaseItem {
   icon?: string;
   logo?: string;
   organization_id?: string;
+  user_id?: string;
+  owner_id?: string;
 }
 
 export interface FinancialTransaction extends BaseItem {
