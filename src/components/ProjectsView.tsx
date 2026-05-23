@@ -900,7 +900,7 @@ export function ProjectsView() {
       {/* PROJECT CREATOR/EDITOR MODAL OVERLAY */}
       {showForm && (
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4">
-          <Card className="max-w-xl w-full bg-background border border-border/50 rounded-[5px] shadow-2xl overflow-hidden animate-in zoom-in duration-300">
+          <Card className="max-w-xl w-full bg-background border border-border/50 rounded-[5px] shadow-2xl overflow-visible animate-in zoom-in duration-300">
             <CardHeader className="bg-secondary/20 border-b border-border/30 p-6 flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-xl font-bold tracking-tight uppercase font-mono text-foreground">
@@ -935,7 +935,7 @@ export function ProjectsView() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5 relative">
+                <div className="space-y-1.5 relative z-20">
                   <label className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/75 font-mono">Category</label>
                   <div className="relative">
                     <Input 
@@ -1122,7 +1122,7 @@ export function ProjectsView() {
             </CardHeader>
 
             {/* Modal Scrollable Workspace Content split into 2 Columns */}
-            <div className="flex-1 overflow-y-auto lg:overflow-hidden flex flex-col lg:flex-row">
+            <div className="flex-1 overflow-y-auto lg:overflow-visible flex flex-col lg:flex-row">
               
               {/* LEFT PANE: Project details summary */}
               <div className="w-full lg:w-96 border-b lg:border-b-0 lg:border-r border-border/20 p-6 space-y-6 lg:overflow-y-auto shrink-0 bg-secondary/5">
@@ -1191,7 +1191,7 @@ export function ProjectsView() {
               </div>
 
               {/* RIGHT PANE: Dedicated Workspace Panel (Sub-Tasks & Project Access) */}
-              <div className="flex-1 p-6 flex flex-col lg:overflow-hidden min-h-[400px] lg:min-h-0 bg-background">
+              <div className="flex-1 p-6 flex flex-col lg:overflow-visible min-h-[400px] lg:min-h-0 bg-background">
                 <div className="border-b border-border/20 pb-3 mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shrink-0">
                   <div className="flex flex-wrap gap-2">
                     <Button
@@ -1227,7 +1227,7 @@ export function ProjectsView() {
                 {projectModalTab === "tasks" ? (
                   <>
                     {/* Sub-Task Insertion Panel */}
-                    <Card className="border border-border/50 bg-secondary/15 rounded-[5px] p-4 mb-6 shrink-0">
+                    <Card className="border border-border/50 bg-secondary/15 rounded-[5px] p-4 mb-6 shrink-0 relative z-20">
                       <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-muted-foreground/80 font-mono mb-3">Push New Sub-Task Node</p>
                       
                       <div className="flex flex-col md:flex-row gap-3">
@@ -1261,7 +1261,7 @@ export function ProjectsView() {
                           />
                         </div>
 
-                        <div className="w-full md:w-48 relative">
+                        <div className="w-full md:w-48 relative z-30">
                           {/* Trigger Button */}
                           <button
                             type="button"
