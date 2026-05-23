@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { Plus, Briefcase, ExternalLink, Trash2, Edit3, Search, X, Save, Layers, Clock, AlertCircle, AlertTriangle, CheckSquare, Square, Calendar as CalendarIcon, Loader2, Link2, Globe, FolderKanban, ShieldAlert, UserPlus, UserMinus, ShieldCheck, Building2, Terminal } from "lucide-react";
+import { Plus, Briefcase, ExternalLink, Trash2, Edit3, Search, X, Save, Layers, Clock, AlertCircle, AlertTriangle, CheckSquare, Square, Calendar as CalendarIcon, Loader2, Link2, Globe, FolderKanban, ShieldAlert, UserPlus, UserMinus, ShieldCheck, Building2, Terminal, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,6 +52,7 @@ export function WorkspacesView() {
   const [form, setForm] = useState({ ...emptyForm, organization_id: "" });
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [editingWorkspaceId, setEditingWorkspaceId] = useState<string | null>(null);
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
 
   // Big workspace modal states
   const [activeWorkspace, setActiveWorkspace] = useState<ExtendedWorkspace | null>(null);
@@ -669,7 +670,10 @@ export function WorkspacesView() {
         
         <CardFooter className="bg-background/30 border-t border-border/20 p-3 shrink-0">
           <Button 
-            onClick={() => setActiveWorkspace(ws)}
+            onClick={() => {
+              setIsDescExpanded(false);
+              setActiveWorkspace(ws);
+            }}
             variant="ghost" 
             className="w-full h-11 rounded-[5px] text-[9px] font-bold uppercase tracking-[0.25em] hover:bg-primary hover:text-white transition-all group/btn shadow-inner"
           >
@@ -1063,7 +1067,40 @@ export function WorkspacesView() {
                     </Badge>
                   </div>
                   <h2 className="text-xl sm:text-3xl font-extrabold tracking-tighter uppercase truncate">{activeWorkspace.name}</h2>
-                  <p className="text-[11px] sm:text-xs text-muted-foreground font-medium max-w-xl leading-relaxed whitespace-pre-wrap">{activeWorkspace.description}</p>
+                  
+                  {/* Truncated / Collapsible Description Block */}
+                  {(() => {
+                    const descText = activeWorkspace.description || "";
+                    const shouldTruncate = descText.length > 120 || descText.includes("\n");
+                    const displayDesc = shouldTruncate && !isDescExpanded
+                      ? descText.split("\n")[0].substring(0, 120) + "..."
+                      : descText;
+                      
+                    return (
+                      <div className="space-y-2 max-w-xl">
+                        <p className="text-[11px] sm:text-xs text-muted-foreground font-medium leading-relaxed whitespace-pre-wrap">
+                          {displayDesc}
+                        </p>
+                        {shouldTruncate && (
+                          <button
+                            onClick={() => setIsDescExpanded(!isDescExpanded)}
+                            className="text-primary hover:text-primary/80 font-bold uppercase tracking-[0.15em] text-[8px] sm:text-[9px] flex items-center gap-1.5 focus:outline-none bg-primary/5 hover:bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-[3px] transition-colors"
+                          >
+                            {isDescExpanded ? (
+                              <>
+                                <ChevronUp className="w-3 h-3 text-primary animate-pulse" /> Collapse Details
+                              </>
+                            ) : (
+                              <>
+                                <ChevronDown className="w-3 h-3 text-primary animate-pulse" /> Read More Details
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })()}
+                  
                   {activeWorkspace.purpose && (
                     <div className="mt-3 text-[10px] sm:text-[11px] text-primary font-mono uppercase tracking-wider flex items-center gap-2 bg-primary/5 px-3 py-1.5 border border-primary/20 w-fit rounded-[5px] shadow-[0_0_15px_rgba(59,130,246,0.1)]">
                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
@@ -1642,6 +1679,7 @@ export function WorkspacesView() {
             <div className="p-6 border-t border-border/20 bg-secondary/15 flex justify-end shrink-0">
               <Button
                 onClick={() => {
+                  setIsDescExpanded(false);
                   setActiveWorkspace(null);
                   loadWorkspaces();
                 }}
