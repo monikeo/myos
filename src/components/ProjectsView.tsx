@@ -91,6 +91,7 @@ export function ProjectsView() {
   const [isAssigneeDropdownOpen, setIsAssigneeDropdownOpen] = useState(false);
   const [isProjCategoryDropdownOpen, setIsProjCategoryDropdownOpen] = useState(false);
   const [activeReassignTaskId, setActiveReassignTaskId] = useState<string | null>(null);
+  const [popoverRenderUpwards, setPopoverRenderUpwards] = useState(false);
   
   // Deletion warnings
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
@@ -1422,10 +1423,13 @@ export function ProjectsView() {
                                     <div className="relative">
                                       <button
                                         type="button"
-                                        onClick={() => {
+                                        onClick={(e) => {
                                           if (activeReassignTaskId === t.id) {
                                             setActiveReassignTaskId(null);
                                           } else {
+                                            const rect = e.currentTarget.getBoundingClientRect();
+                                            const spaceBelow = window.innerHeight - rect.bottom;
+                                            setPopoverRenderUpwards(spaceBelow < 200);
                                             setActiveReassignTaskId(t.id);
                                           }
                                         }}
@@ -1457,7 +1461,12 @@ export function ProjectsView() {
                                       {activeReassignTaskId === t.id && (
                                         <>
                                           <div className="fixed inset-0 z-40" onClick={() => setActiveReassignTaskId(null)} />
-                                          <div className="absolute right-0 mt-1.5 z-50 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2 rounded-[5px] animate-in slide-in-from-top-2 fade-in duration-200 w-56 max-h-[180px] overflow-y-auto custom-scrollbar font-mono text-[9px]">
+                                          <div className={cn(
+                                            "absolute right-0 z-50 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2 rounded-[5px] fade-in duration-200 w-56 max-h-[180px] overflow-y-auto custom-scrollbar font-mono text-[9px]",
+                                            popoverRenderUpwards 
+                                              ? "bottom-full mb-1.5 origin-bottom animate-in slide-in-from-bottom-2" 
+                                              : "top-full mt-1.5 origin-top animate-in slide-in-from-top-2"
+                                          )}>
                                             <div className="border-b border-border/20 pb-1 mb-1.5 flex justify-between items-center text-[8px] font-bold uppercase tracking-wider">
                                               <span className="text-foreground">REASSIGN TASK</span>
                                               <span className="text-primary">({assigneeIds.length} SELECTED)</span>

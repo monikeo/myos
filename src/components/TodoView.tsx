@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, resolveDriveImage } from "@/lib/utils";
-import { Task, Workspace, Project } from "@/src/types";
+import { Task, Workspace, Project, Organization } from "@/src/types";
 import { getItems, createItem, updateItem, deleteItem, getSettings } from "@/lib/api";
 
 type TaskStatus = "Backlog" | "Active" | "Review" | "Completed";
@@ -47,6 +47,8 @@ export function TodoView() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [activeOrgId, setActiveOrgId] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<TaskStatus | "All">("All");
   const [filterWorkspaceId, setFilterWorkspaceId] = useState<string>("All");
@@ -77,11 +79,26 @@ export function TodoView() {
 
   useEffect(() => {
     loadTasks();
+    
+    const cached = localStorage.getItem("myos_active_organization_id") || "all";
+    setActiveOrgId(cached);
+
     const handleDataChanged = () => {
       loadTasks(true);
     };
+
+    const handleOrgChanged = (e: any) => {
+      if (e.detail?.activeOrgId) {
+        setActiveOrgId(e.detail.activeOrgId);
+      }
+    };
+
     window.addEventListener("myos:data-changed", handleDataChanged);
-    return () => window.removeEventListener("myos:data-changed", handleDataChanged);
+    window.addEventListener("myos:active-org-changed", handleOrgChanged);
+    return () => {
+      window.removeEventListener("myos:data-changed", handleDataChanged);
+      window.removeEventListener("myos:active-org-changed", handleOrgChanged);
+    };
   }, []);
 
   const loadTasks = async (silent = false) => {
@@ -93,6 +110,8 @@ export function TodoView() {
       setWorkspaces(wsData);
       const projData = await getItems<Project>("project");
       setProjects(projData);
+      const orgData = await getItems<Organization>("organization");
+      setOrganizations(orgData);
       try {
         const settings = await getSettings();
         if (settings && settings.profile_name) {
@@ -327,6 +346,18 @@ export function TodoView() {
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
+      // 1. Organizational context filter
+      const ws = workspaces.find(w => w.id === task.workspace_id);
+      if (activeOrgId === "standalone") {
+        const isStandalone = !task.workspace_id || (ws && !ws.organization_id);
+        if (!isStandalone) return false;
+      } else if (activeOrgId !== "all") {
+        if (!task.workspace_id || !ws || ws.organization_id !== activeOrgId) {
+          return false;
+        }
+      }
+
+      // 2. Base filters
       const matchesSearch =
         task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (task.description || "").toLowerCase().includes(searchQuery.toLowerCase());
@@ -346,7 +377,7 @@ export function TodoView() {
 
       return matchesSearch && matchesStatus && matchesWorkspace && matchesProject;
     });
-  }, [tasks, searchQuery, filterStatus, filterWorkspaceId, filterProjectId]);
+  }, [tasks, searchQuery, filterStatus, filterWorkspaceId, filterProjectId, activeOrgId, workspaces]);
 
   const statusColumns: TaskStatus[] = ["Backlog", "Active", "Review", "Completed"];
 
@@ -355,6 +386,7 @@ export function TodoView() {
     const uiStatus = revStatusMapping[task.status] || "Backlog";
     const ws = workspaces.find((w) => w.id === task.workspace_id);
     const proj = projects.find((p) => p.id === task.project_id);
+    const org = ws ? organizations.find((o) => o.id === ws.organization_id) : null;
 
     return (
       <Card
@@ -415,6 +447,15 @@ export function TodoView() {
                   );
                 });
               })()}
+              {org && (
+                <Badge
+                  variant="outline"
+                  className="text-[8px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono shrink-0 border-primary/20 bg-primary/5 text-primary flex items-center gap-1"
+                >
+                  <Briefcase className="w-2.5 h-2.5 shrink-0" />
+                  {org.name}
+                </Badge>
+              )}
               {ws ? (
                 <Badge
                   style={{
@@ -745,11 +786,17 @@ export function TodoView() {
                   className="w-full h-11 px-3 rounded-[5px] bg-background/50 border border-border/30 text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <option value="">General Task</option>
-                  {workspaces.map((ws) => (
-                    <option key={ws.id} value={ws.id}>
-                      {ws.name}
-                    </option>
-                  ))}
+                  {workspaces
+                    .filter(ws => {
+                      if (activeOrgId === "standalone") return !ws.organization_id;
+                      if (activeOrgId !== "all") return ws.organization_id === activeOrgId;
+                      return true;
+                    })
+                    .map((ws) => (
+                      <option key={ws.id} value={ws.id}>
+                        {ws.name}
+                      </option>
+                    ))}
                 </select>
               </div>
 
@@ -771,6 +818,12 @@ export function TodoView() {
                   <option value="">Standalone Project</option>
                   {projects
                     .filter(p => !newWorkspaceId || p.workspace_id === newWorkspaceId)
+                    .filter(p => {
+                      const ws = workspaces.find(w => w.id === p.workspace_id);
+                      if (activeOrgId === "standalone") return !p.workspace_id || (ws && !ws.organization_id);
+                      if (activeOrgId !== "all") return p.workspace_id && ws && ws.organization_id === activeOrgId;
+                      return true;
+                    })
                     .map((proj) => (
                       <option key={proj.id} value={proj.id}>{proj.name}</option>
                     ))}
