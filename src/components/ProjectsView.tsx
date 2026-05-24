@@ -901,7 +901,7 @@ export function ProjectsView() {
       {/* PROJECT CREATOR/EDITOR MODAL OVERLAY */}
       {showForm && (
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4">
-          <Card className="max-w-xl w-full bg-background border border-border/50 rounded-[5px] shadow-2xl overflow-visible animate-in zoom-in duration-300">
+          <div className="max-w-xl w-full bg-background border border-border/50 rounded-[5px] shadow-2xl overflow-visible animate-in zoom-in duration-300 flex flex-col ring-1 ring-foreground/10 text-card-foreground">
             <CardHeader className="bg-secondary/20 border-b border-border/30 p-6 flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-xl font-bold tracking-tight uppercase font-mono text-foreground">
@@ -1096,14 +1096,14 @@ export function ProjectsView() {
                 Initialize Node
               </Button>
             </CardFooter>
-          </Card>
+          </div>
         </div>
       )}
 
       {/* FULLY FEATURED PROJECT DETAILED WORKSPACE MODAL OVERLAY */}
       {syncedActiveProject && (
         <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-xl flex items-center justify-center p-4">
-          <Card className="max-w-[1400px] w-full h-[90vh] lg:h-[85vh] bg-background border border-border/50 rounded-[5px] shadow-2xl overflow-y-auto lg:overflow-hidden flex flex-col animate-in zoom-in duration-300">
+          <div className="max-w-[1400px] w-full h-[90vh] lg:h-[85vh] bg-background border border-border/50 rounded-[5px] shadow-2xl overflow-y-auto lg:overflow-visible flex flex-col animate-in zoom-in duration-300 ring-1 ring-foreground/10 text-card-foreground">
             
             {/* Modal Header */}
             <CardHeader className="bg-secondary/20 border-b border-border/30 p-4 sm:p-6 shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
@@ -1126,7 +1126,7 @@ export function ProjectsView() {
             </CardHeader>
 
             {/* Modal Scrollable Workspace Content split into 2 Columns */}
-            <div className="flex-1 overflow-y-auto lg:overflow-visible flex flex-col lg:flex-row">
+            <div className="flex-1 overflow-visible flex flex-col lg:flex-row">
               
               {/* LEFT PANE: Project details summary */}
               <div className="w-full lg:w-96 border-b lg:border-b-0 lg:border-r border-border/20 p-6 space-y-6 lg:overflow-y-auto shrink-0 bg-secondary/5">
@@ -1237,7 +1237,7 @@ export function ProjectsView() {
                 {projectModalTab === "tasks" ? (
                   <>
                     {/* Sub-Task Insertion Panel */}
-                    <Card className="border border-border/50 bg-secondary/15 rounded-[5px] p-4 mb-6 shrink-0 relative z-30 shadow-lg">
+                    <div className="border border-border/50 bg-secondary/15 rounded-[5px] p-4 mb-6 shrink-0 relative z-30 shadow-lg bg-card text-card-foreground text-sm ring-1 ring-foreground/10 flex flex-col gap-4">
                       <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-muted-foreground/80 font-mono mb-3">Push New Sub-Task Node</p>
                       
                       <div className="flex flex-col md:flex-row gap-3">
@@ -1370,10 +1370,10 @@ export function ProjectsView() {
                           PUSH NODE
                         </Button>
                       </div>
-                    </Card>
+                    </div>
 
                     {/* Sub-Task Scroll Queue */}
-                    <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2 relative z-10">
+                    <div className="flex-1 lg:overflow-y-auto overflow-visible space-y-3 custom-scrollbar pr-2 relative z-10 pb-36">
                       {tasks.filter(t => t.project_id === syncedActiveProject.id).length === 0 ? (
                         <div className="p-16 text-center text-muted-foreground border border-dashed border-border/30 rounded-[5px] bg-secondary/5">
                           <CheckSquare className="w-12 h-12 mx-auto mb-3 opacity-10 text-muted-foreground" />
@@ -1530,7 +1530,7 @@ export function ProjectsView() {
                   </>
                 ) : (
                   /* ACCESS GOVERNANCE GRID: Left input form, Right role list */
-                  <div className="flex-1 flex flex-col lg:flex-row gap-6 lg:overflow-hidden">
+                  <div className="flex-1 flex flex-col lg:flex-row gap-6 overflow-visible lg:overflow-visible">
                     {/* Left pane: Assign Role Form */}
                     <div className="w-full lg:w-72 space-y-4 shrink-0 bg-secondary/5 border border-border/20 p-4">
                       <div className="border-b border-border/20 pb-2 mb-3">
@@ -1579,13 +1579,13 @@ export function ProjectsView() {
                     </div>
 
                     {/* Right pane: List of users with project role assignments */}
-                    <div className="flex-1 flex flex-col lg:overflow-hidden min-h-[250px] lg:min-h-0">
+                    <div className="flex-1 flex flex-col overflow-visible lg:overflow-visible min-h-[250px] lg:min-h-0">
                       <div className="border-b border-border/20 pb-2 mb-3">
                         <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-foreground font-mono">Role Registry</h4>
                         <p className="text-[8px] text-muted-foreground font-mono uppercase mt-0.5">Active access configurations</p>
                       </div>
 
-                      <div className="flex-1 overflow-y-auto pr-1 space-y-3 custom-scrollbar">
+                      <div className="flex-1 lg:overflow-y-auto overflow-visible pr-1 space-y-3 custom-scrollbar pb-12">
                         {roleAssignments.filter(ra => ra.scope_type === "project" && ra.scope_id === syncedActiveProject.id).length === 0 ? (
                           <div className="py-16 text-center flex flex-col items-center justify-center border border-dashed border-border/20 bg-background/20">
                             <ShieldCheck className="w-8 h-8 text-muted-foreground/30 mb-3" />
@@ -1654,7 +1654,7 @@ export function ProjectsView() {
                 )}
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       )}
 
