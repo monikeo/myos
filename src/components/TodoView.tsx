@@ -1,14 +1,16 @@
 import { useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { Plus, Search, Columns, LayoutGrid, List as ListIcon, Calendar as CalendarIcon, ChevronRight, Circle, Clock, Flag, CheckSquare, Trash2, X, Save, AlertTriangle, Briefcase, Edit3, FolderKanban } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Plus, Search, Columns, LayoutGrid, List as ListIcon, Calendar as CalendarIcon, ChevronRight, Circle, Clock, Flag, CheckSquare, Square, Trash2, X, Save, AlertTriangle, Briefcase, Edit3, FolderKanban, Bold, Italic, List, Code } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, resolveDriveImage } from "@/lib/utils";
-import { Task, Workspace, Project, Organization } from "@/src/types";
-import { getItems, createItem, updateItem, deleteItem, getSettings } from "@/lib/api";
+import { Task, Workspace, Project, Organization, RoleAssignment } from "@/src/types";
+import { getItems, createItem, updateItem, deleteItem, getSettings, getAllUsers } from "@/lib/api";
 
 type TaskStatus = "Backlog" | "Active" | "Review" | "Completed";
 type TaskPriority = "High" | "Medium" | "Low";
@@ -48,7 +50,11 @@ export function TodoView() {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [roleAssignments, setRoleAssignments] = useState<RoleAssignment[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
   const [activeOrgId, setActiveOrgId] = useState<string>("all");
+  const [viewingTask, setViewingTask] = useState<Task | null>(null);
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<TaskStatus | "All">("All");
   const [filterWorkspaceId, setFilterWorkspaceId] = useState<string>("All");
@@ -70,10 +76,14 @@ export function TodoView() {
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [newWorkspaceId, setNewWorkspaceId] = useState("");
   const [newProjectId, setNewProjectId] = useState("");
+  const [newTaskAssigneeId, setNewTaskAssigneeId] = useState("");
+  const [isAssigneeDropdownOpen, setIsAssigneeDropdownOpen] = useState(false);
 
   // Custom edit and delete triggers
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
+  const [isEditingInModal, setIsEditingInModal] = useState(false);
+  const [newChecklistItem, setNewChecklistItem] = useState("");
   const [draggedOverColumn, setDraggedOverColumn] = useState<TaskStatus | null>(null);
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
 
@@ -112,6 +122,12 @@ export function TodoView() {
       setProjects(projData);
       const orgData = await getItems<Organization>("organization");
       setOrganizations(orgData);
+      
+      const rolesData = await getItems<RoleAssignment>("role_assignment");
+      setRoleAssignments(rolesData);
+      const usersData = await getAllUsers();
+      setAllUsers(usersData);
+
       try {
         const settings = await getSettings();
         if (settings && settings.profile_name) {
@@ -149,6 +165,8 @@ export function TodoView() {
     setIsCategoryDropdownOpen(false);
     setNewWorkspaceId(task.workspace_id || "");
     setNewProjectId(task.project_id || "");
+    setNewTaskAssigneeId(task.assignee_id || "");
+    setIsAssigneeDropdownOpen(false);
     setShowDeployForm(true);
   };
 
@@ -162,7 +180,136 @@ export function TodoView() {
     setIsCategoryDropdownOpen(false);
     setNewWorkspaceId("");
     setNewProjectId("");
+    setNewTaskAssigneeId("");
+    setIsAssigneeDropdownOpen(false);
+    setIsEditingInModal(false);
     setShowDeployForm(false);
+  };
+
+  // Helper: Parse markdown checkboxes from description
+  const parseChecklist = (description: string) => {
+    if (!description) return [];
+    const lines = description.split("\n");
+    const checklist: { id: string; text: string; completed: boolean; lineIndex: number }[] = [];
+    lines.forEach((line, index) => {
+      const match = line.match(/^(\s*[-*]\s+\[([ xX])\])\s+(.*)$/);
+      if (match) {
+        checklist.push({
+          id: `chk-${index}-${match[3]}`,
+          text: match[3],
+          completed: match[2].toLowerCase() === "x",
+          lineIndex: index
+        });
+      }
+    });
+    return checklist;
+  };
+
+  // Helper: Toggle a checkbox in description markdown
+  const toggleChecklistItem = async (task: Task, lineIndex: number, completed: boolean) => {
+    if (!task.description) return;
+    const lines = task.description.split("\n");
+    const line = lines[lineIndex];
+    const match = line.match(/^(\s*[-*]\s+\[)([ xX])(\]\s+.*)$/);
+    if (match) {
+      lines[lineIndex] = `${match[1]}${completed ? "x" : " "}${match[3]}`;
+      const updatedDesc = lines.join("\n");
+      const updatedTask = { ...task, description: updatedDesc };
+      
+      // Update local state
+      setTasks(prev => prev.map(t => t.id === task.id ? updatedTask : t));
+      setViewingTask(updatedTask);
+      
+      // Save to server
+      try {
+        await updateItem(task.id, updatedTask);
+        window.dispatchEvent(new CustomEvent("myos:data-changed"));
+      } catch (err) {
+        console.error("Failed to update checklist item:", err);
+      }
+    }
+  };
+
+  // Helper: Add a new checklist item to the task description
+  const addChecklistItem = async (task: Task, text: string) => {
+    if (!text.trim()) return;
+    const itemLine = `- [ ] ${text.trim()}`;
+    const currentDesc = task.description ? task.description.trim() : "";
+    const updatedDesc = currentDesc ? `${currentDesc}\n${itemLine}` : itemLine;
+    const updatedTask = { ...task, description: updatedDesc };
+
+    setTasks(prev => prev.map(t => t.id === task.id ? updatedTask : t));
+    setViewingTask(updatedTask);
+
+    try {
+      await updateItem(task.id, updatedTask);
+      window.dispatchEvent(new CustomEvent("myos:data-changed"));
+    } catch (err) {
+      console.error("Failed to add checklist item:", err);
+    }
+  };
+
+  // Helper: Delete a checklist item from description
+  const deleteChecklistItem = async (task: Task, lineIndex: number) => {
+    if (!task.description) return;
+    const lines = task.description.split("\n");
+    lines.splice(lineIndex, 1);
+    const updatedDesc = lines.join("\n");
+    const updatedTask = { ...task, description: updatedDesc };
+
+    setTasks(prev => prev.map(t => t.id === task.id ? updatedTask : t));
+    setViewingTask(updatedTask);
+
+    try {
+      await updateItem(task.id, updatedTask);
+      window.dispatchEvent(new CustomEvent("myos:data-changed"));
+    } catch (err) {
+      console.error("Failed to delete checklist item:", err);
+    }
+  };
+
+  // Helper: Get prose description only (without checklist lines)
+  const getProseOnly = (description: string) => {
+    if (!description) return "";
+    return description
+      .split("\n")
+      .filter(line => !line.match(/^(\s*[-*]\s+\[([ xX])\])\s+(.*)$/))
+      .join("\n")
+      .trim();
+  };
+
+  const insertMarkdownHelper = (syntax: string) => {
+    const textarea = document.getElementById("task-description-textarea") as HTMLTextAreaElement;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const before = text.substring(0, start);
+    const after = text.substring(end, text.length);
+    const selected = text.substring(start, end);
+
+    let insertion = "";
+    if (syntax === "bold") {
+      insertion = `**${selected || "bold text"}**`;
+    } else if (syntax === "italic") {
+      insertion = `*${selected || "italic text"}*`;
+    } else if (syntax === "bullet") {
+      insertion = `\n- ${selected || "list item"}`;
+    } else if (syntax === "code") {
+      insertion = `\`\`\`\n${selected || "code block"}\n\`\`\``;
+    } else if (syntax === "todo") {
+      insertion = `\n- [ ] ${selected || "checklist item"}`;
+    }
+
+    const updated = before + insertion + after;
+    setNewDesc(updated);
+    
+    // Reset focus and selection
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + insertion.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
   };
 
   const handleDeployTask = async () => {
@@ -185,6 +332,7 @@ export function TodoView() {
         category: newCategory,
         workspace_id: inheritedWorkspaceId,
         project_id: newProjectId || undefined,
+        assignee_id: newTaskAssigneeId || undefined,
       };
 
       try {
@@ -201,6 +349,7 @@ export function TodoView() {
         );
         handleCancelForm();
         loadTasks();
+        window.dispatchEvent(new CustomEvent("myos:data-changed"));
       } catch (err: any) {
         console.error("Failed to update task:", err);
         import("@/lib/utils").then(m => m.emitError("Task Update Failed", err?.message || "Failed to update task"));
@@ -217,6 +366,7 @@ export function TodoView() {
         category: newCategory,
         workspace_id: inheritedWorkspaceId,
         project_id: newProjectId || undefined,
+        assignee_id: newTaskAssigneeId || undefined,
         tags: [],
       };
 
@@ -234,6 +384,7 @@ export function TodoView() {
         );
         handleCancelForm();
         loadTasks();
+        window.dispatchEvent(new CustomEvent("myos:data-changed"));
       } catch (err: any) {
         console.error("Failed to deploy task:", err);
         import("@/lib/utils").then(m => m.emitError("Task Deployment Failed", err?.message || "Failed to deploy task"));
@@ -254,6 +405,7 @@ export function TodoView() {
 
     try {
       await updateItem(task.id, updated);
+      window.dispatchEvent(new CustomEvent("myos:data-changed"));
       window.dispatchEvent(
         new CustomEvent("myos:notification", {
           detail: {
@@ -337,6 +489,7 @@ export function TodoView() {
       }
       setTaskToDelete(null);
       loadTasks();
+      window.dispatchEvent(new CustomEvent("myos:data-changed"));
     } catch (err: any) {
       console.error("Failed to delete task:", err);
       import("@/lib/utils").then(m => m.emitError("Task Deletion Failed", err?.message || "Failed to delete task"));
@@ -495,31 +648,135 @@ export function TodoView() {
               <CalendarIcon className="w-3 h-3" /> {task.due_date}
             </span>
           </div>
-          <CardTitle className="text-base font-bold group-hover:text-primary transition-colors tracking-tight leading-snug line-clamp-2">
+          <CardTitle 
+            className="text-base font-bold group-hover:text-primary transition-colors tracking-tight leading-snug line-clamp-2 cursor-pointer"
+            onClick={() => {
+              setViewingTask(task);
+              setIsDescExpanded(false);
+            }}
+          >
             {task.title}
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-5 pt-0">
-          <p className="text-xs text-muted-foreground font-medium mb-5 leading-relaxed opacity-80 line-clamp-2">
-            {task.description || "No description provided."}
-          </p>
+        <CardContent className="p-5 pt-0 flex-1 flex flex-col justify-between">
+          <div className="space-y-4 mb-5">
+            {/* Description Render Area with Prose, line-breaks & bullets support */}
+            <div 
+              className="relative cursor-pointer select-none group/desc"
+              onClick={() => {
+                setViewingTask(task);
+                setIsDescExpanded(false);
+              }}
+            >
+              <div className="max-h-24 overflow-hidden relative text-xs text-muted-foreground/80 leading-relaxed prose prose-sm dark:prose-invert prose-p:my-0 prose-ul:my-1 prose-li:my-0.5 prose-ul:list-disc prose-ul:pl-4 prose-ol:list-decimal prose-ol:pl-4 font-medium font-mono">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {getProseOnly(task.description || "") || (task.description ? "" : "No description provided.")}
+                </ReactMarkdown>
+                {/* Vertical Fadeout */}
+                {(task.description || "").length > 90 && (
+                  <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-background/95 via-background/20 to-transparent pointer-events-none group-hover/desc:from-background/90" />
+                )}
+              </div>
+              {(task.description || "").length > 90 && (
+                <span className="text-[10px] text-primary group-hover/desc:text-primary/80 transition-colors font-semibold font-mono mt-1 block">
+                  ... Read More Details
+                </span>
+              )}
+            </div>
+
+            {/* Checklist items progress preview */}
+            {(() => {
+              const checklist = parseChecklist(task.description || "");
+              if (checklist.length === 0) return null;
+              const completed = checklist.filter(c => c.completed).length;
+              return (
+                <div 
+                  className="space-y-1.5 p-2.5 rounded-[5px] bg-secondary/20 border border-border/10 cursor-pointer hover:bg-secondary/40 transition-colors"
+                  onClick={() => {
+                    setViewingTask(task);
+                    setIsDescExpanded(false);
+                  }}
+                >
+                  <div className="flex items-center justify-between text-[9px] font-mono font-bold text-muted-foreground uppercase tracking-wider">
+                    <span className="flex items-center gap-1">
+                      <CheckSquare className="w-3 h-3 text-primary animate-pulse" /> Subtask Checklist
+                    </span>
+                    <span>{completed}/{checklist.length}</span>
+                  </div>
+                  <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden border border-border/5">
+                    <div 
+                      className="bg-primary h-full rounded-full transition-all duration-500" 
+                      style={{ width: `${(completed / checklist.length) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
 
           <div className="flex items-center justify-between border-t border-border/10 pt-4">
-            <div className="flex -space-x-3">
-              <Avatar className="w-7 h-7 border-2 border-background ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
-                <AvatarImage src={resolveDriveImage(profile.profile_avatar)} />
-                <AvatarFallback className="bg-primary/10 text-primary font-bold text-[10px]">
-                  {profile.profile_name
-                    ? profile.profile_name
-                        .split(" ")
-                        .filter(Boolean)
-                        .map((n) => n[0])
-                        .join("")
-                        .slice(0, 2)
-                        .toUpperCase()
-                    : "AT"}
-                </AvatarFallback>
-              </Avatar>
+            <div className="flex -space-x-2 items-center overflow-visible">
+              {(() => {
+                const assigneeIds = task.assignee_id ? task.assignee_id.split(",").map(s => s.trim()).filter(Boolean) : [];
+                if (assigneeIds.length === 0) {
+                  return (
+                    <span className="text-[9px] font-bold font-mono text-muted-foreground/45 uppercase tracking-wider">
+                      Unassigned
+                    </span>
+                  );
+                }
+
+                return assigneeIds.map(id => {
+                  const u = allUsers.find(user => user.id === id);
+                  if (!u) return null;
+
+                  // Check if this user is a "Project Lead" in the parent project context
+                  const isLead = roleAssignments.some(
+                    ra => ra.scope_type === "project" && 
+                          ra.scope_id === task.project_id && 
+                          ra.user_id === id && 
+                          ra.role === "Project Lead"
+                  ) || (
+                    proj && (proj.user_id === id || proj.owner_id === id)
+                  );
+
+                  return (
+                    <div key={id} className="relative group/avatar overflow-visible">
+                      <Avatar className={cn(
+                        "w-7 h-7 border-2 transition-all duration-300 relative",
+                        isLead 
+                          ? "border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)] ring-1 ring-red-500/50 scale-105 z-10 animate-pulse-subtle" 
+                          : "border-background ring-1 ring-transparent hover:scale-110"
+                      )}>
+                        <AvatarImage src={u.avatar_url ? resolveDriveImage(u.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${u.id}`} />
+                        <AvatarFallback className={cn(
+                          "font-bold text-[9px]",
+                          isLead ? "bg-red-500/10 text-red-500" : "bg-primary/10 text-primary"
+                        )}>
+                          {u.display_name
+                            ? u.display_name.split(" ").filter(Boolean).map(n => n[0]).join("").slice(0, 2).toUpperCase()
+                            : u.username.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      {/* Project Lead visual crown or shield emblem */}
+                      {isLead && (
+                        <div 
+                          className="absolute -top-1.5 -right-1 bg-red-500 text-white rounded-full p-0.5 border border-background shadow-md scale-75 z-20 flex items-center justify-center"
+                          title="Project Lead"
+                        >
+                          <span className="text-[7px] leading-none font-bold px-0.5">L</span>
+                        </div>
+                      )}
+
+                      {/* Tooltip */}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-900/95 border border-border/40 text-slate-100 text-[8px] font-mono font-bold uppercase rounded-[5px] opacity-0 pointer-events-none group-hover/avatar:opacity-100 transition-opacity duration-300 whitespace-nowrap shadow-xl z-50">
+                        {u.display_name || u.username} {isLead ? "(Project Lead)" : "(Member)"}
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
             </div>
 
             <div className="flex items-center gap-1.5">
@@ -742,17 +999,27 @@ export function TodoView() {
                 </div>
               </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Description</span>
-                <Input
-                  placeholder="Task Description"
-                  value={newDesc}
-                  onChange={(e) => setNewDesc(e.target.value)}
-                  className="bg-background/50 border-border/30 rounded-[5px] h-11"
-                />
+
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Task Description Protocol</span>
+              <div className="flex gap-1 mb-1.5 bg-secondary/25 p-1 rounded-[5px] border border-border/10 w-fit">
+                <button type="button" onClick={() => insertMarkdownHelper("bold")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Bold"><Bold className="w-3.5 h-3.5" /></button>
+                <button type="button" onClick={() => insertMarkdownHelper("italic")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Italic"><Italic className="w-3.5 h-3.5" /></button>
+                <button type="button" onClick={() => insertMarkdownHelper("bullet")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Bullet List"><List className="w-3.5 h-3.5" /></button>
+                <button type="button" onClick={() => insertMarkdownHelper("todo")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Checklist Item"><CheckSquare className="w-3.5 h-3.5" /></button>
+                <button type="button" onClick={() => insertMarkdownHelper("code")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Code Block"><Code className="w-3.5 h-3.5" /></button>
               </div>
+              <textarea
+                id="task-description-textarea"
+                placeholder="Write task details or checklist items (e.g. - [ ] Item name)"
+                value={newDesc}
+                onChange={(e) => setNewDesc(e.target.value)}
+                rows={5}
+                className="w-full bg-background/50 border border-border/30 rounded-[5px] p-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-muted-foreground/40 font-mono text-foreground leading-relaxed transition-all hover:border-primary/40 focus:border-primary"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Due Date</span>
                 <Input
@@ -761,6 +1028,99 @@ export function TodoView() {
                   onChange={(e) => setNewDueDate(e.target.value)}
                   className="bg-background/50 border-border/30 rounded-[5px] h-11 text-xs"
                 />
+              </div>
+              
+              <div className="space-y-1.5 flex flex-col justify-end relative">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Assign Operations Team</span>
+                <div className="relative">
+                  {/* Trigger Button */}
+                  <button
+                    type="button"
+                    onClick={() => setIsAssigneeDropdownOpen(!isAssigneeDropdownOpen)}
+                    className="w-full flex items-center justify-between min-h-[44px] px-3 py-2 bg-background/50 border border-border/30 rounded-[5px] text-left hover:border-primary/50 transition-all focus:outline-none focus:ring-1 focus:ring-primary/30 font-mono"
+                  >
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      {(() => {
+                        const selectedAssigneeIds = newTaskAssigneeId ? newTaskAssigneeId.split(",").map(s => s.trim()).filter(Boolean) : [];
+                        if (selectedAssigneeIds.length === 0) {
+                          return <span className="text-xs text-muted-foreground/60 font-medium">No Assigned Members</span>;
+                        }
+                        return selectedAssigneeIds.map(id => {
+                          const u = allUsers.find(user => user.id === id);
+                          if (!u) return null;
+                          return (
+                            <Badge
+                              key={id}
+                              variant="outline"
+                              className="text-[9px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[5px] border-primary/20 bg-primary/5 text-primary flex items-center gap-1 font-mono"
+                            >
+                              <Avatar className="w-4 h-4 border border-background">
+                                <AvatarImage src={u.avatar_url ? resolveDriveImage(u.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${u.id}`} />
+                                <AvatarFallback className="text-[7px]">{u.username.slice(0, 2)}</AvatarFallback>
+                              </Avatar>
+                              {u.display_name || u.username}
+                            </Badge>
+                          );
+                        });
+                      })()}
+                    </div>
+                    <ChevronRight className={cn("w-4 h-4 text-muted-foreground/60 transition-transform shrink-0 ml-2", isAssigneeDropdownOpen ? "rotate-90 text-primary" : "")} />
+                  </button>
+
+                  {/* Dropdown Menu Popup */}
+                  {isAssigneeDropdownOpen && (
+                    <>
+                      {/* Backdrop for closing */}
+                      <div className="fixed inset-0 z-30" onClick={() => setIsAssigneeDropdownOpen(false)} />
+                      
+                      {/* Floating panel */}
+                      <div className="absolute left-0 right-0 mt-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2.5 rounded-[5px] animate-in slide-in-from-top-2 fade-in duration-200 max-h-[220px] overflow-y-auto custom-scrollbar">
+                        <div className="grid grid-cols-1 gap-1">
+                          {allUsers.length === 0 ? (
+                            <div className="p-3 text-center text-xs text-muted-foreground uppercase font-mono">No Users Available</div>
+                          ) : (
+                            allUsers.map(user => {
+                              const selectedAssigneeIds = newTaskAssigneeId ? newTaskAssigneeId.split(",").map(s => s.trim()).filter(Boolean) : [];
+                              const isSelected = selectedAssigneeIds.includes(user.id);
+                              return (
+                                <button
+                                  key={user.id}
+                                  type="button"
+                                  onClick={() => {
+                                    let updated: string[];
+                                    if (isSelected) {
+                                      updated = selectedAssigneeIds.filter(id => id !== user.id);
+                                    } else {
+                                      updated = [...selectedAssigneeIds, user.id];
+                                    }
+                                    setNewTaskAssigneeId(updated.join(","));
+                                  }}
+                                  className={cn(
+                                    "text-[10px] font-medium px-2.5 py-2 rounded-[5px] border transition-all flex items-center justify-between gap-1.5 text-left font-mono",
+                                    isSelected 
+                                      ? "bg-primary/10 text-primary border-primary/30 font-bold shadow-sm" 
+                                      : "bg-background/40 text-muted-foreground/80 border-border/30 hover:border-muted-foreground/40 hover:bg-secondary/40 hover:text-foreground"
+                                  )}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <Avatar className="w-5 h-5 border border-border">
+                                      <AvatarImage src={user.avatar_url ? resolveDriveImage(user.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${user.id}`} />
+                                      <AvatarFallback className="text-[8px] font-bold">{user.username.slice(0, 2)}</AvatarFallback>
+                                    </Avatar>
+                                    <span>{user.display_name || user.username} (@{user.username})</span>
+                                  </div>
+                                  {isSelected && (
+                                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping shrink-0" />
+                                  )}
+                                </button>
+                              );
+                            })
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -1101,7 +1461,13 @@ export function TodoView() {
                     </span>
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                    <CardTitle className="text-base font-bold group-hover:text-primary transition-colors truncate">
+                    <CardTitle 
+                      className="text-base font-bold group-hover:text-primary transition-colors truncate cursor-pointer"
+                      onClick={() => {
+                        setViewingTask(task);
+                        setIsDescExpanded(false);
+                      }}
+                    >
                       {task.title}
                     </CardTitle>
                     {(() => {
@@ -1210,6 +1576,649 @@ export function TodoView() {
               >
                 Purge Task
               </Button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {viewingTask && createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+          <div className="bg-background border border-border/50 w-full max-w-4xl shadow-2xl relative overflow-hidden rounded-[5px] max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
+            {/* Color Accent Indicator Strip */}
+            <div className="absolute top-0 left-0 w-full h-1.5 shrink-0" style={{ backgroundColor: viewingTask.priority === "high" ? "#ef4444" : viewingTask.priority === "medium" ? "#f59e0b" : "#3b82f6" }} />
+            
+            {/* Header Area */}
+            <div className="bg-secondary/20 border-b border-border/30 p-6 shrink-0 flex items-start justify-between gap-4">
+              <div className="space-y-1.5 min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <Badge variant="outline" className="text-[9px] font-bold uppercase tracking-widest border-border/50 bg-background/50 px-2 opacity-70 font-mono">
+                    TASK_{viewingTask.id.slice(0, 8).toUpperCase()}
+                  </Badge>
+                  
+                  {(() => {
+                    const currentCats = isEditingInModal ? newCategory : viewingTask.category;
+                    const taskCategories = currentCats ? currentCats.split(",").map(c => c.trim()).filter(Boolean) : [];
+                    return taskCategories.map(catName => (
+                      <Badge
+                        key={catName}
+                        variant="outline"
+                        className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono shrink-0 transition-all border border-primary/20 bg-primary/5 text-primary"
+                      >
+                        {catName}
+                      </Badge>
+                    ));
+                  })()}
+                </div>
+                <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground line-clamp-2">
+                  {isEditingInModal ? "Modify Task Parameters" : viewingTask.title}
+                </h3>
+              </div>
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-[5px] hover:bg-secondary/80 shrink-0 self-start" onClick={() => { setViewingTask(null); setIsDescExpanded(false); setIsEditingInModal(false); }}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            {/* Modal Body: Two Columns */}
+            <div className="p-6 sm:p-8 flex flex-col md:flex-row gap-8 overflow-y-auto flex-1">
+              
+              {/* LEFT COLUMN */}
+              <div className="flex-1 space-y-6">
+                {isEditingInModal ? (
+                  /* EDIT MODE Left Column */
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Task Title</span>
+                      <Input
+                        placeholder="Task Title"
+                        value={newTitle}
+                        onChange={(e) => setNewTitle(e.target.value)}
+                        className="bg-secondary/20 border-border/30 rounded-[5px] h-11 text-sm font-bold w-full"
+                      />
+                    </div>
+                    
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Task Description Protocol</span>
+                      <div className="flex gap-1 mb-1 bg-secondary/25 p-1 rounded-[5px] border border-border/10 w-fit">
+                        <button type="button" onClick={() => insertMarkdownHelper("bold")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Bold"><Bold className="w-3.5 h-3.5" /></button>
+                        <button type="button" onClick={() => insertMarkdownHelper("italic")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Italic"><Italic className="w-3.5 h-3.5" /></button>
+                        <button type="button" onClick={() => insertMarkdownHelper("bullet")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Bullet List"><List className="w-3.5 h-3.5" /></button>
+                        <button type="button" onClick={() => insertMarkdownHelper("todo")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Checklist Item"><CheckSquare className="w-3.5 h-3.5" /></button>
+                        <button type="button" onClick={() => insertMarkdownHelper("code")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Code Block"><Code className="w-3.5 h-3.5" /></button>
+                      </div>
+                      <textarea
+                        id="task-description-textarea"
+                        placeholder="Write task details or checklist items (e.g. - [ ] Item name)"
+                        value={newDesc}
+                        onChange={(e) => setNewDesc(e.target.value)}
+                        rows={10}
+                        className="w-full bg-background/50 border border-border/30 rounded-[5px] p-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-muted-foreground/40 font-mono text-foreground leading-relaxed transition-all hover:border-primary/40 focus:border-primary"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  /* VIEW MODE Left Column */
+                  <div className="space-y-6">
+                    {/* Prose Markdown Viewer */}
+                    <div className="space-y-2">
+                      <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/60 font-mono">Task Details & Context</h4>
+                      <div className="bg-secondary/5 border border-border/20 p-5 rounded-[5px] shadow-inner relative overflow-hidden">
+                        <div className={cn(
+                          "transition-all duration-500 overflow-hidden relative",
+                          !isDescExpanded && getProseOnly(viewingTask.description || "").length > 250 ? "max-h-48" : "max-h-none"
+                        )}>
+                          <div className="prose prose-sm dark:prose-invert max-w-none text-xs leading-relaxed font-mono whitespace-pre-wrap text-foreground/90 prose-p:my-0 prose-ul:my-2 prose-li:my-0.5 prose-ul:list-disc prose-ul:pl-4 prose-ol:list-decimal prose-ol:pl-4">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {getProseOnly(viewingTask.description || "") || "No descriptive notes logged."}
+                            </ReactMarkdown>
+                          </div>
+                          
+                          {/* Blurred Bottom Fade if truncated */}
+                          {!isDescExpanded && getProseOnly(viewingTask.description || "").length > 250 && (
+                            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
+                          )}
+                        </div>
+                        
+                        {getProseOnly(viewingTask.description || "").length > 250 && (
+                          <div className="flex justify-start mt-4 border-t border-border/10 pt-3">
+                            <button
+                              onClick={() => setIsDescExpanded(!isDescExpanded)}
+                              className="text-[9px] font-extrabold uppercase tracking-widest text-primary hover:text-primary/80 transition-colors font-mono"
+                            >
+                              {isDescExpanded ? "Show Less" : "Read More Description"}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Interactive Subtask Checklist */}
+                    {(() => {
+                      const checklist = parseChecklist(viewingTask.description || "");
+                      const completed = checklist.filter(c => c.completed).length;
+                      return (
+                        <div className="space-y-3">
+                          <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/60 font-mono flex items-center justify-between">
+                            <span>Active Workstream checklist</span>
+                            <span className="text-primary font-bold">{completed}/{checklist.length} Completed</span>
+                          </h4>
+                          
+                          <div className="bg-secondary/5 border border-border/20 p-5 rounded-[5px] space-y-3 shadow-inner">
+                            {checklist.length > 0 && (
+                              <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden border border-border/10 mb-4">
+                                <div 
+                                  className="bg-primary h-full rounded-full transition-all duration-500" 
+                                  style={{ width: `${(completed / checklist.length) * 100}%` }}
+                                />
+                              </div>
+                            )}
+
+                            {checklist.length === 0 ? (
+                              <p className="text-[11px] text-muted-foreground font-mono italic">No checklist items logged. Add one below!</p>
+                            ) : (
+                              <div className="space-y-2.5 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                                {checklist.map((item) => (
+                                  <div key={item.id} className="flex items-start justify-between gap-3 group/chk py-0.5 border-b border-border/5 last:border-b-0 pb-1">
+                                    <label className="flex items-start gap-2.5 cursor-pointer text-xs font-mono text-foreground/90 select-none flex-1">
+                                      <input
+                                        type="checkbox"
+                                        checked={item.completed}
+                                        onChange={(e) => toggleChecklistItem(viewingTask, item.lineIndex, e.target.checked)}
+                                        className="rounded border-border/40 text-primary bg-background focus:ring-primary/20 mt-0.5 h-3.5 w-3.5 transition-all cursor-pointer"
+                                      />
+                                      <span className={cn(
+                                        "leading-relaxed transition-all duration-200",
+                                        item.completed ? "line-through text-muted-foreground/60 italic" : "text-foreground/90"
+                                      )}>
+                                        {item.text}
+                                      </span>
+                                    </label>
+                                    <button
+                                      onClick={() => deleteChecklistItem(viewingTask, item.lineIndex)}
+                                      className="opacity-0 group-hover/chk:opacity-100 p-1 hover:bg-red-500/10 text-muted-foreground hover:text-red-500 rounded transition-all shrink-0"
+                                      title="Delete checklist subtask"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Add checklist item inline form */}
+                            <form 
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                if (newChecklistItem.trim()) {
+                                  addChecklistItem(viewingTask, newChecklistItem.trim());
+                                  setNewChecklistItem("");
+                                }
+                              }}
+                              className="flex gap-2 pt-3 border-t border-border/10 mt-3"
+                            >
+                              <Input
+                                placeholder="Add checklist subtask (e.g. Design assets)"
+                                value={newChecklistItem}
+                                onChange={(e) => setNewChecklistItem(e.target.value)}
+                                className="h-8 text-xs bg-background/50 border-border/30 rounded-[5px] font-mono text-foreground focus-visible:ring-primary"
+                              />
+                              <Button
+                                type="submit"
+                                size="sm"
+                                disabled={!newChecklistItem.trim()}
+                                className="h-8 rounded-[5px] bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-[9px] px-3 shrink-0"
+                              >
+                                Add
+                              </Button>
+                            </form>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+              </div>
+
+              {/* RIGHT COLUMN */}
+              <div className="w-full md:w-80 space-y-5 shrink-0 bg-secondary/5 border border-border/20 p-5 rounded-[5px] flex flex-col justify-between">
+                <div className="space-y-5">
+                  
+                  {isEditingInModal ? (
+                    /* EDIT MODE Right Column inputs */
+                    <div className="space-y-4">
+                      <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/60 font-mono border-b border-border/20 pb-2.5 mb-1">Edit Parameters</h4>
+                      
+                      {/* Priority */}
+                      <div className="space-y-1">
+                        <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Priority Protocol</span>
+                        <select
+                          value={newPriority}
+                          onChange={(e) => setNewPriority(e.target.value as TaskPriority)}
+                          className="w-full h-9 px-2 bg-background border border-border/30 rounded-[5px] text-xs font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
+                        >
+                          <option value="High">High</option>
+                          <option value="Medium">Medium</option>
+                          <option value="Low">Low</option>
+                        </select>
+                      </div>
+
+                      {/* Workspace */}
+                      <div className="space-y-1">
+                        <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Node Workspace</span>
+                        <select
+                          value={newWorkspaceId}
+                          onChange={(e) => setNewWorkspaceId(e.target.value)}
+                          className="w-full h-9 px-2 bg-background border border-border/30 rounded-[5px] text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
+                        >
+                          <option value="">General Task</option>
+                          {workspaces
+                            .filter(ws => {
+                              if (activeOrgId === "standalone") return !ws.organization_id;
+                              if (activeOrgId !== "all") return ws.organization_id === activeOrgId;
+                              return true;
+                            })
+                            .map((ws) => (
+                              <option key={ws.id} value={ws.id}>{ws.name}</option>
+                            ))}
+                        </select>
+                      </div>
+
+                      {/* Project */}
+                      <div className="space-y-1">
+                        <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Project Context</span>
+                        <select
+                          value={newProjectId}
+                          onChange={(e) => {
+                            setNewProjectId(e.target.value);
+                            if (e.target.value) {
+                              const selectedProj = projects.find(p => p.id === e.target.value);
+                              if (selectedProj && selectedProj.workspace_id) {
+                                setNewWorkspaceId(selectedProj.workspace_id);
+                              }
+                            }
+                          }}
+                          className="w-full h-9 px-2 bg-background border border-border/30 rounded-[5px] text-xs font-semibold text-foreground focus:outline-none"
+                        >
+                          <option value="">Standalone Project</option>
+                          {projects
+                            .filter(p => !newWorkspaceId || p.workspace_id === newWorkspaceId)
+                            .filter(p => {
+                              const ws = workspaces.find(w => w.id === p.workspace_id);
+                              if (activeOrgId === "standalone") return !p.workspace_id || (ws && !ws.organization_id);
+                              if (activeOrgId !== "all") return p.workspace_id && ws && ws.organization_id === activeOrgId;
+                              return true;
+                            })
+                            .map((proj) => (
+                              <option key={proj.id} value={proj.id}>{proj.name}</option>
+                            ))}
+                        </select>
+                      </div>
+
+                      {/* Due Date */}
+                      <div className="space-y-1">
+                        <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Target Deadline</span>
+                        <Input
+                          type="date"
+                          value={newDueDate}
+                          onChange={(e) => setNewDueDate(e.target.value)}
+                          className="bg-background border border-border/30 rounded-[5px] h-9 text-xs"
+                        />
+                      </div>
+
+                      {/* Category multiselect inside modal */}
+                      <div className="space-y-1 relative">
+                        <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Category protocol</span>
+                        <button
+                          type="button"
+                          onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                          className="w-full flex items-center justify-between min-h-[36px] px-2 py-1.5 bg-background border border-border/30 rounded-[5px] text-left hover:border-primary/50 transition-all focus:outline-none"
+                        >
+                          <div className="flex flex-wrap gap-1 items-center max-w-[200px] overflow-hidden">
+                            {(() => {
+                              const selectedCats = newCategory ? newCategory.split(",").map(c => c.trim()).filter(Boolean) : [];
+                              if (selectedCats.length === 0) {
+                                return <span className="text-[10px] text-muted-foreground/50 font-mono">Select...</span>;
+                              }
+                              return selectedCats.slice(0, 2).map(catName => (
+                                <span key={catName} className="text-[8px] font-bold uppercase tracking-widest px-1 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-[3px] font-mono">{catName}</span>
+                              ));
+                            })()}
+                          </div>
+                          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/60 ml-1 shrink-0" />
+                        </button>
+                        
+                        {isCategoryDropdownOpen && (
+                          <>
+                            <div className="fixed inset-0 z-30" onClick={() => setIsCategoryDropdownOpen(false)} />
+                            <div className="absolute right-0 left-0 bottom-full mb-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2 rounded-[5px] max-h-[160px] overflow-y-auto custom-scrollbar grid grid-cols-1 gap-1">
+                              {AVAILABLE_CATEGORIES.map(cat => {
+                                const selectedCats = newCategory ? newCategory.split(",").map(c => c.trim()).filter(Boolean) : [];
+                                const isSelected = selectedCats.includes(cat.name);
+                                return (
+                                  <button
+                                    key={cat.name}
+                                    type="button"
+                                    onClick={() => {
+                                      let updated: string[];
+                                      if (isSelected) {
+                                        updated = selectedCats.filter(c => c !== cat.name);
+                                      } else {
+                                        updated = [...selectedCats, cat.name];
+                                      }
+                                      setNewCategory(updated.length === 0 ? "Other" : updated.join(", "));
+                                    }}
+                                    className={cn(
+                                      "text-[8.5px] uppercase font-bold tracking-widest px-2 py-1.5 rounded-[3px] border transition-all flex items-center gap-1.5 font-mono",
+                                      isSelected ? "bg-primary/10 text-primary border-primary/30" : "bg-background text-muted-foreground border-border/30 hover:border-foreground/30 hover:text-foreground"
+                                    )}
+                                  >
+                                    <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", cat.color)} />
+                                    {cat.name}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Team multi-select in modal */}
+                      <div className="space-y-1 relative">
+                        <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Assign Operations Team</span>
+                        <button
+                          type="button"
+                          onClick={() => setIsAssigneeDropdownOpen(!isAssigneeDropdownOpen)}
+                          className="w-full flex items-center justify-between min-h-[36px] px-2 py-1.5 bg-background border border-border/30 rounded-[5px] text-left hover:border-primary/50 transition-all focus:outline-none"
+                        >
+                          <div className="flex -space-x-1 items-center max-w-[200px] overflow-hidden">
+                            {(() => {
+                              const selectedAssigneeIds = newTaskAssigneeId ? newTaskAssigneeId.split(",").map(s => s.trim()).filter(Boolean) : [];
+                              if (selectedAssigneeIds.length === 0) {
+                                return <span className="text-[10px] text-muted-foreground/50 font-mono">Unassigned</span>;
+                              }
+                              return selectedAssigneeIds.slice(0, 3).map(id => {
+                                const u = allUsers.find(user => user.id === id);
+                                if (!u) return null;
+                                return (
+                                  <Avatar key={id} className="w-5 h-5 border border-background shrink-0">
+                                    <AvatarImage src={u.avatar_url ? resolveDriveImage(u.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${u.id}`} />
+                                    <AvatarFallback className="text-[6px]">{u.username.slice(0, 2)}</AvatarFallback>
+                                  </Avatar>
+                                );
+                              });
+                            })()}
+                          </div>
+                          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/60 ml-1 shrink-0" />
+                        </button>
+                        
+                        {isAssigneeDropdownOpen && (
+                          <>
+                            <div className="fixed inset-0 z-30" onClick={() => setIsAssigneeDropdownOpen(false)} />
+                            <div className="absolute right-0 left-0 bottom-full mb-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2 rounded-[5px] max-h-[160px] overflow-y-auto custom-scrollbar grid grid-cols-1 gap-1">
+                              {allUsers.map(user => {
+                                const selectedAssigneeIds = newTaskAssigneeId ? newTaskAssigneeId.split(",").map(s => s.trim()).filter(Boolean) : [];
+                                const isSelected = selectedAssigneeIds.includes(user.id);
+                                return (
+                                  <button
+                                    key={user.id}
+                                    type="button"
+                                    onClick={() => {
+                                      let updated: string[];
+                                      if (isSelected) {
+                                        updated = selectedAssigneeIds.filter(id => id !== user.id);
+                                      } else {
+                                        updated = [...selectedAssigneeIds, user.id];
+                                      }
+                                      setNewTaskAssigneeId(updated.join(","));
+                                    }}
+                                    className={cn(
+                                      "text-[9px] font-bold px-2 py-1.5 rounded-[3px] border transition-all flex items-center gap-1.5 font-mono",
+                                      isSelected ? "bg-primary/10 text-primary border-primary/30" : "bg-background text-muted-foreground border-border/30 hover:border-foreground/30 hover:text-foreground"
+                                    )}
+                                  >
+                                    <Avatar className="w-4 h-4 border border-background shrink-0">
+                                      <AvatarImage src={user.avatar_url ? resolveDriveImage(user.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${user.id}`} />
+                                      <AvatarFallback className="text-[6px]">{user.username.slice(0,2)}</AvatarFallback>
+                                    </Avatar>
+                                    <span className="truncate">{user.display_name || user.username}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    /* VIEW MODE Right Column parameters */
+                    <div className="space-y-5">
+                      <div>
+                        <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/60 font-mono border-b border-border/20 pb-2.5 mb-3">Task Parameters</h4>
+                        
+                        <div className="space-y-4">
+                          {/* Organization Mapping */}
+                          {(() => {
+                            const wsObj = workspaces.find(w => w.id === viewingTask.workspace_id);
+                            const orgObj = wsObj ? organizations.find(o => o.id === wsObj.organization_id) : null;
+                            if (!orgObj) return null;
+                            return (
+                              <div className="space-y-1 animate-fade-in">
+                                <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Root Organization</span>
+                                <div className="flex items-center gap-1.5 text-xs font-bold font-mono">
+                                  <Briefcase className="w-3.5 h-3.5 text-primary shrink-0 animate-pulse" />
+                                  <span className="truncate">{orgObj.name}</span>
+                                </div>
+                              </div>
+                            );
+                          })()}
+
+                          {/* Workspace Mapping */}
+                          {(() => {
+                            const wsObj = workspaces.find(w => w.id === viewingTask.workspace_id);
+                            if (!wsObj) return null;
+                            return (
+                              <div className="space-y-1 animate-fade-in">
+                                <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Parent Workspace</span>
+                                <div className="flex items-center gap-1.5 text-xs font-bold font-mono" style={{ color: wsObj.color }}>
+                                  <Briefcase className="w-3.5 h-3.5 shrink-0" style={{ color: wsObj.color }} />
+                                  <span className="truncate">{wsObj.name}</span>
+                                </div>
+                              </div>
+                            );
+                          })()}
+
+                          {/* Project Mapping */}
+                          {(() => {
+                            const projObj = projects.find(p => p.id === viewingTask.project_id);
+                            if (!projObj) return null;
+                            return (
+                              <div className="space-y-1 animate-fade-in">
+                                <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Project Context</span>
+                                <div className="flex items-center gap-1.5 text-xs font-bold font-mono" style={{ color: projObj.color }}>
+                                  <FolderKanban className="w-3.5 h-3.5 shrink-0" style={{ color: projObj.color }} />
+                                  <span className="truncate">{projObj.name}</span>
+                                </div>
+                              </div>
+                            );
+                          })()}
+
+                          {/* Priority details */}
+                          <div className="space-y-1">
+                            <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Priority Protocol</span>
+                            <Badge 
+                              className={cn(
+                                "text-[8px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-[5px] font-mono border",
+                                viewingTask.priority === "high" ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                                viewingTask.priority === "medium" ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
+                                "bg-primary/10 text-primary border-primary/20"
+                              )}
+                            >
+                              {viewingTask.priority}
+                            </Badge>
+                          </div>
+
+                          {/* Due date details */}
+                          <div className="space-y-1">
+                            <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Target Deadline</span>
+                            <div className="flex items-center gap-1.5 text-xs font-bold font-mono">
+                              <CalendarIcon className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
+                              <span>{viewingTask.due_date || "No deadline assigned"}</span>
+                            </div>
+                          </div>
+
+                          {/* Status Toggle control */}
+                          <div className="space-y-2">
+                            <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Workstream Progress</span>
+                            <select
+                              value={revStatusMapping[viewingTask.status] || "Backlog"}
+                              onChange={(e) => changeTaskStatus(viewingTask, e.target.value as any)}
+                              className="w-full h-9 px-2 bg-background border border-border/30 rounded-[5px] text-xs font-bold uppercase tracking-wider font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
+                            >
+                              <option value="Backlog">BACKLOG</option>
+                              <option value="Active">ACTIVE</option>
+                              <option value="Review">REVIEW</option>
+                              <option value="Completed">COMPLETED</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Responsible Members List */}
+                      <div className="space-y-2.5">
+                        <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/60 font-mono border-b border-border/20 pb-2">Assigned Team</h4>
+                        <div className="flex flex-wrap gap-1.5">
+                          {(() => {
+                            const assigneeIds = viewingTask.assignee_id ? viewingTask.assignee_id.split(",").map(s => s.trim()).filter(Boolean) : [];
+                            if (assigneeIds.length === 0) {
+                              return <span className="text-[9px] font-bold font-mono text-muted-foreground/40 uppercase">Unassigned</span>;
+                            }
+                            return assigneeIds.map(id => {
+                              const u = allUsers.find(user => user.id === id);
+                              if (!u) return null;
+                              return (
+                                <Badge key={id} variant="secondary" className="text-[8.5px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[5px] border border-border/10 font-mono flex items-center gap-1">
+                                  <Avatar className="w-4 h-4 shrink-0">
+                                    <AvatarImage src={u.avatar_url ? resolveDriveImage(u.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${u.id}`} />
+                                    <AvatarFallback className="text-[6px] font-bold">{u.username.slice(0, 2)}</AvatarFallback>
+                                  </Avatar>
+                                  {u.display_name || u.username}
+                                </Badge>
+                              );
+                            });
+                          })()}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Edit Button Panels */}
+                <div className="pt-4 border-t border-border/10 flex flex-col gap-2 shrink-0">
+                  {isEditingInModal ? (
+                    <>
+                      <Button
+                        onClick={async () => {
+                          if (!newTitle.trim()) return;
+                          
+                          // Smart inheritance logic
+                          const selectedProj = projects.find(p => p.id === newProjectId);
+                          const inheritedWorkspaceId = selectedProj ? (selectedProj.workspace_id || undefined) : (newWorkspaceId || undefined);
+
+                          const updatedTask: Task = {
+                            ...viewingTask,
+                            title: newTitle,
+                            description: newDesc,
+                            priority: newPriority.toLowerCase() as any,
+                            due_date: newDueDate || new Date().toISOString().split("T")[0],
+                            category: newCategory,
+                            workspace_id: inheritedWorkspaceId,
+                            project_id: newProjectId || undefined,
+                            assignee_id: newTaskAssigneeId || undefined,
+                          };
+
+                          try {
+                            await updateItem(viewingTask.id, updatedTask);
+                            
+                            // Emits customized notification
+                            window.dispatchEvent(
+                              new CustomEvent("myos:notification", {
+                                detail: {
+                                  title: "Task Refactored",
+                                  message: `Task "${newTitle}" has been successfully saved in workspace.`,
+                                  category: "task",
+                                  link_to: "todo"
+                                }
+                              })
+                            );
+                            
+                            // Sync states
+                            setTasks(prev => prev.map(t => t.id === viewingTask.id ? updatedTask : t));
+                            setViewingTask(updatedTask);
+                            setIsEditingInModal(false);
+                            loadTasks();
+                            window.dispatchEvent(new CustomEvent("myos:data-changed"));
+                          } catch (err: any) {
+                            console.error("Failed to save inline edits:", err);
+                            import("@/lib/utils").then(m => m.emitError("Refactor Saved Failed", err?.message || "Failed to update task"));
+                          }
+                        }}
+                        className="w-full rounded-[5px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-md flex items-center justify-center gap-1.5"
+                      >
+                        <Save className="w-3.5 h-3.5" />
+                        Apply Work Changes
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsEditingInModal(false)}
+                        className="w-full rounded-[5px] border-border/50 text-muted-foreground hover:text-foreground font-bold uppercase tracking-widest text-[9px] h-10 font-mono"
+                      >
+                        Cancel Refactor
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        onClick={() => {
+                          setNewTitle(viewingTask.title || "");
+                          setNewDesc(viewingTask.description || "");
+                          
+                          let parsedPriority: TaskPriority = "Medium";
+                          if (viewingTask.priority) {
+                            const normalized = viewingTask.priority.toLowerCase();
+                            if (normalized === "high") parsedPriority = "High";
+                            else if (normalized === "low") parsedPriority = "Low";
+                          }
+                          setNewPriority(parsedPriority);
+                          
+                          setNewDueDate(viewingTask.due_date || "");
+                          setNewCategory(viewingTask.category || "Development");
+                          setNewWorkspaceId(viewingTask.workspace_id || "");
+                          setNewProjectId(viewingTask.project_id || "");
+                          setNewTaskAssigneeId(viewingTask.assignee_id || "");
+                          setIsCategoryDropdownOpen(false);
+                          setIsAssigneeDropdownOpen(false);
+                          setIsEditingInModal(true);
+                        }}
+                        className="w-full rounded-[5px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-md flex items-center justify-center gap-1.5"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        Transition to Edit Mode
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setViewingTask(null);
+                          setIsDescExpanded(false);
+                          setIsEditingInModal(false);
+                        }}
+                        className="w-full rounded-[5px] border-border/50 text-muted-foreground hover:text-foreground font-bold uppercase tracking-widest text-[9px] h-10 font-mono"
+                      >
+                        Close Workspace
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>,

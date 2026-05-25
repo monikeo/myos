@@ -6,13 +6,27 @@ const BASE = "/api";
 // AUTH SEGMENT & NETWORK WRAPPER
 // ============================================================
 
+function sanitizeSessionString(str: string | undefined | null): string {
+  if (!str) return "";
+  return str.replace(/[<>]/g, ""); // strip standard HTML tag symbols
+}
+
+function isValidUuid(id: string | null | undefined): boolean {
+  if (!id) return false;
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
+
 export function getAuthToken(): string | null {
   if (typeof window !== "undefined") {
     const userStr = localStorage.getItem("myos_session_user");
     if (userStr) {
       try {
         const user = JSON.parse(userStr);
-        return user.id || null;
+        const id = user.id || null;
+        if (id && isValidUuid(id)) {
+          return id;
+        }
       } catch {
         return null;
       }
@@ -26,7 +40,18 @@ export function getCurrentSession(): any | null {
     const userStr = localStorage.getItem("myos_session_user");
     if (userStr) {
       try {
-        return JSON.parse(userStr);
+        const user = JSON.parse(userStr);
+        if (user && user.id && isValidUuid(user.id)) {
+          return {
+            id: user.id,
+            username: sanitizeSessionString(user.username),
+            email: sanitizeSessionString(user.email),
+            dob: sanitizeSessionString(user.dob),
+            display_name: sanitizeSessionString(user.display_name),
+            role_title: sanitizeSessionString(user.role_title),
+            avatar_url: sanitizeSessionString(user.avatar_url),
+          };
+        }
       } catch {
         return null;
       }
@@ -38,7 +63,11 @@ export function getCurrentSession(): any | null {
 export async function login(username: string, password: string): Promise<any> {
   const res = await fetch(`${BASE}/auth/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest",
+      "X-MyOS-CSRF": "myos-secure-spa"
+    },
     body: JSON.stringify({ username, password }),
   });
   if (!res.ok) {
@@ -68,7 +97,11 @@ export async function register(
 ): Promise<any> {
   const res = await fetch(`${BASE}/auth/register`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest",
+      "X-MyOS-CSRF": "myos-secure-spa"
+    },
     body: JSON.stringify({ username, password, displayName, roleTitle, avatarUrl, email, dob }),
   });
   if (!res.ok) {
@@ -132,6 +165,8 @@ async function apiFetch(url: string, options: RequestInit = {}): Promise<Respons
   const token = getAuthToken();
   const headers = {
     ...(options.headers || {}),
+    "X-Requested-With": "XMLHttpRequest",
+    "X-MyOS-CSRF": "myos-secure-spa",
   } as any;
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
@@ -161,7 +196,13 @@ try {
     const stored = localStorage.getItem("myos_api_cache_items");
     if (stored) {
       const parsed = JSON.parse(stored);
-      Object.keys(parsed).forEach(k => cache.items.set(k, parsed[k]));
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        Object.keys(parsed).forEach(k => {
+          if (/^[a-zA-Z0-9_-]+$/.test(k) && Array.isArray(parsed[k])) {
+            cache.items.set(k, parsed[k]);
+          }
+        });
+      }
     }
   }
 } catch (err) {

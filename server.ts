@@ -161,6 +161,25 @@ async function startServer() {
     next();
   });
 
+  // API CSRF & Custom Header Protection Middleware (Defense-in-depth)
+  app.use((req, res, next) => {
+    const isMutation = ["POST", "PUT", "DELETE", "PATCH"].includes(req.method);
+    const isApiRoute = req.path.startsWith("/api/");
+    const isProxyRoute = req.path.startsWith("/api/proxy");
+
+    if (isApiRoute && isMutation && !isProxyRoute) {
+      const csrfHeader = req.headers["x-myos-csrf"];
+      const requestedWithHeader = req.headers["x-requested-with"];
+
+      if (csrfHeader !== "myos-secure-spa" && requestedWithHeader !== "XMLHttpRequest") {
+        return res.status(403).json({ 
+          error: "Forbidden: API Request blocked by CSRF protection protocols." 
+        });
+      }
+    }
+    next();
+  });
+
   // Ensure Google Sheets has headers on startup (fire-and-forget)
   ensureSheetHeaders().catch(() => {});
 

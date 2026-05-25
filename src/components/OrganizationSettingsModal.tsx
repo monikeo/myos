@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Organization, RoleAssignment } from "@/src/types";
+import { Organization, RoleAssignment, Workspace, Project, Task, FinancialTransaction } from "@/src/types";
 import { updateItem, deleteItem, createItem, lookupUserByEmail, getItems, getAllUsers, getCurrentSession } from "@/lib/api";
-import { X, Settings2, Users, ShieldAlert, ShieldCheck, Trash2, Search, UserPlus, Building2, Loader2, AlertTriangle } from "lucide-react";
+import { X, Settings2, Users, ShieldAlert, ShieldCheck, Trash2, Search, UserPlus, Building2, Loader2, AlertTriangle, Wallet, TrendingDown, Clock, TrendingUp, FolderKanban, Layers, Info } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { createPortal } from "react-dom";
-import { resolveDriveImage } from "@/lib/utils";
+import { resolveDriveImage, cn } from "@/lib/utils";
 
 interface OrganizationSettingsModalProps {
   organization: Organization;
@@ -14,7 +15,7 @@ interface OrganizationSettingsModalProps {
 }
 
 export function OrganizationSettingsModal({ organization, onClose, onUpdate }: OrganizationSettingsModalProps) {
-  const [activeTab, setActiveTab] = useState<"general" | "members" | "danger">("general");
+  const [activeTab, setActiveTab] = useState<"general" | "members" | "danger" | "info">("info");
   
   // General Tab
   const [name, setName] = useState(organization.name);
@@ -29,6 +30,13 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
   const [selectedRole, setSelectedRole] = useState("Admin");
   const [loadingMembers, setLoadingMembers] = useState(true);
 
+  // Organization analysis and listings states
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [transactions, setTransactions] = useState<FinancialTransaction[]>([]);
+  const [loadingInfo, setLoadingInfo] = useState(true);
+
   // Danger Zone confirmation
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
@@ -40,11 +48,12 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
 
   useEffect(() => {
     loadMembersData();
+    loadOrgInfoData();
   }, [organization.id]);
 
   useEffect(() => {
     if (!loadingMembers && (userRole === "Member" || userRole === "Guest")) {
-      setActiveTab("general");
+      setActiveTab("info");
     }
   }, [userRole, loadingMembers]);
 
@@ -72,6 +81,33 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
       console.error("Failed to load members", err);
     } finally {
       setLoadingMembers(false);
+    }
+  };
+
+  const loadOrgInfoData = async () => {
+    try {
+      setLoadingInfo(true);
+      const [wsList, projList, taskList, txList] = await Promise.all([
+        getItems<Workspace>("workspace"),
+        getItems<Project>("project"),
+        getItems<Task>("task"),
+        getItems<FinancialTransaction>("transaction")
+      ]);
+      
+      const orgWorkspaces = wsList.filter(w => w.organization_id === organization.id);
+      setWorkspaces(orgWorkspaces);
+      
+      const orgProjects = projList.filter(p => p.workspace_id && orgWorkspaces.some(w => w.id === p.workspace_id));
+      setProjects(orgProjects);
+      
+      const orgTasks = taskList.filter(t => t.workspace_id && orgWorkspaces.some(w => w.id === t.workspace_id));
+      setTasks(orgTasks);
+      
+      setTransactions(txList);
+    } catch (err) {
+      console.error("Failed to load organization info dashboard:", err);
+    } finally {
+      setLoadingInfo(false);
     }
   };
 
@@ -249,6 +285,15 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
             {/* Sidebar */}
             <div className="w-full sm:w-56 border-b sm:border-b-0 sm:border-r border-border/50 bg-secondary/5 p-2 sm:p-4 space-y-0 sm:space-y-1 shrink-0 overflow-x-auto sm:overflow-x-hidden sm:overflow-y-auto flex sm:flex-col gap-1 sm:gap-0 scrollbar-none items-center sm:items-stretch">
               <button
+                onClick={() => setActiveTab("info")}
+                className={`w-auto sm:w-full shrink-0 flex items-center gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-[5px] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                  activeTab === "info" ? "bg-primary text-primary-foreground border-primary/20 shadow-[inset_2px_0_0_0_rgba(255,255,255,0.2)]" : "border-transparent text-muted-foreground hover:bg-secondary/40 hover:text-foreground hover:border-border/30"
+                }`}
+              >
+                <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                Overview Info
+              </button>
+              <button
                 onClick={() => setActiveTab("general")}
                 className={`w-auto sm:w-full shrink-0 flex items-center gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-[5px] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all border ${
                   activeTab === "general" ? "bg-primary text-primary-foreground border-primary/20 shadow-[inset_2px_0_0_0_rgba(255,255,255,0.2)]" : "border-transparent text-muted-foreground hover:bg-secondary/40 hover:text-foreground hover:border-border/30"
@@ -285,6 +330,207 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
 
           {/* Content Area */}
           <div className="flex-1 p-4 sm:p-8 overflow-y-auto custom-scrollbar bg-background">
+            {activeTab === "info" && (
+              <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+                <div className="border-b border-border/50 pb-4">
+                  <h3 className="text-xl font-bold text-foreground tracking-tight">Organization Overview</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Audit active workspaces, projects, task metrics, and budget consumption in real-time.</p>
+                </div>
+
+                {loadingInfo ? (
+                  <div className="py-20 flex flex-col items-center justify-center gap-3">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground font-mono">Auditing Organization Nodes...</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Basic Analyze Metrics Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {/* Workspaces Card */}
+                      <div className="p-4 border border-border/40 bg-secondary/5 rounded-[5px] space-y-2 flex flex-col justify-between">
+                        <div className="flex items-center justify-between text-muted-foreground">
+                          <span className="text-[8px] font-extrabold uppercase tracking-widest font-mono">Workspaces</span>
+                          <Layers className="w-4 h-4 text-primary shrink-0" />
+                        </div>
+                        <p className="text-2xl font-black font-mono tracking-tight text-foreground">{workspaces.length}</p>
+                        <p className="text-[8px] uppercase tracking-wider font-mono text-muted-foreground/60">Active Workspace Nodes</p>
+                      </div>
+
+                      {/* Projects Card */}
+                      <div className="p-4 border border-border/40 bg-secondary/5 rounded-[5px] space-y-2 flex flex-col justify-between">
+                        <div className="flex items-center justify-between text-muted-foreground">
+                          <span className="text-[8px] font-extrabold uppercase tracking-widest font-mono">Projects</span>
+                          <FolderKanban className="w-4 h-4 text-primary shrink-0" />
+                        </div>
+                        <p className="text-2xl font-black font-mono tracking-tight text-foreground">{projects.length}</p>
+                        <p className="text-[8px] uppercase tracking-wider font-mono text-muted-foreground/60">Linked Project Clusters</p>
+                      </div>
+
+                      {/* Budget Tracker Card */}
+                      {(() => {
+                        const totalBudget = projects.reduce((sum, p) => sum + (p.budget || 0), 0);
+                        const totalSpent = transactions
+                          .filter(t => t.transaction_type === 'expense' && projects.some(p => p.id === t.project_id))
+                          .reduce((sum, tx) => sum + tx.amount, 0);
+                        const percent = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0;
+                        return (
+                          <div className="p-4 border border-border/40 bg-secondary/5 rounded-[5px] space-y-2 flex flex-col justify-between col-span-1">
+                            <div className="flex items-center justify-between text-muted-foreground">
+                              <span className="text-[8px] font-extrabold uppercase tracking-widest font-mono">Spent / Limit</span>
+                              <Wallet className="w-4 h-4 text-primary shrink-0" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold font-mono tracking-tight text-foreground">${totalSpent.toLocaleString()}</p>
+                              <p className="text-[9px] font-mono text-muted-foreground mt-0.5">Limit: ${totalBudget.toLocaleString()}</p>
+                            </div>
+                            {totalBudget > 0 ? (
+                              <div className="w-full bg-secondary h-1 rounded-[5px] overflow-hidden">
+                                <div className="h-full bg-primary" style={{ width: `${percent}%` }} />
+                              </div>
+                            ) : (
+                              <p className="text-[8px] uppercase tracking-wider font-mono text-muted-foreground/40">No limit defined</p>
+                            )}
+                          </div>
+                        );
+                      })()}
+
+                      {/* Tasks Tracker Card */}
+                      {(() => {
+                        const totalTasks = tasks.length;
+                        const completed = tasks.filter(t => t.status === "completed" || t.status === "archived").length;
+                        const percent = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
+                        return (
+                          <div className="p-4 border border-border/40 bg-secondary/5 rounded-[5px] space-y-2 flex flex-col justify-between">
+                            <div className="flex items-center justify-between text-muted-foreground">
+                              <span className="text-[8px] font-extrabold uppercase tracking-widest font-mono">Tasks Done</span>
+                              <Clock className="w-4 h-4 text-primary shrink-0" />
+                            </div>
+                            <p className="text-2xl font-black font-mono tracking-tight text-foreground">{percent}%</p>
+                            <p className="text-[8px] uppercase tracking-wider font-mono text-muted-foreground/60">{completed} / {totalTasks} Complete</p>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Structural Directory List of Workspaces & Projects */}
+                    <div className="space-y-4">
+                      <h4 className="text-[10px] font-bold text-primary uppercase tracking-[0.25em] font-mono flex items-center gap-2 border-b border-border/10 pb-2">
+                        <Layers className="w-4 h-4 text-primary" /> Workspace Registry Directory
+                      </h4>
+
+                      {workspaces.length === 0 ? (
+                        <div className="py-12 text-center border border-dashed border-border/30 bg-secondary/5 rounded-[5px] text-muted-foreground/60 font-mono uppercase tracking-widest text-[9px]">
+                          No active workspaces in this organization.
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {workspaces.map(ws => {
+                            const wsProj = projects.filter(p => p.workspace_id === ws.id);
+                            const wsBudget = wsProj.reduce((sum, p) => sum + (p.budget || 0), 0);
+                            const wsSpent = transactions
+                              .filter(t => t.transaction_type === 'expense' && wsProj.some(p => p.id === t.project_id))
+                              .reduce((sum, tx) => sum + tx.amount, 0);
+
+                            return (
+                              <div key={ws.id} className="border border-border/50 bg-secondary/5 rounded-[5px] p-4 space-y-3">
+                                {/* Workspace Header */}
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/10 pb-2.5">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-[5px] bg-background border border-border/50 flex items-center justify-center shrink-0 shadow-sm font-bold text-xs uppercase text-primary" style={{ borderColor: ws.color }}>
+                                      {ws.name.slice(0, 2)}
+                                    </div>
+                                    <div>
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <h5 className="text-sm font-extrabold uppercase text-foreground leading-none">{ws.name}</h5>
+                                        <Badge variant="outline" className="text-[7px] font-mono font-bold uppercase tracking-wider h-4 bg-background/50 border-border/50 text-muted-foreground px-1.5">{ws.company}</Badge>
+                                      </div>
+                                      <p className="text-[10px] text-muted-foreground font-mono mt-0.5">{ws.description || "No description overview logged."}</p>
+                                    </div>
+                                  </div>
+
+                                  <div className="text-left sm:text-right shrink-0">
+                                    <p className="text-[9px] font-bold font-mono text-foreground uppercase">
+                                      Spent: <span className="text-red-400 font-extrabold">${wsSpent.toLocaleString()}</span>
+                                    </p>
+                                    <p className="text-[8px] font-mono text-muted-foreground mt-0.5 uppercase">
+                                      Limit: ${wsBudget.toLocaleString()} • {wsProj.length} Projects
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Nested Projects Registry list */}
+                                <div className="pl-0 sm:pl-4 space-y-2">
+                                  <p className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground/60 font-mono">Linked Project Nodes</p>
+                                  {wsProj.length === 0 ? (
+                                    <div className="py-4 text-center border border-dashed border-border/20 bg-background/25 text-[8.5px] font-mono text-muted-foreground uppercase tracking-widest">
+                                      No linked project nodes registered.
+                                    </div>
+                                  ) : (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                      {wsProj.map(proj => {
+                                        const projSpent = transactions
+                                          .filter(t => t.project_id === proj.id && t.transaction_type === 'expense')
+                                          .reduce((sum, tx) => sum + tx.amount, 0);
+                                        const projLimit = proj.budget;
+
+                                        return (
+                                          <div key={proj.id} className="p-3 bg-background border border-border/40 rounded-[5px] flex flex-col justify-between gap-2.5" style={{ borderLeft: `3px solid ${proj.color || "#3b82f6"}` }}>
+                                            <div className="flex justify-between items-start gap-2">
+                                              <div className="min-w-0">
+                                                <h6 className="text-[11px] font-bold uppercase text-foreground leading-none truncate">{proj.name}</h6>
+                                                <p className="text-[9px] text-muted-foreground font-mono mt-0.5 truncate uppercase">{proj.status}</p>
+                                              </div>
+                                              <Badge variant="outline" className={cn(
+                                                "text-[6.5px] uppercase font-bold tracking-widest h-4 px-1 rounded-[5px] shrink-0 font-mono",
+                                                proj.priority === "critical" ? "bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_8px_rgba(239,68,68,0.25)]" :
+                                                proj.priority === "high" ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
+                                                "bg-primary/10 text-primary border-primary/20"
+                                              )}>
+                                                {proj.priority}
+                                              </Badge>
+                                            </div>
+
+                                            <div className="space-y-1">
+                                              <div className="flex justify-between items-center text-[7.5px] font-mono text-muted-foreground/60 tracking-wider">
+                                                <span>BUDGET CONSUMED</span>
+                                                <span className={cn(
+                                                  "font-extrabold text-foreground",
+                                                  projLimit && projSpent >= projLimit ? "text-red-500" : ""
+                                                )}>
+                                                  ${projSpent.toLocaleString()} {projLimit ? `/ $${projLimit.toLocaleString()}` : ""}
+                                                </span>
+                                              </div>
+                                              {projLimit ? (
+                                                <div className="w-full bg-secondary h-1 rounded-[5px] overflow-hidden border border-border/10">
+                                                  <div 
+                                                    className={cn(
+                                                      "h-full transition-all duration-300",
+                                                      projSpent >= projLimit ? "bg-red-500" : projSpent >= projLimit * 0.75 ? "bg-amber-500" : "bg-emerald-500"
+                                                    )}
+                                                    style={{ width: `${Math.min(100, (projSpent / projLimit) * 100)}%` }}
+                                                  />
+                                                </div>
+                                              ) : (
+                                                <div className="text-[7.5px] font-mono text-muted-foreground/40 uppercase">No budget limit set</div>
+                                              )}
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
             {activeTab === "general" && (
               <div className="max-w-2xl space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="border-b border-border/50 pb-4">

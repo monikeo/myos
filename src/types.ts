@@ -34,6 +34,7 @@ export interface Project extends BaseItem {
   category?: string;
   owner_id?: string;
   user_id?: string;
+  budget?: number;
 }
 
 export interface Note extends BaseItem {
@@ -67,6 +68,7 @@ export interface FinancialTransaction extends BaseItem {
   transaction_type: 'income' | 'expense';
   date: string;
   workspace_id?: string;
+  project_id?: string;
 }
 
 export interface CalendarEvent extends BaseItem {

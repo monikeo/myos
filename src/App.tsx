@@ -725,6 +725,18 @@ function AppContent() {
   }, [sessionUser]);
 
   useEffect(() => {
+    // Clickjacking Mitigation: frame-busting to prevent malicious nesting
+    if (window.self !== window.top) {
+      try {
+        window.top.location.href = window.self.location.href;
+      } catch (e) {
+        // Fallback for strict sandbox iframe restrictions
+        window.self.addEventListener("DOMContentLoaded", () => {
+          document.body.innerHTML = "<div style='display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#ef4444;font-weight:bold;'>Security Access Blocked: Malicious framing detected.</div>";
+        });
+      }
+    }
+
     // Fresh session reverification check on start to guarantee perfect sync on reload
     if (sessionUser) {
       fetch("/api/auth/session", {

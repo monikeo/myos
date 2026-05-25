@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { FinancialTransaction, Workspace } from "@/src/types";
+import { FinancialTransaction, Workspace, Project } from "@/src/types";
 import { getItems, createItem, deleteItem } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { 
@@ -35,6 +35,9 @@ export function FinanceView() {
   const [newCategory, setNewCategory] = useState("");
   const [newDate, setNewDate] = useState("");
   const [newWorkspaceId, setNewWorkspaceId] = useState("");
+  const [newProjectId, setNewProjectId] = useState("");
+
+  const [projects, setProjects] = useState<Project[]>([]);
 
   // Deletion modal state
   const [txToDelete, setTxToDelete] = useState<string | null>(null);
@@ -45,12 +48,14 @@ export function FinanceView() {
 
   const loadData = async () => {
     try {
-      const [txData, wsData] = await Promise.all([
+      const [txData, wsData, projData] = await Promise.all([
         getItems<FinancialTransaction>("transaction"),
-        getItems<Workspace>("workspace")
+        getItems<Workspace>("workspace"),
+        getItems<Project>("project")
       ]);
       setTransactions(txData);
       setWorkspaces(wsData);
+      setProjects(projData);
     } catch (err) {
       console.error(err);
     }
@@ -117,7 +122,8 @@ export function FinanceView() {
       transaction_type: newTxType,
       category: newCategory || "General",
       date: newDate || new Date().toISOString().split("T")[0],
-      workspace_id: newWorkspaceId || undefined
+      workspace_id: newWorkspaceId || undefined,
+      project_id: newProjectId || undefined
     };
 
     try {
@@ -137,18 +143,54 @@ export function FinanceView() {
         })
       );
 
-      // Proactively trigger warning if expense is high (>= $1000)
-      if (newTxType === "expense" && amountVal >= 1000) {
-        window.dispatchEvent(
-          new CustomEvent("myos:notification", {
-            detail: {
-              title: "High Expense Warning",
-              message: `High value transaction detected: $${amountVal.toLocaleString()} was logged for "${newDesc}".`,
-              category: "finance",
-              link_to: "finance"
+      // Proactively trigger warnings
+      if (newTxType === "expense") {
+        if (newProjectId) {
+          const activeProj = projects.find(p => p.id === newProjectId);
+          if (activeProj && activeProj.budget) {
+            const limit = activeProj.budget;
+            const spent = transactions
+              .filter(t => t.project_id === newProjectId && t.transaction_type === 'expense')
+              .reduce((sum, tx) => sum + tx.amount, 0) + amountVal;
+
+            if (spent >= limit) {
+              window.dispatchEvent(
+                new CustomEvent("myos:notification", {
+                  detail: {
+                    title: "CRITICAL: Project Budget Exceeded",
+                    message: `Project "${activeProj.name}" has exceeded its budget of $${limit.toLocaleString()}! Current spent is $${spent.toLocaleString()}.`,
+                    category: "finance",
+                    link_to: "finance"
+                  }
+                })
+              );
+            } else if (spent >= limit * 0.75) {
+              window.dispatchEvent(
+                new CustomEvent("myos:notification", {
+                  detail: {
+                    title: "Warning: Low Project Budget",
+                    message: `Project "${activeProj.name}" has consumed over 75% of its budget. Current spent is $${spent.toLocaleString()} / $${limit.toLocaleString()}.`,
+                    category: "finance",
+                    link_to: "finance"
+                  }
+                })
+              );
             }
-          })
-        );
+          }
+        }
+
+        if (amountVal >= 1000) {
+          window.dispatchEvent(
+            new CustomEvent("myos:notification", {
+              detail: {
+                title: "High Expense Warning",
+                message: `High value transaction detected: $${amountVal.toLocaleString()} was logged for "${newDesc}".`,
+                category: "finance",
+                link_to: "finance"
+              }
+            })
+          );
+        }
       }
 
       setNewDesc("");
@@ -156,6 +198,7 @@ export function FinanceView() {
       setNewCategory("");
       setNewDate("");
       setNewWorkspaceId("");
+      setNewProjectId("");
       setShowDeployForm(false);
       loadData();
     } catch (err) {
@@ -308,6 +351,23 @@ export function FinanceView() {
             </select>
           </div>
 
+          <div className="grid grid-cols-1 gap-4">
+            <select
+              value={newProjectId}
+              onChange={(e) => setNewProjectId(e.target.value)}
+              className="h-11 px-3 rounded-[5px] bg-background/50 border border-border/30 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+            >
+              <option value="">No Linked Project</option>
+              {projects
+                .filter(p => !newWorkspaceId || p.workspace_id === newWorkspaceId)
+                .map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+
           <div className="flex justify-end gap-3 pt-3 border-t border-border/10">
             <Button
               variant="outline"
@@ -318,6 +378,7 @@ export function FinanceView() {
                 setNewCategory("");
                 setNewDate("");
                 setNewWorkspaceId("");
+                setNewProjectId("");
               }}
               className="rounded-[5px] border-border/50 px-6 h-11 font-bold uppercase tracking-widest text-[9px]"
             >
@@ -494,6 +555,14 @@ export function FinanceView() {
                                 className="text-[7.5px] font-bold uppercase tracking-[0.2em] font-mono px-1.5 py-0 bg-background/40"
                               >
                                 {parentWorkspace.name}
+                              </Badge>
+                            )}
+                            {t.project_id && (
+                              <Badge 
+                                variant="outline" 
+                                className="text-[7.5px] font-bold uppercase tracking-[0.2em] font-mono px-1.5 py-0 bg-background/40 border-primary/30 text-primary"
+                              >
+                                {projects.find(p => p.id === t.project_id)?.name || "Project"}
                               </Badge>
                             )}
                           </div>

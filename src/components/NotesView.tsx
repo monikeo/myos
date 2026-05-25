@@ -12,6 +12,16 @@ import { Note } from "@/src/types";
 import { getItems, createItem, updateItem, deleteItem } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
+// Configure DOMPurify to mitigate reverse tabnabbing (target hijacking) on all anchor links
+if (typeof window !== "undefined") {
+  DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+    if (node.tagName === "A") {
+      node.setAttribute("target", "_blank");
+      node.setAttribute("rel", "noopener noreferrer");
+    }
+  });
+}
+
 function stripHtml(html: string) {
   return html.replace(/<[^>]*>/g, "");
 }

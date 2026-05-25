@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { Plus, Briefcase, ExternalLink, Trash2, Edit3, Search, X, Save, Layers, Clock, AlertCircle, AlertTriangle, CheckSquare, Square, Calendar as CalendarIcon, Loader2, Link2, Globe, FolderKanban, ShieldAlert, UserPlus, UserMinus, ShieldCheck, Building2, Terminal, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Briefcase, ExternalLink, Trash2, Edit3, Search, X, Save, Layers, Clock, AlertCircle, AlertTriangle, CheckSquare, Square, Calendar as CalendarIcon, Loader2, Link2, Globe, FolderKanban, ShieldAlert, UserPlus, UserMinus, ShieldCheck, Building2, Terminal, ChevronDown, ChevronUp, Wallet } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Workspace, Task, QuickLink, Project, RoleAssignment, Organization } from "@/src/types";
+import { Workspace, Task, QuickLink, Project, RoleAssignment, Organization, FinancialTransaction } from "@/src/types";
 import { getItems, createItem, deleteItem, updateItem, uploadFile, getAllUsers, getCurrentSession } from "@/lib/api";
 import { cn, resolveDriveImage } from "@/lib/utils";
 import { SafeLogo } from "@/src/components/SafeLogo";
@@ -61,6 +61,7 @@ export function WorkspacesView() {
   const [modalTab, setModalTab] = useState<"tasks" | "links" | "projects" | "access">("tasks");
   const [links, setLinks] = useState<QuickLink[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [transactions, setTransactions] = useState<FinancialTransaction[]>([]);
   const [uploading, setUploading] = useState(false);
 
   // Hierarchical states
@@ -171,6 +172,8 @@ export function WorkspacesView() {
       setLinks(allLinks);
       const allProjects = await getItems<Project>("project");
       setProjects(allProjects);
+      const allTx = await getItems<FinancialTransaction>("transaction");
+      setTransactions(allTx);
 
       // Load hierarchical scopes & permissions
       const allOrgs = await getItems<Organization>("organization");
@@ -1396,6 +1399,64 @@ export function WorkspacesView() {
                   </div>
                 </div>
 
+                {(() => {
+                  const wsProjects = projects.filter(p => p.workspace_id === activeWorkspace.id);
+                  if (wsProjects.length === 0) return null;
+
+                  const totalBudget = wsProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
+                  const totalSpent = transactions
+                    .filter(t => t.transaction_type === 'expense' && wsProjects.some(p => p.id === t.project_id))
+                    .reduce((sum, tx) => sum + tx.amount, 0);
+                  const remaining = totalBudget - totalSpent;
+                  const percent = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0;
+
+                  return (
+                    <div className="border border-border/20 bg-background/50 p-6 space-y-4">
+                      <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary border-b border-border/10 pb-2 font-mono flex items-center justify-between">
+                        <span>Workspace Budget Overview</span>
+                        <Wallet className="w-3.5 h-3.5" />
+                      </h3>
+                      <div className="space-y-3 font-mono text-xs">
+                        <div className="flex justify-between py-1.5 border-b border-dashed border-border/10">
+                          <span className="text-muted-foreground">Projects Limit:</span>
+                          <span className="font-bold text-foreground">${totalBudget.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between py-1.5 border-b border-dashed border-border/10">
+                          <span className="text-muted-foreground">Total Spent:</span>
+                          <span className="font-bold text-red-400">${totalSpent.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between py-1.5">
+                          <span className="text-muted-foreground">Remaining:</span>
+                          <span className={cn(
+                            "font-extrabold",
+                            remaining < 0 ? "text-red-500 animate-pulse" : "text-emerald-400"
+                          )}>
+                            {remaining < 0 ? `-$${Math.abs(remaining).toLocaleString()}` : `$${remaining.toLocaleString()}`}
+                          </span>
+                        </div>
+                        
+                        {totalBudget > 0 && (
+                          <div className="space-y-1.5 pt-2">
+                            <div className="flex justify-between text-[9px] font-bold text-muted-foreground">
+                              <span>Consumed</span>
+                              <span>{percent}%</span>
+                            </div>
+                            <div className="w-full bg-secondary/50 h-1.5 rounded-[5px] overflow-hidden border border-border/10">
+                              <div 
+                                className={cn(
+                                  "h-full transition-all duration-500",
+                                  totalSpent >= totalBudget ? "bg-red-500" : totalSpent >= totalBudget * 0.75 ? "bg-amber-500" : "bg-emerald-500"
+                                )}
+                                style={{ width: `${percent}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* Dynamic Inline form to create tasks, links, or projects within this workspace */}
                 {modalTab === "tasks" ? (
                   <div className="border border-primary/20 bg-primary/5 p-6 space-y-4">
@@ -1822,6 +1883,40 @@ export function WorkspacesView() {
                                   <div className="h-full transition-all" style={{ width: `${statsObj.percent}%`, backgroundColor: proj.color || "#3b82f6" }} />
                                 </div>
                               </div>
+
+                              {/* Budget progress bar */}
+                              {(() => {
+                                const spent = transactions
+                                  .filter(t => t.project_id === proj.id && t.transaction_type === 'expense')
+                                  .reduce((sum, tx) => sum + tx.amount, 0);
+                                const limit = proj.budget;
+                                return (
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between items-center text-[8px] font-mono tracking-wider text-muted-foreground/60">
+                                      <span>BUDGET SPENT</span>
+                                      <span className={cn(
+                                        "font-bold text-foreground",
+                                        limit && spent >= limit ? "text-red-500 font-extrabold animate-pulse" : ""
+                                      )}>
+                                        ${spent.toLocaleString()} {limit ? `/ $${limit.toLocaleString()}` : ""}
+                                      </span>
+                                    </div>
+                                    {limit ? (
+                                      <div className="w-full bg-secondary/50 h-1.5 rounded-[5px] overflow-hidden border border-border/10">
+                                        <div 
+                                          className={cn(
+                                            "h-full transition-all",
+                                            spent >= limit ? "bg-red-500" : spent >= limit * 0.75 ? "bg-amber-500" : "bg-emerald-500"
+                                          )}
+                                          style={{ width: `${Math.min(100, (spent / limit) * 100)}%` }}
+                                        />
+                                      </div>
+                                    ) : (
+                                      <div className="text-[7.5px] font-mono text-muted-foreground/50 uppercase">No budget limit set</div>
+                                    )}
+                                  </div>
+                                );
+                              })()}
 
                               <div className="flex justify-between items-center mt-1">
                                 <span className="text-[7.5px] font-mono font-bold text-muted-foreground/60 uppercase">
