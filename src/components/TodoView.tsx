@@ -111,6 +111,46 @@ export function TodoView() {
     };
   }, []);
 
+  const allowedUsersForNewTask = useMemo(() => {
+    let parentWorkspace = workspaces.find(w => w.id === newWorkspaceId);
+    
+    if (!parentWorkspace && newProjectId) {
+      const proj = projects.find(p => p.id === newProjectId);
+      if (proj && proj.workspace_id) {
+        parentWorkspace = workspaces.find(w => w.id === proj.workspace_id);
+      }
+    }
+
+    if (!parentWorkspace) {
+      return allUsers; 
+    }
+
+    const orgId = parentWorkspace.organization_id;
+    
+    return allUsers.filter(user => {
+      const isWsOwner = parentWorkspace.user_id === user.id || parentWorkspace.owner_id === user.id;
+      const hasWsRole = roleAssignments.some(
+        ra => ra.scope_type === "workspace" && 
+              ra.scope_id === parentWorkspace.id && 
+              ra.user_id === user.id
+      );
+
+      let hasOrgRole = false;
+      if (orgId) {
+        const org = organizations.find(o => o.id === orgId);
+        const isOrgOwner = org && (org.user_id === user.id || org.owner_id === user.id);
+        const isOrgMember = roleAssignments.some(
+          ra => ra.scope_type === "organization" && 
+                ra.scope_id === orgId && 
+                ra.user_id === user.id
+        );
+        hasOrgRole = !!(isOrgOwner || isOrgMember);
+      }
+
+      return isWsOwner || hasWsRole || hasOrgRole;
+    });
+  }, [newWorkspaceId, newProjectId, workspaces, projects, organizations, roleAssignments, allUsers]);
+
   const loadTasks = async (silent = false) => {
     try {
       if (!silent) setLoading(true);
@@ -1076,10 +1116,10 @@ export function TodoView() {
                       {/* Floating panel */}
                       <div className="absolute left-0 right-0 mt-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2.5 rounded-[5px] animate-in slide-in-from-top-2 fade-in duration-200 max-h-[220px] overflow-y-auto custom-scrollbar">
                         <div className="grid grid-cols-1 gap-1">
-                          {allUsers.length === 0 ? (
+                          {allowedUsersForNewTask.length === 0 ? (
                             <div className="p-3 text-center text-xs text-muted-foreground uppercase font-mono">No Users Available</div>
                           ) : (
-                            allUsers.map(user => {
+                            allowedUsersForNewTask.map(user => {
                               const selectedAssigneeIds = newTaskAssigneeId ? newTaskAssigneeId.split(",").map(s => s.trim()).filter(Boolean) : [];
                               const isSelected = selectedAssigneeIds.includes(user.id);
                               return (
@@ -1955,8 +1995,11 @@ export function TodoView() {
                           <>
                             <div className="fixed inset-0 z-30" onClick={() => setIsAssigneeDropdownOpen(false)} />
                             <div className="absolute right-0 left-0 bottom-full mb-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2 rounded-[5px] max-h-[160px] overflow-y-auto custom-scrollbar grid grid-cols-1 gap-1">
-                              {allUsers.map(user => {
-                                const selectedAssigneeIds = newTaskAssigneeId ? newTaskAssigneeId.split(",").map(s => s.trim()).filter(Boolean) : [];
+                              {allowedUsersForNewTask.length === 0 ? (
+                                <div className="p-2 text-center text-xs text-muted-foreground uppercase font-mono">No Users</div>
+                              ) : (
+                                allowedUsersForNewTask.map(user => {
+                                  const selectedAssigneeIds = newTaskAssigneeId ? newTaskAssigneeId.split(",").map(s => s.trim()).filter(Boolean) : [];
                                 const isSelected = selectedAssigneeIds.includes(user.id);
                                 return (
                                   <button
@@ -1983,7 +2026,7 @@ export function TodoView() {
                                     <span className="truncate">{user.display_name || user.username}</span>
                                   </button>
                                 );
-                              })}
+                              }))}
                             </div>
                           </>
                         )}

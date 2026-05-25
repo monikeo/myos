@@ -171,7 +171,7 @@ async function startServer() {
       const csrfHeader = req.headers["x-myos-csrf"];
       const requestedWithHeader = req.headers["x-requested-with"];
 
-      if (csrfHeader !== "myos-secure-spa" && requestedWithHeader !== "XMLHttpRequest") {
+      if (csrfHeader !== "myos-secure-spa" || requestedWithHeader !== "XMLHttpRequest") {
         return res.status(403).json({ 
           error: "Forbidden: API Request blocked by CSRF protection protocols." 
         });
