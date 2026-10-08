@@ -588,7 +588,7 @@ export function TodoView() {
         onDragStart={(e) => handleDragStart(e, task)}
         onDragEnd={handleDragEnd}
         className={cn(
-          "group border shadow-sm hover:shadow-xl transition-all duration-200 glass-panel relative overflow-hidden rounded-[5px] cursor-grab active:cursor-grabbing",
+          "group border shadow-sm hover:shadow-xl transition-all duration-200 glass-panel relative overflow-hidden rounded-[8px] cursor-grab active:cursor-grabbing",
           draggedTaskId === task.id 
             ? "opacity-30 border-dashed border-primary scale-95" 
             : "border-border/50 hover:border-primary/60"
@@ -628,7 +628,7 @@ export function TodoView() {
                       key={catName}
                       variant="outline"
                       className={cn(
-                        "text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono shrink-0 transition-all border flex items-center gap-1",
+                        "text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[8px] font-mono shrink-0 transition-all border flex items-center gap-1",
                         catInfo.text,
                         catInfo.border,
                         catInfo.bg
@@ -643,7 +643,7 @@ export function TodoView() {
               {org && (
                 <Badge
                   variant="outline"
-                  className="text-[8px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono shrink-0 border-primary/20 bg-primary/5 text-primary flex items-center gap-1"
+                  className="text-[8px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-[8px] font-mono shrink-0 border-primary/20 bg-primary/5 text-primary flex items-center gap-1"
                 >
                   <Briefcase className="w-2.5 h-2.5 shrink-0" />
                   {org.name}
@@ -657,14 +657,14 @@ export function TodoView() {
                     backgroundColor: `${ws.color}11`
                   }}
                   variant="outline"
-                  className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono shrink-0"
+                  className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[8px] font-mono shrink-0"
                 >
                   {ws.name}
                 </Badge>
               ) : (
                 <Badge
                   variant="outline"
-                  className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono text-muted-foreground/60 bg-background/50 border-border/50 shrink-0"
+                  className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[8px] font-mono text-muted-foreground/60 bg-background/50 border-border/50 shrink-0"
                 >
                   General
                 </Badge>
@@ -677,7 +677,7 @@ export function TodoView() {
                     backgroundColor: `${proj.color}11`
                   }}
                   variant="outline"
-                  className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono shrink-0 flex items-center gap-1"
+                  className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[8px] font-mono shrink-0 flex items-center gap-1"
                 >
                   <FolderKanban className="w-2.5 h-2.5 shrink-0" />
                   {proj.name}
@@ -731,7 +731,7 @@ export function TodoView() {
               const completed = checklist.filter(c => c.completed).length;
               return (
                 <div 
-                  className="space-y-1.5 p-2.5 rounded-[5px] bg-secondary/20 border border-border/10 cursor-pointer hover:bg-secondary/40 transition-colors"
+                  className="space-y-1.5 p-2.5 rounded-[8px] bg-secondary/20 border border-border/10 cursor-pointer hover:bg-secondary/40 transition-colors"
                   onClick={() => {
                     setViewingTask(task);
                     setIsDescExpanded(false);
@@ -810,7 +810,7 @@ export function TodoView() {
                       )}
 
                       {/* Tooltip */}
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-900/95 border border-border/40 text-slate-100 text-[8px] font-mono font-bold uppercase rounded-[5px] opacity-0 pointer-events-none group-hover/avatar:opacity-100 transition-opacity duration-300 whitespace-nowrap shadow-xl z-50">
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-900/95 border border-border/40 text-slate-100 text-[8px] font-mono font-bold uppercase rounded-[8px] opacity-0 pointer-events-none group-hover/avatar:opacity-100 transition-opacity duration-300 whitespace-nowrap shadow-xl z-50">
                         {u.display_name || u.username} {isLead ? "(Project Lead)" : "(Member)"}
                       </div>
                     </div>
@@ -828,14 +828,14 @@ export function TodoView() {
                 </div>
               )}
               <div
-                className="w-8 h-8 rounded-[5px] bg-background border border-border/50 flex flex-col items-center justify-center hover:bg-secondary hover:border-primary transition-all cursor-pointer"
+                className="w-8 h-8 rounded-[8px] bg-background border border-border/50 flex flex-col items-center justify-center hover:bg-secondary hover:border-primary transition-all cursor-pointer"
                 onClick={() => handleEditTask(task)}
                 title="Edit Task"
               >
                 <Edit3 className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary" />
               </div>
               <div
-                className="w-8 h-8 rounded-[5px] bg-background border border-border/50 flex flex-col items-center justify-center hover:bg-secondary hover:border-primary transition-all cursor-pointer"
+                className="w-8 h-8 rounded-[8px] bg-background border border-border/50 flex flex-col items-center justify-center hover:bg-secondary hover:border-primary transition-all cursor-pointer"
                 onClick={() => {
                   const nextStatusIdx = (statusColumns.indexOf(uiStatus) + 1) % statusColumns.length;
                   changeTaskStatus(task, statusColumns[nextStatusIdx]);
@@ -845,7 +845,7 @@ export function TodoView() {
                 <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
               </div>
               <div
-                className="w-8 h-8 rounded-[5px] bg-background border border-border/50 flex flex-col items-center justify-center hover:bg-red-500/10 hover:border-red-500 transition-all cursor-pointer"
+                className="w-8 h-8 rounded-[8px] bg-background border border-border/50 flex flex-col items-center justify-center hover:bg-red-500/10 hover:border-red-500 transition-all cursor-pointer"
                 onClick={() => handleDeleteTask(task.id)}
                 title="Delete Task"
               >
@@ -868,7 +868,7 @@ export function TodoView() {
         </div>
         <Button
           onClick={() => setShowDeployForm(true)}
-          className="rounded-[5px] shadow-[0_0_20px_rgba(59,130,246,0.2)] bg-primary hover:bg-primary/90 h-11 px-5 font-bold text-xs uppercase tracking-[0.2em]"
+          className="rounded-[8px] shadow-[0_0_20px_rgba(59,130,246,0.2)] bg-primary hover:bg-primary/90 h-11 px-5 font-bold text-xs uppercase tracking-[0.2em]"
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Task
@@ -877,7 +877,7 @@ export function TodoView() {
 
       {showDeployForm && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-          <div className="bg-background border border-primary/30 w-full max-w-2xl shadow-2xl relative overflow-hidden p-6 sm:p-8 space-y-6 rounded-[5px] max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="bg-background border border-primary/30 w-full max-w-2xl shadow-2xl relative overflow-hidden p-6 sm:p-8 space-y-6 rounded-[8px] max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
             
             <div className="flex items-center justify-between mb-2">
@@ -885,7 +885,7 @@ export function TodoView() {
                 <Edit3 className="w-4 h-4 text-primary" />
                 {editingTaskId ? "Edit Task Details" : "Create New Task"}
               </h3>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-[5px] hover:bg-secondary/80" onClick={handleCancelForm}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-[8px] hover:bg-secondary/80" onClick={handleCancelForm}>
                 <X className="w-4 h-4" />
               </Button>
             </div>
@@ -897,7 +897,7 @@ export function TodoView() {
                   placeholder="Task Title"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="bg-background/50 border-border/30 rounded-[5px] h-11"
+                  className="bg-background/50 border-border/30 rounded-[8px] h-11"
                 />
               </div>
               <div className="space-y-1.5 flex flex-col justify-end relative">
@@ -907,7 +907,7 @@ export function TodoView() {
                   <button
                     type="button"
                     onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-                    className="w-full flex items-center justify-between min-h-[44px] px-3 py-2 bg-background/50 border border-border/30 rounded-[5px] text-left hover:border-primary/50 transition-all focus:outline-none focus:ring-1 focus:ring-primary/30"
+                    className="w-full flex items-center justify-between min-h-[44px] px-3 py-2 bg-background/50 border border-border/30 rounded-[8px] text-left hover:border-primary/50 transition-all focus:outline-none focus:ring-1 focus:ring-primary/30"
                   >
                     <div className="flex flex-wrap gap-1.5 items-center">
                       {(() => {
@@ -928,7 +928,7 @@ export function TodoView() {
                               key={catName}
                               variant="outline"
                               className={cn(
-                                "text-[9px] uppercase font-extrabold tracking-widest px-2 py-0.5 rounded-[5px] font-mono shrink-0 transition-all border flex items-center gap-1",
+                                "text-[9px] uppercase font-extrabold tracking-widest px-2 py-0.5 rounded-[8px] font-mono shrink-0 transition-all border flex items-center gap-1",
                                 catInfo.text,
                                 catInfo.border,
                                 catInfo.bg
@@ -951,12 +951,12 @@ export function TodoView() {
                       <div className="fixed inset-0 z-30" onClick={() => setIsCategoryDropdownOpen(false)} />
                       
                       {/* Floating panel */}
-                      <div className="absolute left-0 right-0 mt-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2.5 rounded-[5px] animate-in slide-in-from-top-2 fade-in duration-200 max-h-[220px] overflow-y-auto custom-scrollbar animate-fade-in">
+                      <div className="absolute left-0 right-0 mt-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2.5 rounded-[8px] animate-in slide-in-from-top-2 fade-in duration-200 max-h-[220px] overflow-y-auto custom-scrollbar animate-fade-in">
                         {/* Custom Category Input */}
                         <div className="flex items-center gap-1.5 mb-2.5 pb-2 border-b border-border/20">
                           <Input
                             placeholder="Add custom category..."
-                            className="h-7 text-[10px] bg-secondary/20 border-border/30 rounded-[5px] flex-1 font-mono text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-primary"
+                            className="h-7 text-[10px] bg-secondary/20 border-border/30 rounded-[8px] flex-1 font-mono text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-primary"
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
                                 e.preventDefault();
@@ -976,7 +976,7 @@ export function TodoView() {
                           <Button
                             type="button"
                             size="icon"
-                            className="h-7 w-7 rounded-[5px] bg-primary hover:bg-primary/90 shrink-0"
+                            className="h-7 w-7 rounded-[8px] bg-primary hover:bg-primary/90 shrink-0"
                             onClick={(e) => {
                               const input = e.currentTarget.previousElementSibling as HTMLInputElement;
                               const val = input.value.trim();
@@ -1016,7 +1016,7 @@ export function TodoView() {
                                   }
                                 }}
                                 className={cn(
-                                  "text-[9px] uppercase font-bold tracking-widest px-2.5 py-2 rounded-[5px] border transition-all flex items-center justify-between gap-1.5 text-left",
+                                  "text-[9px] uppercase font-bold tracking-widest px-2.5 py-2 rounded-[8px] border transition-all flex items-center justify-between gap-1.5 text-left",
                                   isSelected 
                                     ? "bg-primary/10 text-primary border-primary/30 font-extrabold shadow-[inset_0_0_10px_rgba(59,130,246,0.05)]" 
                                     : "bg-background/40 text-muted-foreground/80 border-border/30 hover:border-muted-foreground/40 hover:bg-secondary/40 hover:text-foreground"
@@ -1042,7 +1042,7 @@ export function TodoView() {
 
             <div className="space-y-1.5">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Task Description Protocol</span>
-              <div className="flex gap-1 mb-1.5 bg-secondary/25 p-1 rounded-[5px] border border-border/10 w-fit">
+              <div className="flex gap-1 mb-1.5 bg-secondary/25 p-1 rounded-[8px] border border-border/10 w-fit">
                 <button type="button" onClick={() => insertMarkdownHelper("bold")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Bold"><Bold className="w-3.5 h-3.5" /></button>
                 <button type="button" onClick={() => insertMarkdownHelper("italic")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Italic"><Italic className="w-3.5 h-3.5" /></button>
                 <button type="button" onClick={() => insertMarkdownHelper("bullet")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Bullet List"><List className="w-3.5 h-3.5" /></button>
@@ -1055,7 +1055,7 @@ export function TodoView() {
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
                 rows={5}
-                className="w-full bg-background/50 border border-border/30 rounded-[5px] p-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-muted-foreground/40 font-mono text-foreground leading-relaxed transition-all hover:border-primary/40 focus:border-primary"
+                className="w-full bg-background/50 border border-border/30 rounded-[8px] p-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-muted-foreground/40 font-mono text-foreground leading-relaxed transition-all hover:border-primary/40 focus:border-primary"
               />
             </div>
 
@@ -1066,7 +1066,7 @@ export function TodoView() {
                   type="date"
                   value={newDueDate}
                   onChange={(e) => setNewDueDate(e.target.value)}
-                  className="bg-background/50 border-border/30 rounded-[5px] h-11 text-xs"
+                  className="bg-background/50 border-border/30 rounded-[8px] h-11 text-xs"
                 />
               </div>
               
@@ -1077,7 +1077,7 @@ export function TodoView() {
                   <button
                     type="button"
                     onClick={() => setIsAssigneeDropdownOpen(!isAssigneeDropdownOpen)}
-                    className="w-full flex items-center justify-between min-h-[44px] px-3 py-2 bg-background/50 border border-border/30 rounded-[5px] text-left hover:border-primary/50 transition-all focus:outline-none focus:ring-1 focus:ring-primary/30 font-mono"
+                    className="w-full flex items-center justify-between min-h-[44px] px-3 py-2 bg-background/50 border border-border/30 rounded-[8px] text-left hover:border-primary/50 transition-all focus:outline-none focus:ring-1 focus:ring-primary/30 font-mono"
                   >
                     <div className="flex flex-wrap gap-1.5 items-center">
                       {(() => {
@@ -1092,7 +1092,7 @@ export function TodoView() {
                             <Badge
                               key={id}
                               variant="outline"
-                              className="text-[9px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[5px] border-primary/20 bg-primary/5 text-primary flex items-center gap-1 font-mono"
+                              className="text-[9px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[8px] border-primary/20 bg-primary/5 text-primary flex items-center gap-1 font-mono"
                             >
                               <Avatar className="w-4 h-4 border border-background">
                                 <AvatarImage src={u.avatar_url ? resolveDriveImage(u.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${u.id}`} />
@@ -1114,7 +1114,7 @@ export function TodoView() {
                       <div className="fixed inset-0 z-30" onClick={() => setIsAssigneeDropdownOpen(false)} />
                       
                       {/* Floating panel */}
-                      <div className="absolute left-0 right-0 mt-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2.5 rounded-[5px] animate-in slide-in-from-top-2 fade-in duration-200 max-h-[220px] overflow-y-auto custom-scrollbar">
+                      <div className="absolute left-0 right-0 mt-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2.5 rounded-[8px] animate-in slide-in-from-top-2 fade-in duration-200 max-h-[220px] overflow-y-auto custom-scrollbar">
                         <div className="grid grid-cols-1 gap-1">
                           {allowedUsersForNewTask.length === 0 ? (
                             <div className="p-3 text-center text-xs text-muted-foreground uppercase font-mono">No Users Available</div>
@@ -1136,7 +1136,7 @@ export function TodoView() {
                                     setNewTaskAssigneeId(updated.join(","));
                                   }}
                                   className={cn(
-                                    "text-[10px] font-medium px-2.5 py-2 rounded-[5px] border transition-all flex items-center justify-between gap-1.5 text-left font-mono",
+                                    "text-[10px] font-medium px-2.5 py-2 rounded-[8px] border transition-all flex items-center justify-between gap-1.5 text-left font-mono",
                                     isSelected 
                                       ? "bg-primary/10 text-primary border-primary/30 font-bold shadow-sm" 
                                       : "bg-background/40 text-muted-foreground/80 border-border/30 hover:border-muted-foreground/40 hover:bg-secondary/40 hover:text-foreground"
@@ -1170,7 +1170,7 @@ export function TodoView() {
                 <select
                   value={newPriority}
                   onChange={(e) => setNewPriority(e.target.value as TaskPriority)}
-                  className="w-full h-11 px-4 rounded-[5px] bg-background/50 border border-border/30 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full h-11 px-4 rounded-[8px] bg-background/50 border border-border/30 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <option value="High">High Priority</option>
                   <option value="Medium">Medium Priority</option>
@@ -1183,7 +1183,7 @@ export function TodoView() {
                 <select
                   value={newWorkspaceId}
                   onChange={(e) => setNewWorkspaceId(e.target.value)}
-                  className="w-full h-11 px-3 rounded-[5px] bg-background/50 border border-border/30 text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full h-11 px-3 rounded-[8px] bg-background/50 border border-border/30 text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <option value="">General Task</option>
                   {workspaces
@@ -1213,7 +1213,7 @@ export function TodoView() {
                       }
                     }
                   }}
-                  className="w-full h-11 px-3 rounded-[5px] bg-background/50 border border-border/30 text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full h-11 px-3 rounded-[8px] bg-background/50 border border-border/30 text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <option value="">Standalone Project</option>
                   {projects
@@ -1235,14 +1235,14 @@ export function TodoView() {
               <Button
                 variant="outline"
                 onClick={handleCancelForm}
-                className="rounded-[5px] border-border/50 px-8 h-11 font-bold uppercase tracking-widest text-[10px] bg-background/50 hover:bg-secondary"
+                className="rounded-[8px] border-border/50 px-8 h-11 font-bold uppercase tracking-widest text-[10px] bg-background/50 hover:bg-secondary"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleDeployTask}
                 disabled={!newTitle.trim()}
-                className="rounded-[5px] bg-primary px-8 h-11 font-bold uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+                className="rounded-[8px] bg-primary px-8 h-11 font-bold uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(59,130,246,0.2)]"
               >
                 <Save className="w-4 h-4 mr-2" />
                 {editingTaskId ? "Save Changes" : "Save Task"}
@@ -1260,12 +1260,12 @@ export function TodoView() {
             placeholder="Search tasks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-11 bg-secondary/30 border-border/50 rounded-[5px] w-full"
+            className="pl-9 h-11 bg-secondary/30 border-border/50 rounded-[8px] w-full"
           />
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full">
-          <div className="flex p-1 bg-secondary/30 rounded-[5px] border border-border/50 overflow-x-auto max-w-full">
+          <div className="flex p-1 bg-secondary/30 rounded-[8px] border border-border/50 overflow-x-auto max-w-full">
             {(["All", "Backlog", "Active", "Review", "Completed"] as const).map((status) => (
               <Button
                 key={status}
@@ -1273,7 +1273,7 @@ export function TodoView() {
                 size="sm"
                 onClick={() => setFilterStatus(status)}
                 className={cn(
-                  "rounded-[5px] font-bold text-[10px] uppercase tracking-widest px-4 h-9",
+                  "rounded-[8px] font-bold text-[10px] uppercase tracking-widest px-4 h-9",
                   filterStatus === status ? "bg-background text-primary shadow-sm" : "text-muted-foreground"
                 )}
               >
@@ -1282,11 +1282,11 @@ export function TodoView() {
             ))}
           </div>
 
-          <div className="flex p-1 bg-secondary/30 rounded-[5px] border border-border/50 shrink-0">
+          <div className="flex p-1 bg-secondary/30 rounded-[8px] border border-border/50 shrink-0">
             <Button
               variant={viewStyle === "board" ? "secondary" : "ghost"}
               size="icon"
-              className="w-9 h-9 rounded-[5px]"
+              className="w-9 h-9 rounded-[8px]"
               onClick={() => setViewStyle("board")}
             >
               <Columns className="w-4 h-4" />
@@ -1294,7 +1294,7 @@ export function TodoView() {
             <Button
               variant={viewStyle === "list" ? "secondary" : "ghost"}
               size="icon"
-              className="w-9 h-9 rounded-[5px]"
+              className="w-9 h-9 rounded-[8px]"
               onClick={() => setViewStyle("list")}
             >
               <ListIcon className="w-4 h-4" />
@@ -1302,7 +1302,7 @@ export function TodoView() {
             <Button
               variant={viewStyle === "grid" ? "secondary" : "ghost"}
               size="icon"
-              className="w-9 h-9 rounded-[5px]"
+              className="w-9 h-9 rounded-[8px]"
               onClick={() => setViewStyle("grid")}
             >
               <LayoutGrid className="w-4 h-4" />
@@ -1318,7 +1318,7 @@ export function TodoView() {
             size="sm"
             onClick={() => setFilterWorkspaceId("All")}
             className={cn(
-              "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-3 h-7 border border-border/20",
+              "rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-3 h-7 border border-border/20",
               filterWorkspaceId === "All" ? "bg-primary text-white shadow-sm border-primary" : "text-muted-foreground"
             )}
           >
@@ -1330,7 +1330,7 @@ export function TodoView() {
             size="sm"
             onClick={() => setFilterWorkspaceId("General")}
             className={cn(
-              "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-3 h-7 border border-border/20",
+              "rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-3 h-7 border border-border/20",
               filterWorkspaceId === "General" ? "bg-secondary text-foreground shadow-sm" : "text-muted-foreground"
             )}
           >
@@ -1351,7 +1351,7 @@ export function TodoView() {
                   backgroundColor: isActive ? ws.color : `${ws.color}11`
                 }}
                 className={cn(
-                  "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-3 h-7 border",
+                  "rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-3 h-7 border",
                   !isActive && "hover:bg-secondary/40 text-muted-foreground"
                 )}
               >
@@ -1369,7 +1369,7 @@ export function TodoView() {
             size="sm"
             onClick={() => setFilterProjectId("All")}
             className={cn(
-              "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-3 h-7 border border-border/20",
+              "rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-3 h-7 border border-border/20",
               filterProjectId === "All" ? "bg-primary text-white shadow-sm border-primary" : "text-muted-foreground"
             )}
           >
@@ -1381,7 +1381,7 @@ export function TodoView() {
             size="sm"
             onClick={() => setFilterProjectId("Standalone")}
             className={cn(
-              "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-3 h-7 border border-border/20",
+              "rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-3 h-7 border border-border/20",
               filterProjectId === "Standalone" ? "bg-secondary text-foreground shadow-sm" : "text-muted-foreground"
             )}
           >
@@ -1402,7 +1402,7 @@ export function TodoView() {
                   backgroundColor: isActive ? proj.color : `${proj.color}11`
                 }}
                 className={cn(
-                  "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-3 h-7 border flex items-center gap-1",
+                  "rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-3 h-7 border flex items-center gap-1",
                   !isActive && "hover:bg-secondary/40 text-muted-foreground"
                 )}
               >
@@ -1421,7 +1421,7 @@ export function TodoView() {
             <p className="font-mono text-xs uppercase tracking-widest">Loading tasks...</p>
           </div>
         ) : filteredTasks.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground border-2 border-dashed border-border/30 rounded-[5px] bg-background/20 font-medium text-xs">
+          <div className="p-8 text-center text-muted-foreground border-2 border-dashed border-border/30 rounded-[8px] bg-background/20 font-medium text-xs">
             No tasks found matching your filters.
           </div>
         ) : viewStyle === "board" ? (
@@ -1438,7 +1438,7 @@ export function TodoView() {
                   onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, status)}
                   className={cn(
-                    "flex-1 min-w-[320px] max-w-[400px] flex flex-col gap-4 rounded-[5px] p-4 border transition-all duration-150",
+                    "flex-1 min-w-[320px] max-w-[400px] flex flex-col gap-4 rounded-[8px] p-4 border transition-all duration-150",
                     draggedOverColumn === status 
                       ? "border-primary bg-primary/10 shadow-[0_0_25px_rgba(59,130,246,0.2)] ring-2 ring-primary/30 scale-[1.02] z-10" 
                       : draggedTaskId 
@@ -1461,7 +1461,7 @@ export function TodoView() {
                   <div className="flex flex-col gap-4 overflow-y-auto pr-1 pb-1">
                     {columnTasks.map(renderTaskCard)}
                     {columnTasks.length === 0 && (
-                      <div className="p-8 text-center text-muted-foreground border-2 border-dashed border-border/30 rounded-[5px] bg-background/20 font-medium text-xs">
+                      <div className="p-8 text-center text-muted-foreground border-2 border-dashed border-border/30 rounded-[8px] bg-background/20 font-medium text-xs">
                         No tasks in {status}
                       </div>
                     )}
@@ -1481,7 +1481,7 @@ export function TodoView() {
               return (
                 <Card
                   key={task.id}
-                  className="group border border-border/50 bg-secondary/10 hover:bg-secondary/30 transition-all rounded-[5px] relative overflow-hidden flex flex-col sm:flex-row sm:items-center p-4 sm:p-3 gap-4 sm:gap-6"
+                  className="group border border-border/50 bg-secondary/10 hover:bg-secondary/30 transition-all rounded-[8px] relative overflow-hidden flex flex-col sm:flex-row sm:items-center p-4 sm:p-3 gap-4 sm:gap-6"
                 >
                   <div
                     className={cn(
@@ -1523,14 +1523,14 @@ export function TodoView() {
                                 backgroundColor: `${ws.color}11`
                               }}
                               variant="outline"
-                              className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono shrink-0"
+                              className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[8px] font-mono shrink-0"
                             >
                               {ws.name}
                             </Badge>
                           ) : (
                             <Badge
                               variant="outline"
-                              className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono text-muted-foreground/60 bg-background/50 border-border/50 shrink-0"
+                              className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[8px] font-mono text-muted-foreground/60 bg-background/50 border-border/50 shrink-0"
                             >
                               General
                             </Badge>
@@ -1543,7 +1543,7 @@ export function TodoView() {
                                 backgroundColor: `${proj.color}11`
                               }}
                               variant="outline"
-                              className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono shrink-0 flex items-center gap-1"
+                              className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[8px] font-mono shrink-0 flex items-center gap-1"
                             >
                               <FolderKanban className="w-2.5 h-2.5 shrink-0" />
                               {proj.name}
@@ -1561,14 +1561,14 @@ export function TodoView() {
                     </div>
                     <div className="w-24 shrink-0 flex justify-end gap-2">
                       <div
-                        className="w-8 h-8 rounded-[5px] bg-background border border-border/50 flex flex-col items-center justify-center hover:bg-secondary hover:border-primary transition-all cursor-pointer"
+                        className="w-8 h-8 rounded-[8px] bg-background border border-border/50 flex flex-col items-center justify-center hover:bg-secondary hover:border-primary transition-all cursor-pointer"
                         onClick={() => handleEditTask(task)}
                         title="Edit Task"
                       >
                         <Edit3 className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary" />
                       </div>
                       <div
-                        className="w-8 h-8 rounded-[5px] bg-background border border-border/50 flex flex-col items-center justify-center hover:bg-red-500/10 hover:border-red-500 transition-all cursor-pointer"
+                        className="w-8 h-8 rounded-[8px] bg-background border border-border/50 flex flex-col items-center justify-center hover:bg-red-500/10 hover:border-red-500 transition-all cursor-pointer"
                         onClick={() => handleDeleteTask(task.id)}
                         title="Delete Task"
                       >
@@ -1585,15 +1585,15 @@ export function TodoView() {
 
       {taskToDelete && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-background border border-red-500/30 p-8 rounded-[5px] max-w-sm w-full space-y-6 shadow-[0_0_50px_rgba(239,68,68,0.15)] relative overflow-hidden">
+          <div className="bg-background border border-red-500/30 p-8 rounded-[8px] max-w-sm w-full space-y-6 shadow-[0_0_50px_rgba(239,68,68,0.15)] relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-red-500" />
             
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-[5px] bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 animate-pulse">
+              <div className="w-12 h-12 rounded-[8px] bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 animate-pulse">
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <div>
-                <Badge variant="outline" className="text-red-500 border-red-500/20 bg-red-500/5 text-[8px] font-mono tracking-widest px-2.5 py-0.5 rounded-[5px] font-bold uppercase mb-1">Warning</Badge>
+                <Badge variant="outline" className="text-red-500 border-red-500/20 bg-red-500/5 text-[8px] font-mono tracking-widest px-2.5 py-0.5 rounded-[8px] font-bold uppercase mb-1">Warning</Badge>
                 <h3 className="text-lg font-bold uppercase tracking-tight text-foreground">Delete Task</h3>
               </div>
             </div>
@@ -1606,13 +1606,13 @@ export function TodoView() {
               <Button 
                 variant="outline" 
                 onClick={() => setTaskToDelete(null)}
-                className="rounded-[5px] border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] px-5 h-10"
+                className="rounded-[8px] border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] px-5 h-10"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={handleConfirmDeleteTask}
-                className="rounded-[5px] bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-widest text-[9px] px-6 h-10 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                className="rounded-[8px] bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-widest text-[9px] px-6 h-10 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
               >
                 Purge Task
               </Button>
@@ -1624,7 +1624,7 @@ export function TodoView() {
 
       {viewingTask && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-          <div className="bg-background border border-border/50 w-full max-w-4xl shadow-2xl relative overflow-hidden rounded-[5px] max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
+          <div className="bg-background border border-border/50 w-full max-w-4xl shadow-2xl relative overflow-hidden rounded-[8px] max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col">
             {/* Color Accent Indicator Strip */}
             <div className="absolute top-0 left-0 w-full h-1.5 shrink-0" style={{ backgroundColor: viewingTask.priority === "high" ? "#ef4444" : viewingTask.priority === "medium" ? "#f59e0b" : "#3b82f6" }} />
             
@@ -1643,7 +1643,7 @@ export function TodoView() {
                       <Badge
                         key={catName}
                         variant="outline"
-                        className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono shrink-0 transition-all border border-primary/20 bg-primary/5 text-primary"
+                        className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[8px] font-mono shrink-0 transition-all border border-primary/20 bg-primary/5 text-primary"
                       >
                         {catName}
                       </Badge>
@@ -1654,7 +1654,7 @@ export function TodoView() {
                   {isEditingInModal ? "Modify Task Parameters" : viewingTask.title}
                 </h3>
               </div>
-              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-[5px] hover:bg-secondary/80 shrink-0 self-start" onClick={() => { setViewingTask(null); setIsDescExpanded(false); setIsEditingInModal(false); }}>
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-[8px] hover:bg-secondary/80 shrink-0 self-start" onClick={() => { setViewingTask(null); setIsDescExpanded(false); setIsEditingInModal(false); }}>
                 <X className="w-5 h-5" />
               </Button>
             </div>
@@ -1673,13 +1673,13 @@ export function TodoView() {
                         placeholder="Task Title"
                         value={newTitle}
                         onChange={(e) => setNewTitle(e.target.value)}
-                        className="bg-secondary/20 border-border/30 rounded-[5px] h-11 text-sm font-bold w-full"
+                        className="bg-secondary/20 border-border/30 rounded-[8px] h-11 text-sm font-bold w-full"
                       />
                     </div>
                     
                     <div className="space-y-1.5">
                       <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Task Description Protocol</span>
-                      <div className="flex gap-1 mb-1 bg-secondary/25 p-1 rounded-[5px] border border-border/10 w-fit">
+                      <div className="flex gap-1 mb-1 bg-secondary/25 p-1 rounded-[8px] border border-border/10 w-fit">
                         <button type="button" onClick={() => insertMarkdownHelper("bold")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Bold"><Bold className="w-3.5 h-3.5" /></button>
                         <button type="button" onClick={() => insertMarkdownHelper("italic")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Italic"><Italic className="w-3.5 h-3.5" /></button>
                         <button type="button" onClick={() => insertMarkdownHelper("bullet")} className="p-1.5 hover:bg-secondary rounded text-muted-foreground hover:text-foreground transition-all" title="Bullet List"><List className="w-3.5 h-3.5" /></button>
@@ -1692,7 +1692,7 @@ export function TodoView() {
                         value={newDesc}
                         onChange={(e) => setNewDesc(e.target.value)}
                         rows={10}
-                        className="w-full bg-background/50 border border-border/30 rounded-[5px] p-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-muted-foreground/40 font-mono text-foreground leading-relaxed transition-all hover:border-primary/40 focus:border-primary"
+                        className="w-full bg-background/50 border border-border/30 rounded-[8px] p-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-muted-foreground/40 font-mono text-foreground leading-relaxed transition-all hover:border-primary/40 focus:border-primary"
                       />
                     </div>
                   </div>
@@ -1702,7 +1702,7 @@ export function TodoView() {
                     {/* Prose Markdown Viewer */}
                     <div className="space-y-2">
                       <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/60 font-mono">Task Details & Context</h4>
-                      <div className="bg-secondary/5 border border-border/20 p-5 rounded-[5px] shadow-inner relative overflow-hidden">
+                      <div className="bg-secondary/5 border border-border/20 p-5 rounded-[8px] shadow-inner relative overflow-hidden">
                         <div className={cn(
                           "transition-all duration-500 overflow-hidden relative",
                           !isDescExpanded && getProseOnly(viewingTask.description || "").length > 250 ? "max-h-48" : "max-h-none"
@@ -1743,7 +1743,7 @@ export function TodoView() {
                             <span className="text-primary font-bold">{completed}/{checklist.length} Completed</span>
                           </h4>
                           
-                          <div className="bg-secondary/5 border border-border/20 p-5 rounded-[5px] space-y-3 shadow-inner">
+                          <div className="bg-secondary/5 border border-border/20 p-5 rounded-[8px] space-y-3 shadow-inner">
                             {checklist.length > 0 && (
                               <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden border border-border/10 mb-4">
                                 <div 
@@ -1800,13 +1800,13 @@ export function TodoView() {
                                 placeholder="Add checklist subtask (e.g. Design assets)"
                                 value={newChecklistItem}
                                 onChange={(e) => setNewChecklistItem(e.target.value)}
-                                className="h-8 text-xs bg-background/50 border-border/30 rounded-[5px] font-mono text-foreground focus-visible:ring-primary"
+                                className="h-8 text-xs bg-background/50 border-border/30 rounded-[8px] font-mono text-foreground focus-visible:ring-primary"
                               />
                               <Button
                                 type="submit"
                                 size="sm"
                                 disabled={!newChecklistItem.trim()}
-                                className="h-8 rounded-[5px] bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-[9px] px-3 shrink-0"
+                                className="h-8 rounded-[8px] bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-[9px] px-3 shrink-0"
                               >
                                 Add
                               </Button>
@@ -1820,7 +1820,7 @@ export function TodoView() {
               </div>
 
               {/* RIGHT COLUMN */}
-              <div className="w-full md:w-80 space-y-5 shrink-0 bg-secondary/5 border border-border/20 p-5 rounded-[5px] flex flex-col justify-between">
+              <div className="w-full md:w-80 space-y-5 shrink-0 bg-secondary/5 border border-border/20 p-5 rounded-[8px] flex flex-col justify-between">
                 <div className="space-y-5">
                   
                   {isEditingInModal ? (
@@ -1834,7 +1834,7 @@ export function TodoView() {
                         <select
                           value={newPriority}
                           onChange={(e) => setNewPriority(e.target.value as TaskPriority)}
-                          className="w-full h-9 px-2 bg-background border border-border/30 rounded-[5px] text-xs font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
+                          className="w-full h-9 px-2 bg-background border border-border/30 rounded-[8px] text-xs font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
                         >
                           <option value="High">High</option>
                           <option value="Medium">Medium</option>
@@ -1848,7 +1848,7 @@ export function TodoView() {
                         <select
                           value={newWorkspaceId}
                           onChange={(e) => setNewWorkspaceId(e.target.value)}
-                          className="w-full h-9 px-2 bg-background border border-border/30 rounded-[5px] text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
+                          className="w-full h-9 px-2 bg-background border border-border/30 rounded-[8px] text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
                         >
                           <option value="">General Task</option>
                           {workspaces
@@ -1877,7 +1877,7 @@ export function TodoView() {
                               }
                             }
                           }}
-                          className="w-full h-9 px-2 bg-background border border-border/30 rounded-[5px] text-xs font-semibold text-foreground focus:outline-none"
+                          className="w-full h-9 px-2 bg-background border border-border/30 rounded-[8px] text-xs font-semibold text-foreground focus:outline-none"
                         >
                           <option value="">Standalone Project</option>
                           {projects
@@ -1901,7 +1901,7 @@ export function TodoView() {
                           type="date"
                           value={newDueDate}
                           onChange={(e) => setNewDueDate(e.target.value)}
-                          className="bg-background border border-border/30 rounded-[5px] h-9 text-xs"
+                          className="bg-background border border-border/30 rounded-[8px] h-9 text-xs"
                         />
                       </div>
 
@@ -1911,7 +1911,7 @@ export function TodoView() {
                         <button
                           type="button"
                           onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-                          className="w-full flex items-center justify-between min-h-[36px] px-2 py-1.5 bg-background border border-border/30 rounded-[5px] text-left hover:border-primary/50 transition-all focus:outline-none"
+                          className="w-full flex items-center justify-between min-h-[36px] px-2 py-1.5 bg-background border border-border/30 rounded-[8px] text-left hover:border-primary/50 transition-all focus:outline-none"
                         >
                           <div className="flex flex-wrap gap-1 items-center max-w-[200px] overflow-hidden">
                             {(() => {
@@ -1920,7 +1920,7 @@ export function TodoView() {
                                 return <span className="text-[10px] text-muted-foreground/50 font-mono">Select...</span>;
                               }
                               return selectedCats.slice(0, 2).map(catName => (
-                                <span key={catName} className="text-[8px] font-bold uppercase tracking-widest px-1 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-[3px] font-mono">{catName}</span>
+                                <span key={catName} className="text-[8px] font-bold uppercase tracking-widest px-1 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-[8px] font-mono">{catName}</span>
                               ));
                             })()}
                           </div>
@@ -1930,7 +1930,7 @@ export function TodoView() {
                         {isCategoryDropdownOpen && (
                           <>
                             <div className="fixed inset-0 z-30" onClick={() => setIsCategoryDropdownOpen(false)} />
-                            <div className="absolute right-0 left-0 bottom-full mb-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2 rounded-[5px] max-h-[160px] overflow-y-auto custom-scrollbar grid grid-cols-1 gap-1">
+                            <div className="absolute right-0 left-0 bottom-full mb-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2 rounded-[8px] max-h-[160px] overflow-y-auto custom-scrollbar grid grid-cols-1 gap-1">
                               {AVAILABLE_CATEGORIES.map(cat => {
                                 const selectedCats = newCategory ? newCategory.split(",").map(c => c.trim()).filter(Boolean) : [];
                                 const isSelected = selectedCats.includes(cat.name);
@@ -1948,7 +1948,7 @@ export function TodoView() {
                                       setNewCategory(updated.length === 0 ? "Other" : updated.join(", "));
                                     }}
                                     className={cn(
-                                      "text-[8.5px] uppercase font-bold tracking-widest px-2 py-1.5 rounded-[3px] border transition-all flex items-center gap-1.5 font-mono",
+                                      "text-[8.5px] uppercase font-bold tracking-widest px-2 py-1.5 rounded-[8px] border transition-all flex items-center gap-1.5 font-mono",
                                       isSelected ? "bg-primary/10 text-primary border-primary/30" : "bg-background text-muted-foreground border-border/30 hover:border-foreground/30 hover:text-foreground"
                                     )}
                                   >
@@ -1968,7 +1968,7 @@ export function TodoView() {
                         <button
                           type="button"
                           onClick={() => setIsAssigneeDropdownOpen(!isAssigneeDropdownOpen)}
-                          className="w-full flex items-center justify-between min-h-[36px] px-2 py-1.5 bg-background border border-border/30 rounded-[5px] text-left hover:border-primary/50 transition-all focus:outline-none"
+                          className="w-full flex items-center justify-between min-h-[36px] px-2 py-1.5 bg-background border border-border/30 rounded-[8px] text-left hover:border-primary/50 transition-all focus:outline-none"
                         >
                           <div className="flex -space-x-1 items-center max-w-[200px] overflow-hidden">
                             {(() => {
@@ -1994,7 +1994,7 @@ export function TodoView() {
                         {isAssigneeDropdownOpen && (
                           <>
                             <div className="fixed inset-0 z-30" onClick={() => setIsAssigneeDropdownOpen(false)} />
-                            <div className="absolute right-0 left-0 bottom-full mb-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2 rounded-[5px] max-h-[160px] overflow-y-auto custom-scrollbar grid grid-cols-1 gap-1">
+                            <div className="absolute right-0 left-0 bottom-full mb-1.5 z-40 bg-background/95 backdrop-blur-md border border-primary/20 shadow-2xl p-2 rounded-[8px] max-h-[160px] overflow-y-auto custom-scrollbar grid grid-cols-1 gap-1">
                               {allowedUsersForNewTask.length === 0 ? (
                                 <div className="p-2 text-center text-xs text-muted-foreground uppercase font-mono">No Users</div>
                               ) : (
@@ -2015,7 +2015,7 @@ export function TodoView() {
                                       setNewTaskAssigneeId(updated.join(","));
                                     }}
                                     className={cn(
-                                      "text-[9px] font-bold px-2 py-1.5 rounded-[3px] border transition-all flex items-center gap-1.5 font-mono",
+                                      "text-[9px] font-bold px-2 py-1.5 rounded-[8px] border transition-all flex items-center gap-1.5 font-mono",
                                       isSelected ? "bg-primary/10 text-primary border-primary/30" : "bg-background text-muted-foreground border-border/30 hover:border-foreground/30 hover:text-foreground"
                                     )}
                                   >
@@ -2090,7 +2090,7 @@ export function TodoView() {
                             <span className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest font-mono block">Priority Protocol</span>
                             <Badge 
                               className={cn(
-                                "text-[8px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-[5px] font-mono border",
+                                "text-[8px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-[8px] font-mono border",
                                 viewingTask.priority === "high" ? "bg-red-500/10 text-red-500 border-red-500/20" :
                                 viewingTask.priority === "medium" ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
                                 "bg-primary/10 text-primary border-primary/20"
@@ -2115,7 +2115,7 @@ export function TodoView() {
                             <select
                               value={revStatusMapping[viewingTask.status] || "Backlog"}
                               onChange={(e) => changeTaskStatus(viewingTask, e.target.value as any)}
-                              className="w-full h-9 px-2 bg-background border border-border/30 rounded-[5px] text-xs font-bold uppercase tracking-wider font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
+                              className="w-full h-9 px-2 bg-background border border-border/30 rounded-[8px] text-xs font-bold uppercase tracking-wider font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
                             >
                               <option value="Backlog">BACKLOG</option>
                               <option value="Active">ACTIVE</option>
@@ -2139,7 +2139,7 @@ export function TodoView() {
                               const u = allUsers.find(user => user.id === id);
                               if (!u) return null;
                               return (
-                                <Badge key={id} variant="secondary" className="text-[8.5px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[5px] border border-border/10 font-mono flex items-center gap-1">
+                                <Badge key={id} variant="secondary" className="text-[8.5px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[8px] border border-border/10 font-mono flex items-center gap-1">
                                   <Avatar className="w-4 h-4 shrink-0">
                                     <AvatarImage src={u.avatar_url ? resolveDriveImage(u.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${u.id}`} />
                                     <AvatarFallback className="text-[6px] font-bold">{u.username.slice(0, 2)}</AvatarFallback>
@@ -2205,7 +2205,7 @@ export function TodoView() {
                             import("@/lib/utils").then(m => m.emitError("Refactor Saved Failed", err?.message || "Failed to update task"));
                           }
                         }}
-                        className="w-full rounded-[5px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-md flex items-center justify-center gap-1.5"
+                        className="w-full rounded-[8px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-md flex items-center justify-center gap-1.5"
                       >
                         <Save className="w-3.5 h-3.5" />
                         Apply Work Changes
@@ -2213,7 +2213,7 @@ export function TodoView() {
                       <Button
                         variant="outline"
                         onClick={() => setIsEditingInModal(false)}
-                        className="w-full rounded-[5px] border-border/50 text-muted-foreground hover:text-foreground font-bold uppercase tracking-widest text-[9px] h-10 font-mono"
+                        className="w-full rounded-[8px] border-border/50 text-muted-foreground hover:text-foreground font-bold uppercase tracking-widest text-[9px] h-10 font-mono"
                       >
                         Cancel Refactor
                       </Button>
@@ -2242,7 +2242,7 @@ export function TodoView() {
                           setIsAssigneeDropdownOpen(false);
                           setIsEditingInModal(true);
                         }}
-                        className="w-full rounded-[5px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-md flex items-center justify-center gap-1.5"
+                        className="w-full rounded-[8px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-md flex items-center justify-center gap-1.5"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                         Transition to Edit Mode
@@ -2254,7 +2254,7 @@ export function TodoView() {
                           setIsDescExpanded(false);
                           setIsEditingInModal(false);
                         }}
-                        className="w-full rounded-[5px] border-border/50 text-muted-foreground hover:text-foreground font-bold uppercase tracking-widest text-[9px] h-10 font-mono"
+                        className="w-full rounded-[8px] border-border/50 text-muted-foreground hover:text-foreground font-bold uppercase tracking-widest text-[9px] h-10 font-mono"
                       >
                         Close Workspace
                       </Button>

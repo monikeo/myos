@@ -88,7 +88,7 @@ export function InvitationModal({ assignmentId, onClose }: InvitationModalProps)
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
         <div className="bg-background border border-border/50 p-6 text-center shadow-2xl max-w-sm w-full font-mono">
           <p className="text-red-400 uppercase tracking-widest font-bold text-xs mb-4">Invitation Expired or Invalid</p>
-          <Button onClick={onClose} variant="outline" className="w-full rounded-[5px]">Close</Button>
+          <Button onClick={onClose} variant="outline" className="w-full rounded-[8px]">Close</Button>
         </div>
       </div>,
       document.body
@@ -133,14 +133,14 @@ export function InvitationModal({ assignmentId, onClose }: InvitationModalProps)
             onClick={handleDecline}
             disabled={processing}
             variant="outline"
-            className="flex-1 rounded-[5px] border-border/50 hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/50 uppercase tracking-widest text-xs font-bold"
+            className="flex-1 rounded-[8px] border-border/50 hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/50 uppercase tracking-widest text-xs font-bold"
           >
             Decline
           </Button>
           <Button
             onClick={handleAccept}
             disabled={processing}
-            className="flex-1 rounded-[5px] bg-emerald-500 hover:bg-emerald-400 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)] uppercase tracking-widest text-xs font-bold"
+            className="flex-1 rounded-[8px] bg-emerald-500 hover:bg-emerald-400 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)] uppercase tracking-widest text-xs font-bold"
           >
             {processing ? "Processing..." : "Accept"}
           </Button>

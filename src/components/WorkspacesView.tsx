@@ -718,7 +718,7 @@ export function WorkspacesView() {
           borderLeft: `4px solid ${ws.color || "#3b82f6"}`,
           boxShadow: hoveredId === ws.id ? `0 0 25px ${(ws.color || "#3b82f6")}33` : undefined
         }}
-        className="overflow-hidden border border-border/50 shadow-2xl glass-panel group hover:border-primary/50 transition-all duration-500 rounded-[5px] flex flex-col justify-between"
+        className="overflow-hidden border border-border/50 shadow-2xl glass-panel group hover:border-primary/50 transition-all duration-500 rounded-[8px] flex flex-col justify-between"
       >
         {/* Highlight Palette Top Line Bar */}
         <div 
@@ -728,7 +728,7 @@ export function WorkspacesView() {
         
         <CardHeader className="p-5 pb-3 relative shrink-0">
           <div className="flex items-start justify-between mb-4">
-            <div className="w-10 h-10 rounded-[5px] bg-background border border-border/50 flex items-center justify-center shadow-xl group-hover:border-primary transition-colors duration-500 overflow-hidden shrink-0">
+            <div className="w-10 h-10 rounded-[8px] bg-background border border-border/50 flex items-center justify-center shadow-xl group-hover:border-primary transition-colors duration-500 overflow-hidden shrink-0">
               <SafeLogo
                 src={ws.logo ? resolveDriveImage(ws.logo) : undefined}
                 alt={ws.name}
@@ -740,7 +740,7 @@ export function WorkspacesView() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-secondary rounded-[5px]"
+                className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-secondary rounded-[8px]"
                 onClick={() => {
                   setForm({
                     name: ws.name,
@@ -762,7 +762,7 @@ export function WorkspacesView() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="h-8 w-8 text-red-500 hover:bg-red-500/10 rounded-[5px]"
+                className="h-8 w-8 text-red-500 hover:bg-red-500/10 rounded-[8px]"
                 onClick={() => handleDelete(ws.id)}
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -784,7 +784,7 @@ export function WorkspacesView() {
             {ws.priority && (
               <Badge 
                 className={cn(
-                  "text-[8px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[5px] border shrink-0",
+                  "text-[8px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[8px] border shrink-0",
                   ws.priority === "Critical" 
                     ? "bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.2)]" 
                     : ws.priority === "High"
@@ -806,19 +806,19 @@ export function WorkspacesView() {
             )}
 
             <div className="flex items-center gap-1 ml-auto shrink-0">
-               <div className="w-1 h-1 rounded-[5px]-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+               <div className="w-1 h-1 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest font-mono">ACTIVE</span>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-background/40 border border-border/20 p-3 rounded-[5px] text-center shadow-inner group-hover:border-primary/20 transition-all">
+            <div className="bg-background/40 border border-border/20 p-3 rounded-[8px] text-center shadow-inner group-hover:border-primary/20 transition-all">
               <p className="text-[8px] uppercase font-bold text-muted-foreground/40 mb-1 tracking-[0.25em] font-mono">Tasks</p>
               <p className="text-lg font-bold font-mono">
                 {tasks.filter(t => t.workspace_id === ws.id && t.status !== "completed").length} Active
               </p>
             </div>
-            <div className="bg-background/40 border border-border/20 p-3 rounded-[5px] text-center shadow-inner group-hover:border-primary/20 transition-all">
+            <div className="bg-background/40 border border-border/20 p-3 rounded-[8px] text-center shadow-inner group-hover:border-primary/20 transition-all">
               <p className="text-[8px] uppercase font-bold text-muted-foreground/40 mb-1 tracking-[0.25em] font-mono">Completed</p>
               <p className="text-lg font-bold font-mono">
                 {tasks.filter(t => t.workspace_id === ws.id && t.status === "completed").length} Done
@@ -834,7 +834,7 @@ export function WorkspacesView() {
               setActiveWorkspace(ws);
             }}
             variant="ghost" 
-            className="w-full h-11 rounded-[5px] text-[9px] font-bold uppercase tracking-[0.25em] hover:bg-primary hover:text-white transition-all group/btn shadow-inner"
+            className="w-full h-11 rounded-[8px] text-[9px] font-bold uppercase tracking-[0.25em] hover:bg-primary hover:text-white transition-all group/btn shadow-inner"
           >
             <Layers className="w-3.5 h-3.5 mr-3 text-primary group-hover/btn:text-white" />
             Open Workspace
@@ -856,7 +856,7 @@ export function WorkspacesView() {
         </div>
         <Button 
           onClick={() => { setForm(emptyForm); setEditingWorkspaceId(null); setShowForm(true); }} 
-          className="rounded-[5px] shadow-[0_0_20px_rgba(59,130,246,0.2)] bg-primary hover:bg-primary/90 h-11 px-5 font-bold text-xs uppercase tracking-[0.2em]"
+          className="rounded-[8px] shadow-[0_0_20px_rgba(59,130,246,0.2)] bg-primary hover:bg-primary/90 h-11 px-5 font-bold text-xs uppercase tracking-[0.2em]"
         >
           <Plus className="w-4 h-4 mr-2" />
           New Workspace
@@ -866,7 +866,7 @@ export function WorkspacesView() {
       {/* Deployment Form Modal */}
       {showForm && createPortal(
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="bg-background border border-border/40 rounded-xl w-full max-w-2xl max-h-[92vh] overflow-y-auto p-6 space-y-5 shadow-[0_0_50px_rgba(0,0,0,0.6)] relative">
+          <div className="bg-background border border-border/40 rounded-[8px] w-full max-w-2xl max-h-[92vh] overflow-y-auto p-6 space-y-5 shadow-[0_0_50px_rgba(0,0,0,0.6)] relative">
             {/* Top Palette Indicator Accent Line */}
             <div className="absolute top-0 left-0 w-full h-1.5" style={{ backgroundColor: form.color || "#3b82f6" }} />
             
@@ -874,7 +874,7 @@ export function WorkspacesView() {
               <h3 className="font-bold uppercase tracking-widest text-xs text-primary">
                 {editingWorkspaceId ? "Edit Workspace Node" : "Create Workspace Node"}
               </h3>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-[5px] border border-border/20 hover:bg-secondary" onClick={() => { setShowForm(false); setForm(emptyForm); setEditingWorkspaceId(null); }}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-[8px] border border-border/20 hover:bg-secondary" onClick={() => { setShowForm(false); setForm(emptyForm); setEditingWorkspaceId(null); }}>
                 <X className="w-4 h-4" />
               </Button>
             </div>
@@ -886,7 +886,7 @@ export function WorkspacesView() {
                   placeholder="Workspace Name" 
                   value={form.name} 
                   onChange={(e) => setForm({ ...form, name: e.target.value })} 
-                  className="bg-background/50 border-border/30 rounded-[5px] h-11" 
+                  className="bg-background/50 border-border/30 rounded-[8px] h-11" 
                 />
               </div>
               <div className="space-y-1.5">
@@ -895,7 +895,7 @@ export function WorkspacesView() {
                   placeholder="e.g. Personal, Work, Client" 
                   value={form.company} 
                   onChange={(e) => setForm({ ...form, company: e.target.value })} 
-                  className="bg-background/50 border-border/30 rounded-[5px] h-11" 
+                  className="bg-background/50 border-border/30 rounded-[8px] h-11" 
                 />
               </div>
             </div>
@@ -907,7 +907,7 @@ export function WorkspacesView() {
                 <select
                   value={form.priority}
                   onChange={(e) => setForm({ ...form, priority: e.target.value as PriorityLevel })}
-                  className="h-11 px-4 rounded-[5px] bg-background/50 border border-border/30 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="h-11 px-4 rounded-[8px] bg-background/50 border border-border/30 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   {PRIORITY_LEVELS.map((level) => (
                     <option key={level} value={level}>{level} Priority</option>
@@ -919,7 +919,7 @@ export function WorkspacesView() {
                 <select
                   value={form.organization_id}
                   onChange={(e) => setForm({ ...form, organization_id: e.target.value })}
-                  className="h-11 px-4 rounded-[5px] bg-background/50 border border-border/30 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="h-11 px-4 rounded-[8px] bg-background/50 border border-border/30 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <option value="">None (Standalone)</option>
                   {organizations.map((org) => (
@@ -937,7 +937,7 @@ export function WorkspacesView() {
                 value={form.purpose || ""}
                 onChange={(e) => setForm({ ...form, purpose: e.target.value })}
                 onKeyDown={(e) => handleBulletKeyDown(e, 'purpose')}
-                className="w-full min-h-[60px] p-3 text-xs bg-background/50 border border-border/30 hover:border-border/50 focus:border-primary focus:outline-none transition-colors rounded-[5px] placeholder:text-muted-foreground/30 text-foreground"
+                className="w-full min-h-[60px] p-3 text-xs bg-background/50 border border-border/30 hover:border-border/50 focus:border-primary focus:outline-none transition-colors rounded-[8px] placeholder:text-muted-foreground/30 text-foreground"
               />
             </div>
 
@@ -949,7 +949,7 @@ export function WorkspacesView() {
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 onKeyDown={(e) => handleBulletKeyDown(e, 'description')}
-                className="w-full min-h-[120px] p-3 text-xs bg-background/50 border border-border/30 hover:border-border/50 focus:border-primary focus:outline-none transition-colors rounded-[5px] placeholder:text-muted-foreground/30 text-foreground"
+                className="w-full min-h-[120px] p-3 text-xs bg-background/50 border border-border/30 hover:border-border/50 focus:border-primary focus:outline-none transition-colors rounded-[8px] placeholder:text-muted-foreground/30 text-foreground"
               />
             </div>
 
@@ -968,7 +968,7 @@ export function WorkspacesView() {
                       style={{ backgroundColor: c.hex }}
                       title={c.name}
                       className={cn(
-                        "w-7 h-7 rounded-[5px] transition-all duration-300 transform active:scale-95 border",
+                        "w-7 h-7 rounded-[8px] transition-all duration-300 transform active:scale-95 border",
                         form.color.toLowerCase() === c.hex.toLowerCase()
                           ? "ring-2 ring-primary border-background scale-110 shadow-[0_0_12px_rgba(59,130,246,0.3)]"
                           : "border-transparent opacity-65 hover:opacity-100 hover:scale-105"
@@ -982,7 +982,7 @@ export function WorkspacesView() {
 
                 {/* Custom Picker Group */}
                 <div className="flex items-center gap-3">
-                  <div className="relative w-8 h-8 rounded-[5px] border border-border/40 flex items-center justify-center bg-background shrink-0 cursor-pointer overflow-hidden group/picker">
+                  <div className="relative w-8 h-8 rounded-[8px] border border-border/40 flex items-center justify-center bg-background shrink-0 cursor-pointer overflow-hidden group/picker">
                     {/* Real hidden color input click element */}
                     <input
                       type="color"
@@ -1003,7 +1003,7 @@ export function WorkspacesView() {
                       placeholder="#3B82F6"
                       value={form.color}
                       onChange={(e) => setForm({ ...form, color: e.target.value })}
-                      className="w-24 h-8 bg-background/70 border-border/30 rounded-[5px] text-[11px] font-bold font-mono text-foreground uppercase px-2"
+                      className="w-24 h-8 bg-background/70 border-border/30 rounded-[8px] text-[11px] font-bold font-mono text-foreground uppercase px-2"
                     />
                   </div>
                 </div>
@@ -1055,7 +1055,7 @@ export function WorkspacesView() {
                         type="button"
                         variant="outline"
                         disabled={uploading}
-                        className="w-full sm:w-auto rounded-[5px] border-border/30 h-10 text-[10px] uppercase font-bold tracking-widest font-mono"
+                        className="w-full sm:w-auto rounded-[8px] border-border/30 h-10 text-[10px] uppercase font-bold tracking-widest font-mono"
                       >
                         {uploading ? (
                           <>
@@ -1075,7 +1075,7 @@ export function WorkspacesView() {
                         placeholder="Paste Logo Image URL..."
                         value={form.logo}
                         onChange={(e) => setForm(prev => ({ ...prev, logo: e.target.value }))}
-                        className="pl-9 bg-background/50 border-border/30 rounded-[5px] h-10 text-xs placeholder:text-muted-foreground/40 font-medium"
+                        className="pl-9 bg-background/50 border-border/30 rounded-[8px] h-10 text-xs placeholder:text-muted-foreground/40 font-medium"
                       />
                     </div>
                   </div>
@@ -1090,14 +1090,14 @@ export function WorkspacesView() {
               <Button 
                 variant="outline" 
                 onClick={() => { setShowForm(false); setForm(emptyForm); setEditingWorkspaceId(null); }} 
-                className="rounded-[5px] border-border/50 px-8 h-11 font-bold uppercase tracking-widest text-[10px]"
+                className="rounded-[8px] border-border/50 px-8 h-11 font-bold uppercase tracking-widest text-[10px]"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={handleSaveWorkspace} 
                 disabled={!form.name.trim()} 
-                className="rounded-[5px] bg-primary px-8 h-11 font-bold uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+                className="rounded-[8px] bg-primary px-8 h-11 font-bold uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(59,130,246,0.2)]"
               >
                 <Save className="w-4 h-4 mr-2" />
                 {editingWorkspaceId ? "Update Workspace" : "Save Workspace"}
@@ -1117,13 +1117,13 @@ export function WorkspacesView() {
               placeholder="Search workspaces by name, description, or purpose..." 
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="pl-10 h-12 bg-secondary/30 border-border/50 hover:border-border/80 focus:border-primary/50 transition-colors rounded-[5px] text-sm"
+              className="pl-10 h-12 bg-secondary/30 border-border/50 hover:border-border/80 focus:border-primary/50 transition-colors rounded-[8px] text-sm"
             />
           </div>
 
           <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
             <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 font-mono hidden sm:inline">Group:</span>
-            <div className="flex p-1 bg-secondary/30 rounded-[5px] border border-border/50 min-w-max">
+            <div className="flex p-1 bg-secondary/30 rounded-[8px] border border-border/50 min-w-max">
               {companies.map(c => (
                 <Button
                   key={c}
@@ -1131,7 +1131,7 @@ export function WorkspacesView() {
                   size="sm"
                   onClick={() => setFilterCompany(c)}
                   className={cn(
-                    "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-4 h-8 transition-all",
+                    "rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-4 h-8 transition-all",
                     filterCompany === c ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -1143,13 +1143,13 @@ export function WorkspacesView() {
         </div>
 
         {/* Premium Segment Filters for Scope & Ownership Partitioning */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 bg-background/30 p-3 rounded-[5px] border border-border/20 shadow-inner">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 bg-background/30 p-3 rounded-[8px] border border-border/20 shadow-inner">
           {/* Scope Segment (All / Personal / Org) */}
           <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2.5">
             <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 font-mono flex items-center gap-1.5 shrink-0">
               <Layers className="w-3.5 h-3.5 text-primary/70" /> Scope Partition:
             </span>
-            <div className="grid grid-cols-3 p-1 bg-secondary/20 rounded-[5px] border border-border/30 w-full sm:w-auto">
+            <div className="grid grid-cols-3 p-1 bg-secondary/20 rounded-[8px] border border-border/30 w-full sm:w-auto">
               {(["all", "personal", "org"] as const).map(scope => {
                 const isActive = filterScope === scope;
                 return (
@@ -1159,7 +1159,7 @@ export function WorkspacesView() {
                     size="sm"
                     onClick={() => setFilterScope(scope)}
                     className={cn(
-                      "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-4 h-8 transition-all flex items-center justify-center gap-1.5",
+                      "rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-4 h-8 transition-all flex items-center justify-center gap-1.5",
                       isActive ? "bg-background text-primary shadow-sm border border-primary/10" : "text-muted-foreground hover:text-foreground"
                     )}
                   >
@@ -1191,7 +1191,7 @@ export function WorkspacesView() {
             <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 font-mono flex items-center gap-1.5 shrink-0">
               <ShieldCheck className="w-3.5 h-3.5 text-primary/70" /> Access & Ownership:
             </span>
-            <div className="grid grid-cols-3 p-1 bg-secondary/20 rounded-[5px] border border-border/30 w-full sm:w-auto">
+            <div className="grid grid-cols-3 p-1 bg-secondary/20 rounded-[8px] border border-border/30 w-full sm:w-auto">
               {(["all", "owned", "shared"] as const).map(ownership => {
                 const isActive = filterOwnership === ownership;
                 return (
@@ -1201,7 +1201,7 @@ export function WorkspacesView() {
                     size="sm"
                     onClick={() => setFilterOwnership(ownership)}
                     className={cn(
-                      "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-4 h-8 transition-all flex items-center justify-center gap-1.5",
+                      "rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-4 h-8 transition-all flex items-center justify-center gap-1.5",
                       isActive ? "bg-background text-primary shadow-sm border border-primary/10" : "text-muted-foreground hover:text-foreground"
                     )}
                   >
@@ -1231,13 +1231,13 @@ export function WorkspacesView() {
       {/* Grid List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredWorkspaces.length === 0 ? (
-          <Card className="col-span-full p-12 text-center border border-border/20 glass-panel rounded-[5px] shadow-2xl">
-            <div className="w-16 h-16 rounded-[5px] bg-secondary/30 flex items-center justify-center mx-auto mb-6 border border-border/10 shadow-inner">
+          <Card className="col-span-full p-12 text-center border border-border/20 glass-panel rounded-[8px] shadow-2xl">
+            <div className="w-16 h-16 rounded-[8px] bg-secondary/30 flex items-center justify-center mx-auto mb-6 border border-border/10 shadow-inner">
                <Briefcase className="w-8 h-8 text-primary opacity-20" />
             </div>
             <h3 className="text-xl font-bold uppercase tracking-widest mb-3">No Workspaces Found</h3>
             <p className="text-muted-foreground text-xs max-w-sm mx-auto mb-6 font-medium leading-relaxed">Adjust your search filters or create a brand new workspace.</p>
-            <Button onClick={() => setShowForm(true)} className="rounded-[5px] font-bold uppercase tracking-widest text-[9px] bg-primary h-11 px-8">Create Your First Workspace</Button>
+            <Button onClick={() => setShowForm(true)} className="rounded-[8px] font-bold uppercase tracking-widest text-[9px] bg-primary h-11 px-8">Create Your First Workspace</Button>
           </Card>
         ) : activeOrgId === "all" ? (
           <>
@@ -1284,7 +1284,7 @@ export function WorkspacesView() {
       {/* ============================================================ */}
       {activeWorkspace && createPortal(
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 sm:p-6 md:p-8 animate-in fade-in duration-300">
-          <div className="bg-background border border-border/40 rounded-xl w-full max-w-7xl h-[92vh] max-h-[92vh] flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.6)] relative overflow-hidden">
+          <div className="bg-background border border-border/40 rounded-[8px] w-full max-w-7xl h-[92vh] max-h-[92vh] flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.6)] relative overflow-hidden">
             
             {/* Top Palette Indicator Accent Line */}
             <div className="h-2 w-full shrink-0" style={{ backgroundColor: activeWorkspace.color || "#3b82f6" }} />
@@ -1292,7 +1292,7 @@ export function WorkspacesView() {
             {/* Header section inside massive modal */}
             <div className="p-4 sm:p-6 md:p-8 border-b border-border/20 flex flex-col sm:flex-row items-stretch sm:items-start justify-between gap-4 shrink-0 bg-secondary/10">
               <div className="flex items-start gap-3 sm:gap-4 min-w-0">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-[5px] bg-background border border-border/50 flex items-center justify-center shadow-xl overflow-hidden shrink-0">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-[8px] bg-background border border-border/50 flex items-center justify-center shadow-xl overflow-hidden shrink-0">
                   <SafeLogo
                     src={activeWorkspace.logo ? resolveDriveImage(activeWorkspace.logo) : undefined}
                     alt={activeWorkspace.name}
@@ -1331,7 +1331,7 @@ export function WorkspacesView() {
                         {shouldTruncate && (
                           <button
                             onClick={() => setIsDescExpanded(!isDescExpanded)}
-                            className="text-primary hover:text-primary/80 font-bold uppercase tracking-[0.15em] text-[8px] sm:text-[9px] flex items-center gap-1.5 focus:outline-none bg-primary/5 hover:bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-[3px] transition-colors"
+                            className="text-primary hover:text-primary/80 font-bold uppercase tracking-[0.15em] text-[8px] sm:text-[9px] flex items-center gap-1.5 focus:outline-none bg-primary/5 hover:bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-[8px] transition-colors"
                           >
                             {isDescExpanded ? (
                               <>
@@ -1349,7 +1349,7 @@ export function WorkspacesView() {
                   })()}
                   
                   {activeWorkspace.purpose && (
-                    <div className="mt-3 text-[10px] sm:text-[11px] text-primary font-mono uppercase tracking-wider flex items-center gap-2 bg-primary/5 px-3 py-1.5 border border-primary/20 w-fit rounded-[5px] shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                    <div className="mt-3 text-[10px] sm:text-[11px] text-primary font-mono uppercase tracking-wider flex items-center gap-2 bg-primary/5 px-3 py-1.5 border border-primary/20 w-fit rounded-[8px] shadow-[0_0_15px_rgba(59,130,246,0.1)]">
                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                       <span className="font-bold text-muted-foreground">Purpose:</span> {activeWorkspace.purpose}
                     </div>
@@ -1364,7 +1364,7 @@ export function WorkspacesView() {
                 }}
                 variant="ghost" 
                 size="icon" 
-                className="h-10 w-10 sm:h-12 sm:w-12 rounded-[5px] border border-border/20 hover:bg-secondary shrink-0 self-end sm:self-auto"
+                className="h-10 w-10 sm:h-12 sm:w-12 rounded-[8px] border border-border/20 hover:bg-secondary shrink-0 self-end sm:self-auto"
               >
                 <X className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
               </Button>
@@ -1441,7 +1441,7 @@ export function WorkspacesView() {
                               <span>Consumed</span>
                               <span>{percent}%</span>
                             </div>
-                            <div className="w-full bg-secondary/50 h-1.5 rounded-[5px] overflow-hidden border border-border/10">
+                            <div className="w-full bg-secondary/50 h-1.5 rounded-[8px] overflow-hidden border border-border/10">
                               <div 
                                 className={cn(
                                   "h-full transition-all duration-500",
@@ -1470,21 +1470,21 @@ export function WorkspacesView() {
                         placeholder="Task Title"
                         value={newTitle}
                         onChange={e => setNewTitle(e.target.value)}
-                        className="bg-background/70 border-border/30 rounded-[5px] h-10 text-xs placeholder:text-muted-foreground/30 font-medium focus-visible:ring-primary"
+                        className="bg-background/70 border-border/30 rounded-[8px] h-10 text-xs placeholder:text-muted-foreground/30 font-medium focus-visible:ring-primary"
                       />
                       
                       <textarea
                         placeholder="Task Description..."
                         value={newDesc}
                         onChange={e => setNewDesc(e.target.value)}
-                        className="w-full min-h-[60px] p-2.5 text-xs bg-background/70 border border-border/30 hover:border-border/50 focus:border-primary focus:outline-none transition-colors rounded-[5px] placeholder:text-muted-foreground/30 text-foreground"
+                        className="w-full min-h-[60px] p-2.5 text-xs bg-background/70 border border-border/30 hover:border-border/50 focus:border-primary focus:outline-none transition-colors rounded-[8px] placeholder:text-muted-foreground/30 text-foreground"
                       />
 
                       <div className="grid grid-cols-2 gap-3">
                         <select
                           value={newPriority}
                           onChange={e => setNewPriority(e.target.value as any)}
-                          className="h-10 px-2 rounded-[5px] bg-background/70 border border-border/30 text-[10px] uppercase font-bold tracking-wider focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground font-mono"
+                          className="h-10 px-2 rounded-[8px] bg-background/70 border border-border/30 text-[10px] uppercase font-bold tracking-wider focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground font-mono"
                         >
                           <option value="low">Low Priority</option>
                           <option value="medium">Medium Priority</option>
@@ -1495,14 +1495,14 @@ export function WorkspacesView() {
                           type="date"
                           value={newDueDate}
                           onChange={e => setNewDueDate(e.target.value)}
-                          className="bg-background/70 border-border/30 rounded-[5px] h-10 text-[10px] font-bold font-mono focus-visible:ring-primary"
+                          className="bg-background/70 border-border/30 rounded-[8px] h-10 text-[10px] font-bold font-mono focus-visible:ring-primary"
                         />
                       </div>
 
                       <Button
                         onClick={handleCreateWorkspaceTask}
                         disabled={!newTitle.trim()}
-                        className="w-full rounded-[5px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-sm"
+                        className="w-full rounded-[8px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-sm"
                       >
                         Deploy Task
                       </Button>
@@ -1520,27 +1520,27 @@ export function WorkspacesView() {
                         placeholder="Link Title (e.g. Google Docs)"
                         value={newLinkTitle}
                         onChange={e => setNewLinkTitle(e.target.value)}
-                        className="bg-background/70 border-border/30 rounded-[5px] h-10 text-xs placeholder:text-muted-foreground/30 font-medium focus-visible:ring-primary"
+                        className="bg-background/70 border-border/30 rounded-[8px] h-10 text-xs placeholder:text-muted-foreground/30 font-medium focus-visible:ring-primary"
                       />
 
                       <Input
                         placeholder="Link URL (e.g. docs.google.com)"
                         value={newLinkUrl}
                         onChange={e => setNewLinkUrl(e.target.value)}
-                        className="bg-background/70 border-border/30 rounded-[5px] h-10 text-xs placeholder:text-muted-foreground/30 font-medium focus-visible:ring-primary"
+                        className="bg-background/70 border-border/30 rounded-[8px] h-10 text-xs placeholder:text-muted-foreground/30 font-medium focus-visible:ring-primary"
                       />
                       
                       <textarea
                         placeholder="Link Description (optional)..."
                         value={newLinkDesc}
                         onChange={e => setNewLinkDesc(e.target.value)}
-                        className="w-full min-h-[50px] p-2.5 text-xs bg-background/70 border border-border/30 hover:border-border/50 focus:border-primary focus:outline-none transition-colors rounded-[5px] placeholder:text-muted-foreground/30 text-foreground"
+                        className="w-full min-h-[50px] p-2.5 text-xs bg-background/70 border border-border/30 hover:border-border/50 focus:border-primary focus:outline-none transition-colors rounded-[8px] placeholder:text-muted-foreground/30 text-foreground"
                       />
 
                       <select
                         value={newLinkCategory}
                         onChange={e => setNewLinkCategory(e.target.value)}
-                        className="w-full h-10 px-2 rounded-[5px] bg-background/70 border border-border/30 text-[10px] uppercase font-bold tracking-wider focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground font-mono"
+                        className="w-full h-10 px-2 rounded-[8px] bg-background/70 border border-border/30 text-[10px] uppercase font-bold tracking-wider focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground font-mono"
                       >
                         {LINK_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
@@ -1548,7 +1548,7 @@ export function WorkspacesView() {
                       <Button
                         onClick={handleCreateWorkspaceLink}
                         disabled={!newLinkTitle.trim() || !newLinkUrl.trim()}
-                        className="w-full rounded-[5px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-sm"
+                        className="w-full rounded-[8px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-sm"
                       >
                         Deploy Quick Link
                       </Button>
@@ -1566,21 +1566,21 @@ export function WorkspacesView() {
                         placeholder="Project Name"
                         value={newProjName}
                         onChange={e => setNewProjName(e.target.value)}
-                        className="bg-background/70 border-border/30 rounded-[5px] h-10 text-xs placeholder:text-muted-foreground/30 font-medium focus-visible:ring-primary"
+                        className="bg-background/70 border-border/30 rounded-[8px] h-10 text-xs placeholder:text-muted-foreground/30 font-medium focus-visible:ring-primary"
                       />
                       
                       <textarea
                         placeholder="Project Description..."
                         value={newProjDesc}
                         onChange={e => setNewProjDesc(e.target.value)}
-                        className="w-full min-h-[60px] p-2.5 text-xs bg-background/70 border border-border/30 hover:border-border/50 focus:border-primary focus:outline-none transition-colors rounded-[5px] placeholder:text-muted-foreground/30 text-foreground"
+                        className="w-full min-h-[60px] p-2.5 text-xs bg-background/70 border border-border/30 hover:border-border/50 focus:border-primary focus:outline-none transition-colors rounded-[8px] placeholder:text-muted-foreground/30 text-foreground"
                       />
 
                       <div className="grid grid-cols-2 gap-3">
                         <select
                           value={newProjPriority}
                           onChange={e => setNewProjPriority(e.target.value as any)}
-                          className="h-10 px-2 rounded-[5px] bg-background/70 border border-border/30 text-[10px] uppercase font-bold tracking-wider focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground font-mono"
+                          className="h-10 px-2 rounded-[8px] bg-background/70 border border-border/30 text-[10px] uppercase font-bold tracking-wider focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground font-mono"
                         >
                           <option value="low">Low Priority</option>
                           <option value="medium">Medium Priority</option>
@@ -1588,7 +1588,7 @@ export function WorkspacesView() {
                           <option value="critical">Critical Priority</option>
                         </select>
                         
-                        <div className="flex items-center gap-2 bg-background/70 border border-border/30 px-2 h-10 rounded-[5px]">
+                        <div className="flex items-center gap-2 bg-background/70 border border-border/30 px-2 h-10 rounded-[8px]">
                           <input
                             type="color"
                             value={newProjColor}
@@ -1602,7 +1602,7 @@ export function WorkspacesView() {
                       <Button
                         onClick={handleCreateWorkspaceProject}
                         disabled={!newProjName.trim()}
-                        className="w-full rounded-[5px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-sm"
+                        className="w-full rounded-[8px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-sm"
                       >
                         Deploy Project Node
                       </Button>
@@ -1622,7 +1622,7 @@ export function WorkspacesView() {
                         <select
                           value={selectedUserForRole}
                           onChange={e => setSelectedUserForRole(e.target.value)}
-                          className="w-full h-10 px-2 rounded-[5px] bg-background/70 border border-border/30 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground"
+                          className="w-full h-10 px-2 rounded-[8px] bg-background/70 border border-border/30 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground"
                         >
                           <option value="">-- Choose User --</option>
                           {allowedWorkspaceUsers.map(user => (
@@ -1638,7 +1638,7 @@ export function WorkspacesView() {
                         <select
                           value={selectedRoleForUser}
                           onChange={e => setSelectedRoleForUser(e.target.value)}
-                          className="w-full h-10 px-2 rounded-[5px] bg-background/70 border border-border/30 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground font-mono"
+                          className="w-full h-10 px-2 rounded-[8px] bg-background/70 border border-border/30 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground font-mono"
                         >
                           <option value="Owner">Owner</option>
                           <option value="Admin">Admin</option>
@@ -1651,7 +1651,7 @@ export function WorkspacesView() {
                       <Button
                         onClick={handleAssignWorkspaceRole}
                         disabled={!selectedUserForRole}
-                        className="w-full rounded-[5px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-sm"
+                        className="w-full rounded-[8px] bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest text-[9px] h-10 shadow-sm"
                       >
                         Grant Workspace Access
                       </Button>
@@ -1669,7 +1669,7 @@ export function WorkspacesView() {
                       size="sm"
                       onClick={() => setModalTab("tasks")}
                       className={cn(
-                        "rounded-[5px] text-[9px] uppercase font-bold tracking-widest px-3 h-8 font-mono border border-border/20",
+                        "rounded-[8px] text-[9px] uppercase font-bold tracking-widest px-3 h-8 font-mono border border-border/20",
                         modalTab === "tasks" ? "bg-primary text-white border-primary" : "text-muted-foreground hover:bg-secondary/40"
                       )}
                     >
@@ -1681,7 +1681,7 @@ export function WorkspacesView() {
                       size="sm"
                       onClick={() => setModalTab("links")}
                       className={cn(
-                        "rounded-[5px] text-[9px] uppercase font-bold tracking-widest px-3 h-8 font-mono border border-border/20",
+                        "rounded-[8px] text-[9px] uppercase font-bold tracking-widest px-3 h-8 font-mono border border-border/20",
                         modalTab === "links" ? "bg-primary text-white border-primary" : "text-muted-foreground hover:bg-secondary/40"
                       )}
                     >
@@ -1693,7 +1693,7 @@ export function WorkspacesView() {
                       size="sm"
                       onClick={() => setModalTab("projects")}
                       className={cn(
-                        "rounded-[5px] text-[9px] uppercase font-bold tracking-widest px-3 h-8 font-mono border border-border/20",
+                        "rounded-[8px] text-[9px] uppercase font-bold tracking-widest px-3 h-8 font-mono border border-border/20",
                         modalTab === "projects" ? "bg-primary text-white border-primary" : "text-muted-foreground hover:bg-secondary/40"
                       )}
                     >
@@ -1705,7 +1705,7 @@ export function WorkspacesView() {
                       size="sm"
                       onClick={() => setModalTab("access")}
                       className={cn(
-                        "rounded-[5px] text-[9px] uppercase font-bold tracking-widest px-3 h-8 font-mono border border-border/20",
+                        "rounded-[8px] text-[9px] uppercase font-bold tracking-widest px-3 h-8 font-mono border border-border/20",
                         modalTab === "access" ? "bg-primary text-white border-primary" : "text-muted-foreground hover:bg-secondary/40"
                       )}
                     >
@@ -1734,7 +1734,7 @@ export function WorkspacesView() {
                           <div 
                             key={task.id} 
                             className={cn(
-                              "p-4 border bg-background/40 hover:bg-background/80 transition-all rounded-[5px] flex items-center justify-between gap-4 group/item",
+                              "p-4 border bg-background/40 hover:bg-background/80 transition-all rounded-[8px] flex items-center justify-between gap-4 group/item",
                               isCompleted ? "border-border/30 opacity-60" : "border-border/50"
                             )}
                           >
@@ -1766,7 +1766,7 @@ export function WorkspacesView() {
 
                               <Badge 
                                 className={cn(
-                                  "text-[7px] uppercase font-bold tracking-widest px-1.5 py-0 rounded-[5px] font-mono",
+                                  "text-[7px] uppercase font-bold tracking-widest px-1.5 py-0 rounded-[8px] font-mono",
                                   task.priority === "high" ? "bg-red-500/10 text-red-500 border-red-500/20" :
                                   task.priority === "medium" ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
                                   "bg-primary/10 text-primary border-primary/20"
@@ -1780,7 +1780,7 @@ export function WorkspacesView() {
                                 onClick={() => setTaskToDelete(task.id)}
                                 variant="ghost"
                                 size="icon"
-                                className="h-7 w-7 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 md:opacity-0 md:group-hover/item:opacity-100 opacity-100 transition-all rounded-[5px]"
+                                className="h-7 w-7 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 md:opacity-0 md:group-hover/item:opacity-100 opacity-100 transition-all rounded-[8px]"
                                 title="Delete tracker"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1804,10 +1804,10 @@ export function WorkspacesView() {
                           return (
                             <div 
                               key={link.id} 
-                              className="p-3 border border-border/40 bg-background/30 hover:bg-background/70 transition-all rounded-[5px] flex items-center justify-between gap-3 group/linkitem"
+                              className="p-3 border border-border/40 bg-background/30 hover:bg-background/70 transition-all rounded-[8px] flex items-center justify-between gap-3 group/linkitem"
                             >
                               <div className="flex items-center gap-2 min-w-0">
-                                <div className="w-7 h-7 rounded-[5px] bg-background border border-border/50 flex items-center justify-center shrink-0 overflow-hidden">
+                                <div className="w-7 h-7 rounded-[8px] bg-background border border-border/50 flex items-center justify-center shrink-0 overflow-hidden">
                                   {favicon ? <img src={favicon} alt="" className="w-4 h-4 object-contain" /> : <Globe className="w-3.5 h-3.5 text-muted-foreground/40" />}
                                 </div>
                                 <div className="min-w-0">
@@ -1820,7 +1820,7 @@ export function WorkspacesView() {
                               
                               <div className="flex items-center gap-1.5 shrink-0">
                                 <a href={link.url} target="_blank" rel="noopener noreferrer">
-                                  <Button variant="ghost" size="icon" className="h-7 w-7 rounded-[5px] text-primary hover:bg-primary/10">
+                                  <Button variant="ghost" size="icon" className="h-7 w-7 rounded-[8px] text-primary hover:bg-primary/10">
                                     <ExternalLink className="w-3 h-3" />
                                   </Button>
                                 </a>
@@ -1828,7 +1828,7 @@ export function WorkspacesView() {
                                   onClick={() => handleDeleteWorkspaceLink(link.id)}
                                   variant="ghost"
                                   size="icon"
-                                  className="h-7 w-7 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 md:opacity-0 md:group-hover/linkitem:opacity-100 opacity-100 transition-all rounded-[5px]"
+                                  className="h-7 w-7 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 md:opacity-0 md:group-hover/linkitem:opacity-100 opacity-100 transition-all rounded-[8px]"
                                   title="Delete Link"
                                 >
                                   <Trash2 className="w-3 h-3" />
@@ -1853,7 +1853,7 @@ export function WorkspacesView() {
                           return (
                             <div 
                               key={proj.id} 
-                              className="p-4 border border-border/40 bg-background/30 hover:bg-background/70 transition-all rounded-[5px] flex flex-col justify-between gap-3 group/projitem"
+                              className="p-4 border border-border/40 bg-background/30 hover:bg-background/70 transition-all rounded-[8px] flex flex-col justify-between gap-3 group/projitem"
                               style={{ borderLeft: `3px solid ${proj.color || "#3b82f6"}` }}
                             >
                               <div className="flex items-start justify-between gap-2">
@@ -1864,7 +1864,7 @@ export function WorkspacesView() {
                                   <p className="text-[10px] text-muted-foreground truncate mt-0.5">{proj.description}</p>
                                 </div>
                                 <Badge variant="outline" className={cn(
-                                  "text-[7px] uppercase font-bold tracking-widest px-1.5 py-0 rounded-[5px] font-mono shrink-0",
+                                  "text-[7px] uppercase font-bold tracking-widest px-1.5 py-0 rounded-[8px] font-mono shrink-0",
                                   proj.priority === "critical" ? "bg-red-500/10 text-red-500 border-red-500/20" :
                                   proj.priority === "high" ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
                                   "bg-primary/10 text-primary border-primary/20"
@@ -1879,7 +1879,7 @@ export function WorkspacesView() {
                                   <span>PROGRESS</span>
                                   <span className="text-foreground">{statsObj.percent}% ({statsObj.completed}/{statsObj.total})</span>
                                 </div>
-                                <div className="w-full bg-secondary/50 h-1.5 rounded-[5px] overflow-hidden border border-border/10">
+                                <div className="w-full bg-secondary/50 h-1.5 rounded-[8px] overflow-hidden border border-border/10">
                                   <div className="h-full transition-all" style={{ width: `${statsObj.percent}%`, backgroundColor: proj.color || "#3b82f6" }} />
                                 </div>
                               </div>
@@ -1902,7 +1902,7 @@ export function WorkspacesView() {
                                       </span>
                                     </div>
                                     {limit ? (
-                                      <div className="w-full bg-secondary/50 h-1.5 rounded-[5px] overflow-hidden border border-border/10">
+                                      <div className="w-full bg-secondary/50 h-1.5 rounded-[8px] overflow-hidden border border-border/10">
                                         <div 
                                           className={cn(
                                             "h-full transition-all",
@@ -1931,7 +1931,7 @@ export function WorkspacesView() {
                                     }}
                                     variant="outline" 
                                     size="sm" 
-                                    className="h-6 rounded-[5px] text-[8px] font-mono font-bold uppercase tracking-wider px-2"
+                                    className="h-6 rounded-[8px] text-[8px] font-mono font-bold uppercase tracking-wider px-2"
                                   >
                                     Workspace
                                   </Button>
@@ -1939,7 +1939,7 @@ export function WorkspacesView() {
                                     onClick={() => handleDeleteWorkspaceProject(proj.id)}
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 md:opacity-0 md:group-hover/projitem:opacity-100 opacity-100 transition-all rounded-[5px]"
+                                    className="h-6 w-6 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 md:opacity-0 md:group-hover/projitem:opacity-100 opacity-100 transition-all rounded-[8px]"
                                     title="Delete Project"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -1966,10 +1966,10 @@ export function WorkspacesView() {
                           return (
                             <div 
                               key={ra.id} 
-                              className="p-4 border border-border/40 bg-background/30 hover:bg-background/70 transition-all rounded-[5px] flex items-center justify-between gap-4 group/accessitem"
+                              className="p-4 border border-border/40 bg-background/30 hover:bg-background/70 transition-all rounded-[8px] flex items-center justify-between gap-4 group/accessitem"
                             >
                               <div className="flex items-center gap-3 min-w-0">
-                                <div className="w-8 h-8 rounded-[5px] bg-background border border-border/50 flex items-center justify-center font-bold text-xs uppercase text-primary shrink-0">
+                                <div className="w-8 h-8 rounded-[8px] bg-background border border-border/50 flex items-center justify-center font-bold text-xs uppercase text-primary shrink-0">
                                   {u?.display_name ? u.display_name.slice(0, 2) : u?.username ? u.username.slice(0, 2) : "??"}
                                 </div>
                                 <div className="min-w-0">
@@ -1986,7 +1986,7 @@ export function WorkspacesView() {
                                       <select
                                         value={ra.role}
                                         onChange={(e) => handleUpdateWorkspaceRole(ra.id!, e.target.value)}
-                                        className="text-[10px] font-bold font-mono tracking-wider uppercase bg-secondary/50 border border-border/30 rounded-[5px] px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/20"
+                                        className="text-[10px] font-bold font-mono tracking-wider uppercase bg-secondary/50 border border-border/30 rounded-[8px] px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/20"
                                       >
                                         <option value="Admin">Admin</option>
                                         <option value="Editor">Editor</option>
@@ -1997,7 +1997,7 @@ export function WorkspacesView() {
                                       <Badge 
                                         variant="outline" 
                                         className={cn(
-                                          "text-[8px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[5px] font-mono border",
+                                          "text-[8px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-[8px] font-mono border",
                                           ra.role === "Owner" ? "bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.2)]" :
                                           ra.role === "Admin" ? "bg-orange-500/10 text-orange-500 border-orange-500/20" :
                                           ra.role === "Editor" ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
@@ -2013,7 +2013,7 @@ export function WorkspacesView() {
                                   onClick={() => handleRevokeWorkspaceRole(ra.id!)}
                                   variant="ghost"
                                   size="icon"
-                                  className="h-7 w-7 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 md:opacity-0 md:group-hover/accessitem:opacity-100 opacity-100 transition-all rounded-[5px]"
+                                  className="h-7 w-7 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 md:opacity-0 md:group-hover/accessitem:opacity-100 opacity-100 transition-all rounded-[8px]"
                                   title="Revoke access"
                                 >
                                   <UserMinus className="w-3.5 h-3.5" />
@@ -2038,7 +2038,7 @@ export function WorkspacesView() {
                   setActiveWorkspace(null);
                   loadWorkspaces();
                 }}
-                className="rounded-[5px] border border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] px-8 h-12"
+                className="rounded-[8px] border border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] px-8 h-12"
               >
                 Close Console
               </Button>
@@ -2054,15 +2054,15 @@ export function WorkspacesView() {
       {/* ============================================================ */}
       {workspaceToDelete && createPortal(
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-background border border-red-500/30 p-8 rounded-[5px] max-w-sm w-full space-y-6 shadow-[0_0_50px_rgba(239,68,68,0.15)] relative overflow-hidden">
+          <div className="bg-background border border-red-500/30 p-8 rounded-[8px] max-w-sm w-full space-y-6 shadow-[0_0_50px_rgba(239,68,68,0.15)] relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-red-500" />
             
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-[5px] bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 animate-pulse">
+              <div className="w-12 h-12 rounded-[8px] bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 animate-pulse">
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <div>
-                <Badge variant="outline" className="text-red-500 border-red-500/20 bg-red-500/5 text-[8px] font-mono tracking-widest px-2.5 py-0.5 rounded-[5px] font-bold uppercase mb-1">Warning</Badge>
+                <Badge variant="outline" className="text-red-500 border-red-500/20 bg-red-500/5 text-[8px] font-mono tracking-widest px-2.5 py-0.5 rounded-[8px] font-bold uppercase mb-1">Warning</Badge>
                 <h3 className="text-lg font-bold uppercase tracking-tight text-foreground">Delete Workspace</h3>
               </div>
             </div>
@@ -2075,13 +2075,13 @@ export function WorkspacesView() {
               <Button 
                 variant="outline" 
                 onClick={() => setWorkspaceToDelete(null)}
-                className="rounded-[5px] border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] px-5 h-10"
+                className="rounded-[8px] border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] px-5 h-10"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={handleConfirmDeleteWorkspace}
-                className="rounded-[5px] bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-widest text-[9px] px-6 h-10 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                className="rounded-[8px] bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-widest text-[9px] px-6 h-10 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
               >
                 Purge Workspace
               </Button>
@@ -2096,15 +2096,15 @@ export function WorkspacesView() {
       {/* ============================================================ */}
       {taskToDelete && createPortal(
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-background border border-red-500/30 p-8 rounded-[5px] max-w-sm w-full space-y-6 shadow-[0_0_50px_rgba(239,68,68,0.15)] relative overflow-hidden">
+          <div className="bg-background border border-red-500/30 p-8 rounded-[8px] max-w-sm w-full space-y-6 shadow-[0_0_50px_rgba(239,68,68,0.15)] relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-red-500" />
             
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-[5px] bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 animate-pulse">
+              <div className="w-12 h-12 rounded-[8px] bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 animate-pulse">
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <div>
-                <Badge variant="outline" className="text-red-500 border-red-500/20 bg-red-500/5 text-[8px] font-mono tracking-widest px-2.5 py-0.5 rounded-[5px] font-bold uppercase mb-1">Warning</Badge>
+                <Badge variant="outline" className="text-red-500 border-red-500/20 bg-red-500/5 text-[8px] font-mono tracking-widest px-2.5 py-0.5 rounded-[8px] font-bold uppercase mb-1">Warning</Badge>
                 <h3 className="text-lg font-bold uppercase tracking-tight text-foreground">Delete Tracker</h3>
               </div>
             </div>
@@ -2117,13 +2117,13 @@ export function WorkspacesView() {
               <Button 
                 variant="outline" 
                 onClick={() => setTaskToDelete(null)}
-                className="rounded-[5px] border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] px-5 h-10"
+                className="rounded-[8px] border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] px-5 h-10"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={handleConfirmDeleteTask}
-                className="rounded-[5px] bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-widest text-[9px] px-6 h-10 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                className="rounded-[8px] bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-widest text-[9px] px-6 h-10 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
               >
                 Purge Tracker
               </Button>

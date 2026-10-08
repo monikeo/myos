@@ -20,7 +20,8 @@ import {
   ChevronRight,
   Wrench,
   X,
-  LogOut
+  LogOut,
+  Download
 } from "lucide-react";
 import { cn, resolveDriveImage } from "@/lib/utils";
 import { SafeLogo } from "@/src/components/SafeLogo";
@@ -47,20 +48,23 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SheetClose } from "@/components/ui/sheet";
 
-// Module Imports
-import { NotesView } from "@/src/components/NotesView";
-import { WorkspacesView } from "@/src/components/WorkspacesView";
-import { ProjectsView } from "@/src/components/ProjectsView";
-import { FinanceView } from "@/src/components/FinanceView";
-import { TodoView } from "@/src/components/TodoView";
-import { ToolsView } from "@/src/components/ToolsView";
-import { CalendarView } from "@/src/components/CalendarView";
-import { FileVaultView } from "@/src/components/FileVaultView";
-import { QuickLinksView } from "@/src/components/QuickLinksView";
-import { SettingsView } from "@/src/components/SettingsView";
+// Code-Split Dynamic Module Imports for High Performance & Micro Bundling
+const NotesView = React.lazy(() => import("@/src/components/NotesView").then(m => ({ default: m.NotesView })));
+const WorkspacesView = React.lazy(() => import("@/src/components/WorkspacesView").then(m => ({ default: m.WorkspacesView })));
+const ProjectsView = React.lazy(() => import("@/src/components/ProjectsView").then(m => ({ default: m.ProjectsView })));
+const FinanceView = React.lazy(() => import("@/src/components/FinanceView").then(m => ({ default: m.FinanceView })));
+const TodoView = React.lazy(() => import("@/src/components/TodoView").then(m => ({ default: m.TodoView })));
+const ToolsView = React.lazy(() => import("@/src/components/ToolsView").then(m => ({ default: m.ToolsView })));
+const CalendarView = React.lazy(() => import("@/src/components/CalendarView").then(m => ({ default: m.CalendarView })));
+const FileVaultView = React.lazy(() => import("@/src/components/FileVaultView").then(m => ({ default: m.FileVaultView })));
+const QuickLinksView = React.lazy(() => import("@/src/components/QuickLinksView").then(m => ({ default: m.QuickLinksView })));
+const SettingsView = React.lazy(() => import("@/src/components/SettingsView").then(m => ({ default: m.SettingsView })));
+const InvitationModal = React.lazy(() => import("@/src/components/InvitationModal").then(m => ({ default: m.InvitationModal })));
+
 import { LoginPanel } from "@/src/components/LoginPanel";
 import { OrgSwitcher } from "@/src/components/OrgSwitcher";
 import { SearchPalette } from "@/src/components/SearchPalette";
+import { ThemeToggle } from "@/src/components/ThemeToggle";
 import { 
   getStats, 
   getSettings, 
@@ -75,7 +79,19 @@ import {
 } from "@/lib/api";
 import { Task, Workspace, MyOSNotification } from "@/src/types";
 import { NotificationCenter } from "@/src/components/NotificationCenter";
-import { InvitationModal } from "@/src/components/InvitationModal";
+
+function ViewLoader() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[380px] w-full p-12 text-center animate-in fade-in duration-300">
+      <div className="w-12 h-12 rounded-[8px] bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 text-primary shadow-[0_0_25px_rgba(16,185,129,0.2)]">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+      <p className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-muted-foreground/80">
+        Loading View Module // Decoupled
+      </p>
+    </div>
+  );
+}
 
 type ActivePage = "dashboard" | "todo" | "workspaces" | "projects" | "calendar" | "finance" | "notes" | "docs" | "links" | "settings" | "tools";
 
@@ -174,7 +190,7 @@ System Status:
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-red-500/20 pb-6 mb-8 gap-4 relative z-10">
             <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-[5px]-full bg-red-500 animate-ping shrink-0" />
+              <div className="w-3 h-3 rounded-full bg-red-500 animate-ping shrink-0" />
               <div>
                 <h1 className="text-xl font-bold tracking-tight text-red-500 uppercase font-mono">System Core Protection Activated</h1>
                 <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5 font-mono">Core Runtime Diagnostics Panel v1.2</p>
@@ -242,9 +258,9 @@ System Status:
                 <div className="bg-slate-900 px-4 py-3 border-b border-slate-800/80 flex justify-between items-center">
                   <span className="text-[10px] text-slate-400 uppercase tracking-widest font-mono">Trace Console log</span>
                   <div className="flex gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-[5px]-full bg-red-500/30" />
-                    <span className="w-2.5 h-2.5 rounded-[5px]-full bg-amber-500/30" />
-                    <span className="w-2.5 h-2.5 rounded-[5px]-full bg-emerald-500/30" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-500/30" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500/30" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/30" />
                   </div>
                 </div>
                 <div className="p-6 overflow-auto text-xs space-y-4 max-h-[500px]">
@@ -378,6 +394,34 @@ function AppContent() {
 
   const [notifications, setNotifications] = useState<MyOSNotification[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [canInstallPwa, setCanInstallPwa] = useState(false);
+
+  useEffect(() => {
+    const handleInstallable = () => setCanInstallPwa(true);
+    const handleInstalled = () => setCanInstallPwa(false);
+
+    if ((window as any).__pwaInstallPrompt) {
+      setCanInstallPwa(true);
+    }
+
+    window.addEventListener("myos:pwa-installable", handleInstallable);
+    window.addEventListener("myos:pwa-installed", handleInstalled);
+    return () => {
+      window.removeEventListener("myos:pwa-installable", handleInstallable);
+      window.removeEventListener("myos:pwa-installed", handleInstalled);
+    };
+  }, []);
+
+  const handleInstallApp = async () => {
+    const promptEvent = (window as any).__pwaInstallPrompt;
+    if (!promptEvent) return;
+    promptEvent.prompt();
+    const choice = await promptEvent.userChoice;
+    if (choice.outcome === "accepted") {
+      setCanInstallPwa(false);
+      (window as any).__pwaInstallPrompt = null;
+    }
+  };
 
   const loadNotifications = async () => {
     try {
@@ -938,7 +982,7 @@ function AppContent() {
       default:
         return (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-12 text-center">
-            <div className="w-16 h-16 bg-muted rounded-[5px]-full flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
               <Loader2 className="w-8 h-8 animate-spin" />
             </div>
             <h2 className="text-2xl font-semibold text-foreground mb-2">{(activePage as string).toUpperCase()} Module</h2>
@@ -981,7 +1025,7 @@ function AppContent() {
                             }
                           }}
                           className={cn(
-                            "w-full px-4 py-3 transition-all duration-300 rounded-[5px] flex items-center gap-4 group/btn",
+                            "w-full px-4 py-3 transition-all duration-300 rounded-[8px] flex items-center gap-4 group/btn",
                             "group-data-[state=collapsed]:px-0 group-data-[state=collapsed]:justify-center group-data-[state=collapsed]:py-3 group-data-[state=collapsed]:h-12 group-data-[state=collapsed]:w-12 group-data-[state=collapsed]:mx-auto",
                             activePage === item.id 
                               ? "bg-secondary text-primary font-bold shadow-sm" 
@@ -998,60 +1042,43 @@ function AppContent() {
               </SidebarGroup>
             </SidebarContent>
             <div className="mt-auto p-4 border-t border-border/50 space-y-4 flex flex-col items-center">
-              <div className="w-full group-data-[state=collapsed]:w-10 group-data-[state=collapsed]:h-10 p-0.5 bg-secondary/40 rounded-[5px] border border-border/20 flex group-data-[state=collapsed]:justify-center shrink-0">
-                <button
-                  onClick={async () => {
-                    setIsDarkMode(false);
-                    localStorage.setItem("myos_theme", "light");
-                    try {
-                      await saveSettings({ ...profile, theme: "light" });
-                      setProfile(prev => ({ ...prev, theme: "light" }));
-                      window.dispatchEvent(new CustomEvent("myos:data-changed"));
-                    } catch (err) {}
-                  }}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[8px] font-bold uppercase tracking-widest transition-all rounded-[5px] font-mono group-data-[state=collapsed]:hidden",
-                    !isDarkMode ? "bg-background text-primary shadow-[0_0_10px_rgba(59,130,246,0.1)] border border-border/25" : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <Sun className="w-3.5 h-3.5 text-amber-500" />
-                  Light
-                </button>
-                <button
-                  onClick={async () => {
-                    setIsDarkMode(true);
-                    localStorage.setItem("myos_theme", "dark");
-                    try {
-                      await saveSettings({ ...profile, theme: "dark" });
-                      setProfile(prev => ({ ...prev, theme: "dark" }));
-                      window.dispatchEvent(new CustomEvent("myos:data-changed"));
-                    } catch (err) {}
-                  }}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[8px] font-bold uppercase tracking-widest transition-all rounded-[5px] font-mono group-data-[state=collapsed]:hidden",
-                    isDarkMode ? "bg-background text-primary shadow-[0_0_10px_rgba(59,130,246,0.1)] border border-border/25" : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <Moon className="w-3.5 h-3.5 text-blue-500" />
-                  Dark
-                </button>
-                <button
-                  onClick={async () => {
-                    const nextMode = !isDarkMode;
-                    setIsDarkMode(nextMode);
-                    localStorage.setItem("myos_theme", nextMode ? "dark" : "light");
-                    try {
-                      await saveSettings({ ...profile, theme: nextMode ? "dark" : "light" });
-                      setProfile(prev => ({ ...prev, theme: nextMode ? "dark" : "light" }));
-                      window.dispatchEvent(new CustomEvent("myos:data-changed"));
-                    } catch (err) {}
-                  }}
-                  className="hidden group-data-[state=collapsed]:flex w-9 h-9 items-center justify-center text-muted-foreground hover:text-foreground"
-                >
-                  {isDarkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-blue-500" />}
-                </button>
+              <div className="w-full flex justify-center shrink-0">
+                <div className="w-full group-data-[state=collapsed]:hidden">
+                  <ThemeToggle
+                    currentTheme={profile.theme || "dark"}
+                    isDarkMode={isDarkMode}
+                    onThemeChange={async (nextTheme) => {
+                      const isDark = resolveTheme(nextTheme);
+                      setIsDarkMode(isDark);
+                      localStorage.setItem("myos_theme", nextTheme);
+                      try {
+                        await saveSettings({ ...profile, theme: nextTheme });
+                        setProfile(prev => ({ ...prev, theme: nextTheme }));
+                        window.dispatchEvent(new CustomEvent("myos:data-changed"));
+                      } catch (err) {}
+                    }}
+                    collapsed={false}
+                  />
+                </div>
+                <div className="hidden group-data-[state=collapsed]:flex justify-center">
+                  <ThemeToggle
+                    currentTheme={profile.theme || "dark"}
+                    isDarkMode={isDarkMode}
+                    onThemeChange={async (nextTheme) => {
+                      const isDark = resolveTheme(nextTheme);
+                      setIsDarkMode(isDark);
+                      localStorage.setItem("myos_theme", nextTheme);
+                      try {
+                        await saveSettings({ ...profile, theme: nextTheme });
+                        setProfile(prev => ({ ...prev, theme: nextTheme }));
+                        window.dispatchEvent(new CustomEvent("myos:data-changed"));
+                      } catch (err) {}
+                    }}
+                    collapsed={true}
+                  />
+                </div>
               </div>
-              <div className="bg-secondary/30 p-4 group-data-[state=collapsed]:p-0 group-data-[state=collapsed]:bg-transparent group-data-[state=collapsed]:border-none rounded-[5px] flex items-center group-data-[state=collapsed]:justify-center gap-4 border border-border/10 w-full shrink-0">
+              <div className="bg-secondary/30 p-4 group-data-[state=collapsed]:p-0 group-data-[state=collapsed]:bg-transparent group-data-[state=collapsed]:border-none rounded-[8px] flex items-center group-data-[state=collapsed]:justify-center gap-4 border border-border/10 w-full shrink-0">
                 <Avatar className="w-10 h-10 border-2 border-background/20 shrink-0">
                   <AvatarImage src={resolveDriveImage(profile.profile_avatar || sessionUser.avatar_url)} />
                   <AvatarFallback className="bg-primary/10 text-primary font-bold font-mono">
@@ -1067,7 +1094,7 @@ function AppContent() {
                     logout();
                     setSessionUser(null);
                   }}
-                  className="h-8 w-8 rounded-[5px] border border-border/40 hover:border-red-500/50 hover:bg-red-500/10 flex items-center justify-center text-muted-foreground hover:text-red-500 transition-all shrink-0 group-data-[state=collapsed]:hidden"
+                  className="h-8 w-8 rounded-[8px] border border-border/40 hover:border-red-500/50 hover:bg-red-500/10 flex items-center justify-center text-muted-foreground hover:text-red-500 transition-all shrink-0 group-data-[state=collapsed]:hidden"
                   title="Session Log Out"
                 >
                   <LogOut className="h-4 w-4" />
@@ -1090,14 +1117,14 @@ function AppContent() {
             
             <header className="h-20 shrink-0 flex items-center justify-between px-4 sm:px-8 border-b border-border/50 bg-background/80 backdrop-blur-xl sticky top-0 z-30">
               <div className="flex items-center gap-3 sm:gap-6 flex-1">
-                <SidebarTrigger className="hover:bg-secondary rounded-[5px] h-10 w-10 shrink-0" />
+                <SidebarTrigger className="hover:bg-secondary rounded-[8px] h-10 w-10 shrink-0" />
                 <OrgSwitcher />
                 <div className="relative max-w-sm w-full hidden lg:block cursor-pointer" onClick={() => setSearchOpen(true)}>
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50 pointer-events-none" />
                   <Input 
                     placeholder="Search everything..." 
                     readOnly
-                    className="pl-11 pr-12 bg-secondary/50 border-border/20 focus-visible:ring-primary h-11 rounded-[5px] w-full transition-all duration-500 focus:bg-background focus:shadow-2xl cursor-pointer select-none"
+                    className="pl-11 pr-12 bg-secondary/50 border-border/20 focus-visible:ring-primary h-11 rounded-[8px] w-full transition-all duration-500 focus:bg-background focus:shadow-2xl cursor-pointer select-none"
                   />
                   <kbd className="absolute right-4 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-border/30 bg-muted/80 text-[10px] font-mono text-muted-foreground/75 pointer-events-none select-none">
                     ⌘K
@@ -1105,8 +1132,18 @@ function AppContent() {
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-4">
+                {canInstallPwa && (
+                  <Button
+                    variant="outline"
+                    onClick={handleInstallApp}
+                    className="rounded-[8px] border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary h-10 px-3.5 text-xs font-bold font-mono uppercase tracking-wider flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(16,185,129,0.15)] shrink-0"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Install PWA</span>
+                  </Button>
+                )}
                 <div className="hidden sm:flex items-center gap-2 mr-2">
-                   <div className="w-2 h-2 rounded-[5px]-full bg-emerald-500 animate-pulse" />
+                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                    <span className="text-[10px] font-bold text-emerald-500/80 font-mono tracking-widest uppercase">Connected</span>
                 </div>
                 <NotificationCenter
@@ -1124,7 +1161,7 @@ function AppContent() {
                       setOpenMobile(false);
                     }
                   }}
-                  className="rounded-[5px] shadow-[0_0_20px_rgba(59,130,246,0.2)] bg-primary hover:bg-primary/90 h-10 w-10 sm:w-auto sm:px-6 p-0 font-bold text-xs uppercase tracking-widest flex items-center justify-center shrink-0"
+                  className="rounded-[8px] shadow-[0_0_20px_rgba(59,130,246,0.2)] bg-primary hover:bg-primary/90 h-10 w-10 sm:w-auto sm:px-6 p-0 font-bold text-xs uppercase tracking-widest flex items-center justify-center shrink-0"
                 >
                   <Plus className="w-4 h-4 sm:mr-2" />
                   <span className="hidden sm:inline">New Task</span>
@@ -1134,7 +1171,9 @@ function AppContent() {
 
             <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 scroll-smooth custom-scrollbar pb-24 md:pb-8">
               <div className="max-w-[1600px] mx-auto">
-                {renderContent()}
+                <React.Suspense fallback={<ViewLoader />}>
+                  {renderContent()}
+                </React.Suspense>
               </div>
             </main>
           </SidebarInset>
@@ -1151,12 +1190,12 @@ function AppContent() {
                       navigateToPage(item.id as ActivePage);
                     }}
                     className={cn(
-                      "flex flex-col items-center justify-center w-16 h-14 rounded-[5px] transition-all duration-300 relative",
+                      "flex flex-col items-center justify-center w-16 h-14 rounded-[8px] transition-all duration-300 relative",
                       isActive ? "text-primary" : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
                     )}
                   >
                     {isActive && (
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-b-[5px] shadow-[0_2px_10px_rgba(59,130,246,0.5)]" />
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-b-[8px] shadow-[0_2px_10px_rgba(59,130,246,0.5)]" />
                     )}
                     <item.icon className={cn("w-5 h-5 mb-1 transition-transform", isActive && "scale-110")} />
                     <span className="text-[9px] font-bold tracking-widest uppercase">{item.label}</span>
@@ -1165,7 +1204,7 @@ function AppContent() {
               })}
               <button
                 onClick={() => setOpenMobile(true)}
-                className="flex flex-col items-center justify-center w-16 h-14 rounded-[5px] text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-all duration-300 relative"
+                className="flex flex-col items-center justify-center w-16 h-14 rounded-[8px] text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-all duration-300 relative"
               >
                 <Layout className="w-5 h-5 mb-1 transition-transform" />
                 <span className="text-[9px] font-bold tracking-widest uppercase">More</span>
@@ -1174,10 +1213,12 @@ function AppContent() {
           </div>
           
           {pendingInviteId && (
-            <InvitationModal
-              assignmentId={pendingInviteId}
-              onClose={() => setPendingInviteId(null)}
-            />
+            <React.Suspense fallback={null}>
+              <InvitationModal
+                assignmentId={pendingInviteId}
+                onClose={() => setPendingInviteId(null)}
+              />
+            </React.Suspense>
           )}
 
           <SearchPalette
@@ -1266,7 +1307,7 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
           <h1 className="text-4xl font-bold tracking-tight">Welcome back, {profile.profile_name || sessionUser?.display_name}</h1>
           <p className="text-muted-foreground/80 font-medium text-base max-w-2xl leading-relaxed">You have {activeIncompleteTasks.length} tasks to focus on today.</p>
         </div>
-        <div className="text-right p-8 bg-secondary/20 rounded-[5px] border border-border/50 backdrop-blur-2xl shadow-2xl min-w-[280px] relative group overflow-hidden">
+        <div className="text-right p-8 bg-secondary/20 rounded-[8px] border border-border/50 backdrop-blur-2xl shadow-2xl min-w-[280px] relative group overflow-hidden">
           <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
           <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground/60 mb-3 font-mono relative z-10">Current Time</p>
           <p className="text-4xl font-mono tabular-nums font-bold tracking-tight relative z-10">{time}</p>
@@ -1276,10 +1317,10 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {statsItems.map((stat, i) => (
-          <Card key={i} className="overflow-hidden border border-border/50 shadow-2xl glass-panel group hover:border-primary/50 transition-all duration-700 hover:-translate-y-2 rounded-[5px]">
+          <Card key={i} className="overflow-hidden border border-border/50 shadow-2xl glass-panel group hover:border-primary/50 transition-all duration-700 hover:-translate-y-2 rounded-[8px]">
             <CardContent className="p-8">
               <div className="flex items-start justify-between mb-8">
-                <div className={cn("w-16 h-16 rounded-[5px] flex items-center justify-center text-white shadow-2xl transform group-hover:scale-110 group-hover:rotate-3 transition-transform duration-700", stat.color)}>
+                <div className={cn("w-16 h-16 rounded-[8px] flex items-center justify-center text-white shadow-2xl transform group-hover:scale-110 group-hover:rotate-3 transition-transform duration-700", stat.color)}>
                   {i === 0 && <CheckSquare className="w-8 h-8" />}
                   {i === 1 && <Briefcase className="w-8 h-8" />}
                   {i === 2 && <Wallet className="w-8 h-8" />}
@@ -1302,10 +1343,10 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 border border-border/50 glass-panel overflow-hidden relative group shadow-2xl rounded-[5px]">
+        <Card className="lg:col-span-2 border border-border/50 glass-panel overflow-hidden relative group shadow-2xl rounded-[8px]">
            {profile?.ui_animations_enabled !== false && (
              <div className="absolute top-0 right-0 p-4">
-               <div className="w-60 h-60 bg-primary/5 rounded-[5px]-full blur-[140px] group-hover:bg-primary/20 transition-all duration-1000" />
+               <div className="w-60 h-60 bg-primary/5 rounded-full blur-[140px] group-hover:bg-primary/20 transition-all duration-1000" />
              </div>
            )}
           <CardHeader className="flex flex-row items-center justify-between border-b border-border/50 bg-background/40 p-6">
@@ -1313,7 +1354,7 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
               <Layout className="w-5 h-5 text-primary" />
               Active Task Queue
             </CardTitle>
-            <Badge className="bg-primary/10 text-primary border border-primary/20 shadow-inner text-[8px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 rounded-[5px]">LIVE FEED</Badge>
+            <Badge className="bg-primary/10 text-primary border border-primary/20 shadow-inner text-[8px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 rounded-[8px]">LIVE FEED</Badge>
           </CardHeader>
           <CardContent className="p-0">
              <div className="divide-y divide-border/10">
@@ -1328,12 +1369,12 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
                     const parentWorkspace = workspaces.find(w => w.id === t.workspace_id);
                     return (
                       <div key={t.id} className="flex items-center gap-4 p-5 hover:bg-secondary/20 transition-all group/item cursor-pointer">
-                        <div className="w-8 h-8 rounded-[5px] bg-background border border-border/40 flex items-center justify-center shrink-0 shadow-inner group-hover/item:border-primary transition-all duration-500">
+                        <div className="w-8 h-8 rounded-[8px] bg-background border border-border/40 flex items-center justify-center shrink-0 shadow-inner group-hover/item:border-primary transition-all duration-500">
                           <input
                             type="checkbox"
                             checked={t.status === "completed"}
                             onChange={() => handleToggleTask(t)}
-                            className="w-3.5 h-3.5 rounded-[5px] bg-background/50 border-border/30 accent-primary text-primary focus:ring-0 cursor-pointer"
+                            className="w-3.5 h-3.5 rounded-[8px] bg-background/50 border-border/30 accent-primary text-primary focus:ring-0 cursor-pointer"
                           />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -1353,7 +1394,7 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
                           </div>
                         </div>
                         <div className="shrink-0">
-                           <Badge className="text-[7px] font-bold py-1 px-2.5 uppercase tracking-[0.2em] rounded-[5px] bg-primary/10 text-primary border border-primary/20" variant="secondary">{t.status}</Badge>
+                           <Badge className="text-[7px] font-bold py-1 px-2.5 uppercase tracking-[0.2em] rounded-[8px] bg-primary/10 text-primary border border-primary/20" variant="secondary">{t.status}</Badge>
                         </div>
                       </div>
                     );
@@ -1364,21 +1405,21 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
         </Card>
 
         <div className="space-y-6">
-          <Card className="border-none shadow-[0_40px_80px_-15px_rgba(59,130,246,0.2)] bg-primary text-white overflow-hidden relative group rounded-[5px]">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-white/20 rounded-[5px]-full -translate-y-40 translate-x-40 blur-[100px] group-hover:scale-125 transition-transform duration-1000" />
-            <div className="absolute bottom-0 left-0 w-60 h-60 bg-black/20 rounded-[5px]-full translate-y-32 -translate-x-32 blur-[80px]" />
+          <Card className="border-none shadow-[0_40px_80px_-15px_rgba(59,130,246,0.2)] bg-primary text-white overflow-hidden relative group rounded-[8px]">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-white/20 rounded-full -translate-y-40 translate-x-40 blur-[100px] group-hover:scale-125 transition-transform duration-1000" />
+            <div className="absolute bottom-0 left-0 w-60 h-60 bg-black/20 rounded-full translate-y-32 -translate-x-32 blur-[80px]" />
             <CardContent className="p-8 relative z-10">
               <div className="flex items-center gap-3 mb-6">
-                 <div className="w-1.5 h-6 bg-white rounded-[5px]-full opacity-90 shadow-[0_0_10px_rgba(255,255,255,0.6)]" />
+                 <div className="w-1.5 h-6 bg-white rounded-full opacity-90 shadow-[0_0_10px_rgba(255,255,255,0.6)]" />
                  <h3 className="text-2xl font-bold tracking-tight">Your Workspace</h3>
               </div>
               <p className="text-primary-foreground/90 text-xs font-bold mb-6 leading-relaxed tracking-tight">Manage all your workspaces, tasks, files, and notes in one convenient place.</p>
-              <Button onClick={loadData} className="w-full font-bold uppercase tracking-[0.25em] text-[9px] h-11 shadow-2xl bg-white text-primary hover:bg-white/90 transition-all hover:scale-[1.03] active:scale-95 rounded-[5px]">Refresh Data</Button>
+              <Button onClick={loadData} className="w-full font-bold uppercase tracking-[0.25em] text-[9px] h-11 shadow-2xl bg-white text-primary hover:bg-white/90 transition-all hover:scale-[1.03] active:scale-95 rounded-[8px]">Refresh Data</Button>
             </CardContent>
           </Card>
 
           {/* Active Workspaces Card Panel */}
-          <Card className="border border-border/50 glass-panel rounded-[5px] shadow-2xl">
+          <Card className="border border-border/50 glass-panel rounded-[8px] shadow-2xl">
             <CardHeader className="border-b border-border/20 bg-background/30 p-5">
               <CardTitle className="text-[9px] font-bold uppercase tracking-[0.35em] font-mono text-muted-foreground flex items-center gap-3">
                 <Briefcase className="w-4 h-4 text-primary" />
@@ -1395,7 +1436,7 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
                   workspaces.slice(0, 4).map((ws) => (
                     <div key={ws.id} className="p-4 flex items-center justify-between hover:bg-secondary/20 transition-all group cursor-pointer">
                       <div className="flex items-center gap-3 overflow-hidden">
-                        <div className="w-6 h-6 rounded-[5px] bg-background border border-border/50 flex items-center justify-center overflow-hidden shrink-0 shadow-sm relative" style={{ borderLeft: `2px solid ${ws.color || "#3b82f6"}` }}>
+                        <div className="w-6 h-6 rounded-[8px] bg-background border border-border/50 flex items-center justify-center overflow-hidden shrink-0 shadow-sm relative" style={{ borderLeft: `2px solid ${ws.color || "#3b82f6"}` }}>
                           <SafeLogo
                             src={ws.logo ? resolveDriveImage(ws.logo) : undefined}
                             alt={ws.name}

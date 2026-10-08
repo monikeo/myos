@@ -2034,7 +2034,7 @@ export function ProjectsView() {
                                                 setCategorySearchQuery("");
                                               }}
                                               className={cn(
-                                                "w-full text-left px-2 py-1.5 rounded-[6px] transition-all flex items-center justify-between text-xs",
+                                                "w-full text-left px-2 py-1.5 rounded-[8px] transition-all flex items-center justify-between text-xs",
                                                 newExpenseCategory === cat 
                                                   ? "bg-primary/10 text-primary font-bold" 
                                                   : "text-muted-foreground hover:bg-secondary/40 hover:text-foreground"
@@ -2055,7 +2055,7 @@ export function ProjectsView() {
                                               setIsCategoryDropdownOpen(false);
                                               setCategorySearchQuery("");
                                             }}
-                                            className="w-full text-left px-2 py-1.5 rounded-[6px] text-primary bg-primary/5 hover:bg-primary/10 transition-all font-bold text-xs flex items-center gap-1"
+                                            className="w-full text-left px-2 py-1.5 rounded-[8px] text-primary bg-primary/5 hover:bg-primary/10 transition-all font-bold text-xs flex items-center gap-1"
                                           >
                                             <Plus className="w-3 h-3" />
                                             <span>Add Custom: "{categorySearchQuery.trim()}"</span>

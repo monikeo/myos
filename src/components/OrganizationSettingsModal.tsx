@@ -259,12 +259,12 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-300">
-      <div className="bg-background border border-border/50 sm:rounded-[5px] w-full max-w-4xl h-full sm:h-auto sm:max-h-[85vh] flex flex-col shadow-2xl relative overflow-hidden">
+      <div className="bg-background border border-border/50 sm:rounded-[8px] w-full max-w-4xl h-full sm:h-auto sm:max-h-[85vh] flex flex-col shadow-2xl relative overflow-hidden">
         
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-5 border-b border-border/50 bg-secondary/20 shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-[5px] bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-[8px] bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
               {organization.logo_url ? (
                 <img src={resolveDriveImage(organization.logo_url)} className="w-full h-full object-cover" alt="Logo" />
               ) : (
@@ -276,7 +276,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
               <p className="text-[10px] uppercase font-mono tracking-widest text-primary mt-1">Organization Settings</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="rounded-[5px] text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent hover:border-border/50 transition-colors">
+          <Button variant="ghost" size="icon" onClick={onClose} className="rounded-[8px] text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent hover:border-border/50 transition-colors">
             <X className="w-5 h-5" />
           </Button>
         </div>
@@ -286,7 +286,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
             <div className="w-full sm:w-56 border-b sm:border-b-0 sm:border-r border-border/50 bg-secondary/5 p-2 sm:p-4 space-y-0 sm:space-y-1 shrink-0 overflow-x-auto sm:overflow-x-hidden sm:overflow-y-auto flex sm:flex-col gap-1 sm:gap-0 scrollbar-none items-center sm:items-stretch">
               <button
                 onClick={() => setActiveTab("info")}
-                className={`w-auto sm:w-full shrink-0 flex items-center gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-[5px] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                className={`w-auto sm:w-full shrink-0 flex items-center gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-[8px] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all border ${
                   activeTab === "info" ? "bg-primary text-primary-foreground border-primary/20 shadow-[inset_2px_0_0_0_rgba(255,255,255,0.2)]" : "border-transparent text-muted-foreground hover:bg-secondary/40 hover:text-foreground hover:border-border/30"
                 }`}
               >
@@ -295,7 +295,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
               </button>
               <button
                 onClick={() => setActiveTab("general")}
-                className={`w-auto sm:w-full shrink-0 flex items-center gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-[5px] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                className={`w-auto sm:w-full shrink-0 flex items-center gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-[8px] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all border ${
                   activeTab === "general" ? "bg-primary text-primary-foreground border-primary/20 shadow-[inset_2px_0_0_0_rgba(255,255,255,0.2)]" : "border-transparent text-muted-foreground hover:bg-secondary/40 hover:text-foreground hover:border-border/30"
                 }`}
               >
@@ -305,7 +305,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
               {(userRole === "Owner" || userRole === "Admin") && (
                 <button
                   onClick={() => setActiveTab("members")}
-                  className={`w-auto sm:w-full shrink-0 flex items-center gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-[5px] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                  className={`w-auto sm:w-full shrink-0 flex items-center gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-[8px] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all border ${
                     activeTab === "members" ? "bg-primary text-primary-foreground border-primary/20 shadow-[inset_2px_0_0_0_rgba(255,255,255,0.2)]" : "border-transparent text-muted-foreground hover:bg-secondary/40 hover:text-foreground hover:border-border/30"
                   }`}
                 >
@@ -317,7 +317,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                 <div className="sm:pt-6 sm:mt-auto sm:border-t sm:border-border/50 shrink-0">
                   <button
                     onClick={() => setActiveTab("danger")}
-                    className={`w-auto sm:w-full shrink-0 flex items-center gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-[5px] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                    className={`w-auto sm:w-full shrink-0 flex items-center gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-[8px] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all border ${
                       activeTab === "danger" ? "bg-destructive text-destructive-foreground border-destructive/20 shadow-[inset_2px_0_0_0_rgba(255,255,255,0.2)]" : "border-transparent text-destructive hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20"
                     }`}
                   >
@@ -347,7 +347,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                     {/* Basic Analyze Metrics Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                       {/* Workspaces Card */}
-                      <div className="p-4 border border-border/40 bg-secondary/5 rounded-[5px] space-y-2 flex flex-col justify-between">
+                      <div className="p-4 border border-border/40 bg-secondary/5 rounded-[8px] space-y-2 flex flex-col justify-between">
                         <div className="flex items-center justify-between text-muted-foreground">
                           <span className="text-[8px] font-extrabold uppercase tracking-widest font-mono">Workspaces</span>
                           <Layers className="w-4 h-4 text-primary shrink-0" />
@@ -357,7 +357,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                       </div>
 
                       {/* Projects Card */}
-                      <div className="p-4 border border-border/40 bg-secondary/5 rounded-[5px] space-y-2 flex flex-col justify-between">
+                      <div className="p-4 border border-border/40 bg-secondary/5 rounded-[8px] space-y-2 flex flex-col justify-between">
                         <div className="flex items-center justify-between text-muted-foreground">
                           <span className="text-[8px] font-extrabold uppercase tracking-widest font-mono">Projects</span>
                           <FolderKanban className="w-4 h-4 text-primary shrink-0" />
@@ -374,7 +374,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                           .reduce((sum, tx) => sum + tx.amount, 0);
                         const percent = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0;
                         return (
-                          <div className="p-4 border border-border/40 bg-secondary/5 rounded-[5px] space-y-2 flex flex-col justify-between col-span-1">
+                          <div className="p-4 border border-border/40 bg-secondary/5 rounded-[8px] space-y-2 flex flex-col justify-between col-span-1">
                             <div className="flex items-center justify-between text-muted-foreground">
                               <span className="text-[8px] font-extrabold uppercase tracking-widest font-mono">Spent / Limit</span>
                               <Wallet className="w-4 h-4 text-primary shrink-0" />
@@ -384,7 +384,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                               <p className="text-[9px] font-mono text-muted-foreground mt-0.5">Limit: ${totalBudget.toLocaleString()}</p>
                             </div>
                             {totalBudget > 0 ? (
-                              <div className="w-full bg-secondary h-1 rounded-[5px] overflow-hidden">
+                              <div className="w-full bg-secondary h-1 rounded-[8px] overflow-hidden">
                                 <div className="h-full bg-primary" style={{ width: `${percent}%` }} />
                               </div>
                             ) : (
@@ -400,7 +400,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                         const completed = tasks.filter(t => t.status === "completed" || t.status === "archived").length;
                         const percent = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
                         return (
-                          <div className="p-4 border border-border/40 bg-secondary/5 rounded-[5px] space-y-2 flex flex-col justify-between">
+                          <div className="p-4 border border-border/40 bg-secondary/5 rounded-[8px] space-y-2 flex flex-col justify-between">
                             <div className="flex items-center justify-between text-muted-foreground">
                               <span className="text-[8px] font-extrabold uppercase tracking-widest font-mono">Tasks Done</span>
                               <Clock className="w-4 h-4 text-primary shrink-0" />
@@ -419,7 +419,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                       </h4>
 
                       {workspaces.length === 0 ? (
-                        <div className="py-12 text-center border border-dashed border-border/30 bg-secondary/5 rounded-[5px] text-muted-foreground/60 font-mono uppercase tracking-widest text-[9px]">
+                        <div className="py-12 text-center border border-dashed border-border/30 bg-secondary/5 rounded-[8px] text-muted-foreground/60 font-mono uppercase tracking-widest text-[9px]">
                           No active workspaces in this organization.
                         </div>
                       ) : (
@@ -432,11 +432,11 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                               .reduce((sum, tx) => sum + tx.amount, 0);
 
                             return (
-                              <div key={ws.id} className="border border-border/50 bg-secondary/5 rounded-[5px] p-4 space-y-3">
+                              <div key={ws.id} className="border border-border/50 bg-secondary/5 rounded-[8px] p-4 space-y-3">
                                 {/* Workspace Header */}
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/10 pb-2.5">
                                   <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-[5px] bg-background border border-border/50 flex items-center justify-center shrink-0 shadow-sm font-bold text-xs uppercase text-primary" style={{ borderColor: ws.color }}>
+                                    <div className="w-8 h-8 rounded-[8px] bg-background border border-border/50 flex items-center justify-center shrink-0 shadow-sm font-bold text-xs uppercase text-primary" style={{ borderColor: ws.color }}>
                                       {ws.name.slice(0, 2)}
                                     </div>
                                     <div>
@@ -474,14 +474,14 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                                         const projLimit = proj.budget;
 
                                         return (
-                                          <div key={proj.id} className="p-3 bg-background border border-border/40 rounded-[5px] flex flex-col justify-between gap-2.5" style={{ borderLeft: `3px solid ${proj.color || "#3b82f6"}` }}>
+                                          <div key={proj.id} className="p-3 bg-background border border-border/40 rounded-[8px] flex flex-col justify-between gap-2.5" style={{ borderLeft: `3px solid ${proj.color || "#3b82f6"}` }}>
                                             <div className="flex justify-between items-start gap-2">
                                               <div className="min-w-0">
                                                 <h6 className="text-[11px] font-bold uppercase text-foreground leading-none truncate">{proj.name}</h6>
                                                 <p className="text-[9px] text-muted-foreground font-mono mt-0.5 truncate uppercase">{proj.status}</p>
                                               </div>
                                               <Badge variant="outline" className={cn(
-                                                "text-[6.5px] uppercase font-bold tracking-widest h-4 px-1 rounded-[5px] shrink-0 font-mono",
+                                                "text-[6.5px] uppercase font-bold tracking-widest h-4 px-1 rounded-[8px] shrink-0 font-mono",
                                                 proj.priority === "critical" ? "bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_8px_rgba(239,68,68,0.25)]" :
                                                 proj.priority === "high" ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
                                                 "bg-primary/10 text-primary border-primary/20"
@@ -501,7 +501,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                                                 </span>
                                               </div>
                                               {projLimit ? (
-                                                <div className="w-full bg-secondary h-1 rounded-[5px] overflow-hidden border border-border/10">
+                                                <div className="w-full bg-secondary h-1 rounded-[8px] overflow-hidden border border-border/10">
                                                   <div 
                                                     className={cn(
                                                       "h-full transition-all duration-300",
@@ -545,7 +545,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                       value={name} 
                       onChange={(e) => setName(e.target.value)} 
                       disabled={!isAllowedToEdit}
-                      className="max-w-md rounded-[5px] border-border/50 h-10 focus-visible:ring-primary bg-secondary/5 font-mono text-sm disabled:opacity-60"
+                      className="max-w-md rounded-[8px] border-border/50 h-10 focus-visible:ring-primary bg-secondary/5 font-mono text-sm disabled:opacity-60"
                       placeholder="Enter organization name"
                     />
                   </div>
@@ -555,7 +555,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                       value={description} 
                       onChange={(e) => setDescription(e.target.value)} 
                       disabled={!isAllowedToEdit}
-                      className="max-w-md rounded-[5px] border-border/50 h-10 focus-visible:ring-primary bg-secondary/5 text-sm disabled:opacity-60"
+                      className="max-w-md rounded-[8px] border-border/50 h-10 focus-visible:ring-primary bg-secondary/5 text-sm disabled:opacity-60"
                       placeholder="Brief description"
                     />
                   </div>
@@ -565,7 +565,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                       value={logoUrl} 
                       onChange={(e) => setLogoUrl(e.target.value)} 
                       disabled={!isAllowedToEdit}
-                      className="max-w-md rounded-[5px] border-border/50 h-10 focus-visible:ring-primary bg-secondary/5 font-mono text-xs disabled:opacity-60"
+                      className="max-w-md rounded-[8px] border-border/50 h-10 focus-visible:ring-primary bg-secondary/5 font-mono text-xs disabled:opacity-60"
                       placeholder="https://example.com/logo.png"
                     />
                   </div>
@@ -576,7 +576,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                     <Button 
                       onClick={handleUpdateGeneral} 
                       disabled={saving}
-                      className="rounded-[5px] bg-primary text-primary-foreground font-bold uppercase tracking-widest text-[9px] px-6 h-10"
+                      className="rounded-[8px] bg-primary text-primary-foreground font-bold uppercase tracking-widest text-[9px] px-6 h-10"
                     >
                       {saving ? "Saving Changes..." : "Save Configuration"}
                     </Button>
@@ -593,7 +593,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                 </div>
 
                 {/* Invite Section */}
-                <div className="bg-secondary/5 border border-border/50 rounded-[5px] p-4 sm:p-5 space-y-4 shrink-0">
+                <div className="bg-secondary/5 border border-border/50 rounded-[8px] p-4 sm:p-5 space-y-4 shrink-0">
                   <h4 className="text-[10px] font-bold text-primary uppercase tracking-widest font-mono flex items-center gap-2">
                     <UserPlus className="w-4 h-4 shrink-0" /> Invite New Members
                   </h4>
@@ -603,14 +603,14 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                         placeholder="Enter exact email address to invite..." 
                         value={inviteEmail}
                         onChange={(e) => setInviteEmail(e.target.value)}
-                        className="bg-background/50 border-border/50 rounded-[5px] focus-visible:ring-primary h-10 font-mono text-xs"
+                        className="bg-background/50 border-border/50 rounded-[8px] focus-visible:ring-primary h-10 font-mono text-xs"
                         onKeyDown={(e) => e.key === "Enter" && handleInviteUser()}
                       />
                     </div>
                     <select
                       value={selectedRole}
                       onChange={(e) => setSelectedRole(e.target.value)}
-                      className="h-10 px-4 rounded-[5px] bg-background/50 border border-border/50 text-xs font-bold font-mono uppercase tracking-widest text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer shrink-0 transition-all hover:bg-background/80"
+                      className="h-10 px-4 rounded-[8px] bg-background/50 border border-border/50 text-xs font-bold font-mono uppercase tracking-widest text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer shrink-0 transition-all hover:bg-background/80"
                     >
                       <option value="Admin">Admin</option>
                       <option value="Member">Member</option>
@@ -619,7 +619,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                     <Button 
                       onClick={handleInviteUser} 
                       disabled={inviteLoading || !inviteEmail.trim()}
-                      className="rounded-[5px] bg-primary text-primary-foreground font-bold uppercase tracking-widest text-[9px] h-10 px-6 shrink-0"
+                      className="rounded-[8px] bg-primary text-primary-foreground font-bold uppercase tracking-widest text-[9px] h-10 px-6 shrink-0"
                     >
                       {inviteLoading ? "Sending..." : "Send Invite"}
                     </Button>
@@ -634,13 +634,13 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                   {loadingMembers ? (
                     <div className="py-12 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
                   ) : members.length === 0 ? (
-                    <div className="py-12 text-center border border-dashed border-border/50 rounded-[5px] text-muted-foreground text-xs font-mono uppercase tracking-widest">No members found.</div>
+                    <div className="py-12 text-center border border-dashed border-border/50 rounded-[8px] text-muted-foreground text-xs font-mono uppercase tracking-widest">No members found.</div>
                   ) : (
-                    <div className="border border-border/50 rounded-[5px] divide-y divide-border/50 overflow-y-auto custom-scrollbar flex-1 bg-background">
+                    <div className="border border-border/50 rounded-[8px] divide-y divide-border/50 overflow-y-auto custom-scrollbar flex-1 bg-background">
                       {members.map(m => (
                         <div key={m.assignmentId} className="flex items-center justify-between p-3 sm:p-4 hover:bg-secondary/20 transition-colors">
                           <div className="flex items-center gap-3 overflow-hidden">
-                            <img src={m.user.avatar_url ? resolveDriveImage(m.user.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${m.user.id}`} className="w-9 h-9 sm:w-10 sm:h-10 rounded-[5px] border border-border/50 bg-secondary shrink-0" alt="Avatar" />
+                            <img src={m.user.avatar_url ? resolveDriveImage(m.user.avatar_url) : `https://api.dicebear.com/7.x/bottts/svg?seed=${m.user.id}`} className="w-9 h-9 sm:w-10 sm:h-10 rounded-[8px] border border-border/50 bg-secondary shrink-0" alt="Avatar" />
                             <div className="min-w-0 flex items-center gap-2">
                               <p className="text-xs font-bold uppercase text-foreground truncate">{m.user.display_name}</p>
                               {m.status === "pending" && (
@@ -654,14 +654,14 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                               <select
                                 value={m.role}
                                 onChange={(e) => handleChangeMemberRole(m.assignmentId, e.target.value)}
-                                className="text-[10px] font-bold font-mono tracking-wider uppercase bg-secondary/50 border border-border/30 rounded-[5px] px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/20"
+                                className="text-[10px] font-bold font-mono tracking-wider uppercase bg-secondary/50 border border-border/30 rounded-[8px] px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-primary/20"
                               >
                                 <option value="Admin">Admin</option>
                                 <option value="Member">Member</option>
                                 <option value="Guest">Guest</option>
                               </select>
                             ) : (
-                              <span className={`text-[8px] sm:text-[9px] font-bold font-mono tracking-widest uppercase px-2 py-1 rounded-[5px] border ${
+                              <span className={`text-[8px] sm:text-[9px] font-bold font-mono tracking-widest uppercase px-2 py-1 rounded-[8px] border ${
                                 m.role === "Owner" ? "bg-amber-500/10 text-amber-500 border-amber-500/30" :
                                 m.role === "Admin" ? "bg-primary/10 text-primary border-primary/30" :
                                 m.role === "Member" ? "bg-blue-500/10 text-blue-500 border-blue-500/30" :
@@ -675,7 +675,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                               variant="ghost" 
                               size="icon" 
                               onClick={() => handleRemoveMember(m.assignmentId)}
-                              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-[5px] h-8 w-8"
+                              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-[8px] h-8 w-8"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -695,9 +695,9 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                   <p className="text-xs text-muted-foreground mt-1">Irreversible destructive actions. Proceed with extreme caution.</p>
                 </div>
                 
-                <div className="border border-destructive/30 bg-destructive/5 rounded-[5px] p-4 sm:p-6 space-y-6 shadow-sm">
+                <div className="border border-destructive/30 bg-destructive/5 rounded-[8px] p-4 sm:p-6 space-y-6 shadow-sm">
                   <div className="flex flex-col sm:flex-row items-start gap-4">
-                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-[5px] shrink-0 flex items-center justify-center">
+                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-[8px] shrink-0 flex items-center justify-center">
                        <AlertTriangle className="w-5 h-5 text-destructive" />
                     </div>
                     <div>
@@ -716,7 +716,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                       value={deleteConfirmText}
                       onChange={(e) => setDeleteConfirmText(e.target.value)}
                       placeholder={`Type "${organization.name}"`}
-                      className="max-w-md bg-background border-destructive/40 focus-visible:ring-destructive rounded-[5px] h-10 font-mono text-sm"
+                      className="max-w-md bg-background border-destructive/40 focus-visible:ring-destructive rounded-[8px] h-10 font-mono text-sm"
                     />
                   </div>
 
@@ -725,7 +725,7 @@ export function OrganizationSettingsModal({ organization, onClose, onUpdate }: O
                       variant="destructive"
                       onClick={handleDeleteOrg}
                       disabled={saving || deleteConfirmText.trim().toLowerCase() !== organization.name.toLowerCase()}
-                      className="rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-6 h-10"
+                      className="rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-6 h-10"
                     >
                       {saving ? "Purging Data..." : "Delete Organization"}
                     </Button>

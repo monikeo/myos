@@ -20,6 +20,10 @@
     <link rel="alternate icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png" />
 
+    <!-- Font Preconnects for Instant Type Loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <script>
       (function() {
         try {
@@ -39,23 +43,25 @@
       })();
     </script>
     <script>
+      // Global PWA Install Prompt Listener
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        window.__pwaInstallPrompt = e;
+        window.dispatchEvent(new CustomEvent("myos:pwa-installable"));
+      });
+      window.addEventListener("appinstalled", () => {
+        window.__pwaInstallPrompt = null;
+        window.dispatchEvent(new CustomEvent("myos:pwa-installed"));
+        console.log("[PWA] Application installed successfully");
+      });
+
       // Service Worker registration for PWA installation and offline caching
       if ("serviceWorker" in navigator) {
-        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-          // Unregister service worker on localhost to prevent caching conflicts during development
-          navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for (var registration of registrations) {
-              registration.unregister();
-              console.log("[PWA] Service Worker unregistered for local development");
-            }
-          });
-        } else {
-          window.addEventListener("load", () => {
-            navigator.serviceWorker.register("/sw.js")
-              .then((reg) => console.log("[PWA] Service Worker registered successfully:", reg.scope))
-              .catch((err) => console.error("[PWA] Service Worker registration failed:", err));
-          });
-        }
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js")
+            .then((reg) => console.log("[PWA] Service Worker registered:", reg.scope))
+            .catch((err) => console.warn("[PWA] Service Worker registration note:", err));
+        });
       }
     </script>
   </head>

@@ -72,7 +72,7 @@ export function NotesView() {
   }, [isEditing, selectedNote?.id]);
 
   const insertChecklist = () => {
-    document.execCommand("insertHTML", false, `<input type="checkbox" class="w-4 h-4 rounded-[5px] bg-background border border-border/50 text-primary focus:ring-0 focus:ring-offset-0 shrink-0 mr-2 align-middle" />&nbsp;`);
+    document.execCommand("insertHTML", false, `<input type="checkbox" class="w-4 h-4 rounded-[8px] bg-background border border-border/50 text-primary focus:ring-0 focus:ring-offset-0 shrink-0 mr-2 align-middle" />&nbsp;`);
   };
 
   const insertDate = () => {
@@ -208,7 +208,7 @@ export function NotesView() {
           <Badge variant="outline" className="text-primary font-mono bg-primary/5 border-primary/20 tracking-widest px-3 py-1 uppercase text-[9px] font-bold">Notes</Badge>
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold tracking-tight">Notes</h1>
-            <Button onClick={handleCreate} size="icon" className="rounded-[5px] bg-primary shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:scale-105 transition-transform h-10 w-10">
+            <Button onClick={handleCreate} size="icon" className="rounded-[8px] bg-primary shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:scale-105 transition-transform h-10 w-10">
               <Plus className="w-5 h-5" />
             </Button>
           </div>
@@ -221,33 +221,33 @@ export function NotesView() {
               placeholder="Search notes..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-12 bg-secondary/30 border-border/20 rounded-[5px] h-12 focus:bg-background transition-all duration-500" 
+              className="pl-12 bg-secondary/30 border-border/20 rounded-[8px] h-12 focus:bg-background transition-all duration-500" 
             />
           </div>
           <Button 
             variant={filterType === "Pinned" ? "secondary" : "ghost"}
             size="icon"
             onClick={() => setFilterType(filterType === "Pinned" ? "All" : "Pinned")}
-            className="h-12 w-12 rounded-[5px] bg-secondary/30 border border-border/20 hover:bg-secondary/50"
+            className="h-12 w-12 rounded-[8px] bg-secondary/30 border border-border/20 hover:bg-secondary/50"
           >
             <Pin className={cn("w-4 h-4", filterType === "Pinned" ? "text-primary" : "text-muted-foreground")} />
           </Button>
         </div>
-        <ScrollArea className="h-[320px] md:h-auto md:flex-1 border border-border/50 rounded-[5px] glass-panel shadow-2xl overflow-hidden">
+        <ScrollArea className="h-[320px] md:h-auto md:flex-1 border border-border/50 rounded-[8px] glass-panel shadow-2xl overflow-hidden">
           <div className="p-3 space-y-2">
             {filteredNotes.map(note => (
               <div 
                 key={note.id}
                 onClick={() => { setSelectedNote(note); setIsEditing(false); }}
                 className={cn(
-                  "p-5 rounded-[5px] cursor-pointer transition-all flex items-start gap-4 group relative overflow-hidden border border-transparent",
+                  "p-5 rounded-[8px] cursor-pointer transition-all flex items-start gap-4 group relative overflow-hidden border border-transparent",
                   selectedNote?.id === note.id 
                     ? "bg-primary text-white shadow-[0_10px_30px_rgba(59,130,246,0.3)] border-primary/20" 
                     : "hover:bg-secondary/40 hover:border-border/30 text-muted-foreground hover:text-white"
                 )}
               >
                 <div className={cn(
-                  "w-10 h-10 rounded-[5px] flex items-center justify-center shrink-0 shadow-inner",
+                  "w-10 h-10 rounded-[8px] flex items-center justify-center shrink-0 shadow-inner",
                   selectedNote?.id === note.id ? "bg-white/10" : "bg-background border border-border/50"
                 )}>
                   <FileText className={cn("w-5 h-5", selectedNote?.id === note.id ? "text-white" : "text-muted-foreground/60")} />
@@ -268,7 +268,7 @@ export function NotesView() {
                    variant="ghost" 
                    size="icon" 
                    className={cn(
-                     "h-8 w-8 md:opacity-0 md:group-hover:opacity-100 opacity-100 transition-opacity rounded-[5px]",
+                     "h-8 w-8 md:opacity-0 md:group-hover:opacity-100 opacity-100 transition-opacity rounded-[8px]",
                      selectedNote?.id === note.id ? "hover:bg-white/10 text-white" : "hover:bg-red-500/10 text-red-500"
                    )}
                    onClick={(e) => handleDelete(note.id, e)}
@@ -281,9 +281,9 @@ export function NotesView() {
         </ScrollArea>
       </div>
 
-      <div className={cn("md:col-span-2 min-h-[500px] md:min-h-0 border border-border/50 rounded-[5px] glass-panel shadow-2xl overflow-hidden flex flex-col relative group/view", !selectedNote && "hidden md:flex")}>
+      <div className={cn("md:col-span-2 min-h-[500px] md:min-h-0 border border-border/50 rounded-[8px] glass-panel shadow-2xl overflow-hidden flex flex-col relative group/view", !selectedNote && "hidden md:flex")}>
         <div className="absolute top-0 right-0 p-8 pointer-events-none">
-           <div className="w-64 h-64 bg-primary/5 rounded-[5px]-full blur-[100px] group-hover/view:bg-primary/10 transition-all duration-1000" />
+           <div className="w-64 h-64 bg-primary/5 rounded-full blur-[100px] group-hover/view:bg-primary/10 transition-all duration-1000" />
         </div>
         {selectedNote ? (
           <>
@@ -292,7 +292,7 @@ export function NotesView() {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="md:hidden shrink-0 h-10 w-10 border border-border/20 rounded-[5px] bg-background/50 hover:bg-secondary" 
+                  className="md:hidden shrink-0 h-10 w-10 border border-border/20 rounded-[8px] bg-background/50 hover:bg-secondary" 
                   onClick={() => { setSelectedNote(null); setIsEditing(false); }}
                 >
                   <ChevronLeft className="w-5 h-5 text-primary" />
@@ -321,15 +321,15 @@ export function NotesView() {
               </div>
               <div className="flex items-center justify-end gap-2 sm:gap-4 shrink-0 relative z-10">
                 {isEditing ? (
-                  <Button onClick={handleUpdate} className="bg-primary shadow-[0_0_20px_rgba(59,130,246,0.3)] rounded-[5px] font-bold uppercase tracking-widest text-[9px] sm:text-[10px] px-4 sm:px-8 h-10 sm:h-12 flex-1 sm:flex-initial">Save Note</Button>
+                  <Button onClick={handleUpdate} className="bg-primary shadow-[0_0_20px_rgba(59,130,246,0.3)] rounded-[8px] font-bold uppercase tracking-widest text-[9px] sm:text-[10px] px-4 sm:px-8 h-10 sm:h-12 flex-1 sm:flex-initial">Save Note</Button>
                 ) : (
-                  <Button variant="outline" onClick={() => setIsEditing(true)} className="rounded-[5px] border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] sm:text-[10px] px-4 sm:px-8 h-10 sm:h-12 flex-1 sm:flex-initial">
+                  <Button variant="outline" onClick={() => setIsEditing(true)} className="rounded-[8px] border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] sm:text-[10px] px-4 sm:px-8 h-10 sm:h-12 flex-1 sm:flex-initial">
                     <Edit3 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 sm:mr-3 text-primary" />
                     Edit Note
                   </Button>
                 )}
                 <div className="h-8 sm:h-10 w-[1px] bg-border/20 mx-1 sm:mx-2" />
-                <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-12 sm:w-12 rounded-[5px] bg-background/50 border border-border/50 hover:bg-secondary transition-all shrink-0">
+                <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-12 sm:w-12 rounded-[8px] bg-background/50 border border-border/50 hover:bg-secondary transition-all shrink-0">
                    <Pin className={cn("w-4 sm:w-5 sm:h-5", selectedNote.pinned ? "text-primary fill-primary" : "text-muted-foreground/60")} />
                 </Button>
               </div>
@@ -338,12 +338,12 @@ export function NotesView() {
               {isEditing ? (
                 <div className="flex flex-col h-full gap-4">
                   {/* curating high-tech floating tools bar */}
-                  <div className="flex flex-wrap items-center gap-1.5 p-2 bg-secondary/30 border border-border/20 rounded-[5px] overflow-x-auto shrink-0 select-none">
+                  <div className="flex flex-wrap items-center gap-1.5 p-2 bg-secondary/30 border border-border/20 rounded-[8px] overflow-x-auto shrink-0 select-none">
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 rounded-[5px] font-extrabold text-xs hover:bg-primary/20"
+                      className="h-8 w-8 p-0 rounded-[8px] font-extrabold text-xs hover:bg-primary/20"
                       onClick={() => document.execCommand("bold")}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Bold (Ctrl+B)"
@@ -354,7 +354,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 rounded-[5px] italic text-xs hover:bg-primary/20"
+                      className="h-8 w-8 p-0 rounded-[8px] italic text-xs hover:bg-primary/20"
                       onClick={() => document.execCommand("italic")}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Italic (Ctrl+I)"
@@ -365,7 +365,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 rounded-[5px] underline text-xs hover:bg-primary/20"
+                      className="h-8 w-8 p-0 rounded-[8px] underline text-xs hover:bg-primary/20"
                       onClick={() => document.execCommand("underline")}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Underline (Ctrl+U)"
@@ -376,7 +376,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 rounded-[5px] line-through text-xs hover:bg-primary/20"
+                      className="h-8 w-8 p-0 rounded-[8px] line-through text-xs hover:bg-primary/20"
                       onClick={() => document.execCommand("strikeThrough")}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Strikethrough"
@@ -392,7 +392,7 @@ export function NotesView() {
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="h-8 px-2 rounded-[5px] font-bold text-[9px] uppercase tracking-widest hover:bg-primary/20 flex items-center gap-1"
+                        className="h-8 px-2 rounded-[8px] font-bold text-[9px] uppercase tracking-widest hover:bg-primary/20 flex items-center gap-1"
                         onClick={() => setSizeOpen(!sizeOpen)}
                         onMouseDown={(e) => e.preventDefault()}
                       >
@@ -400,7 +400,7 @@ export function NotesView() {
                       </Button>
                       {sizeOpen && (
                         <div 
-                          className="absolute left-0 top-full mt-1 bg-background border border-border shadow-2xl p-1 min-w-[100px] flex flex-col gap-1 z-50 rounded-[5px] bg-secondary/80 backdrop-blur-md"
+                          className="absolute left-0 top-full mt-1 bg-background border border-border shadow-2xl p-1 min-w-[100px] flex flex-col gap-1 z-50 rounded-[8px] bg-secondary/80 backdrop-blur-md"
                           onMouseLeave={() => setSizeOpen(false)}
                         >
                           {[
@@ -432,7 +432,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-2 rounded-[5px] font-mono text-[9px] font-bold hover:bg-primary/20"
+                      className="h-8 px-2 rounded-[8px] font-mono text-[9px] font-bold hover:bg-primary/20"
                       onClick={() => document.execCommand("formatBlock", false, "H1")}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Heading 1"
@@ -443,7 +443,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-2 rounded-[5px] font-mono text-[9px] font-bold hover:bg-primary/20"
+                      className="h-8 px-2 rounded-[8px] font-mono text-[9px] font-bold hover:bg-primary/20"
                       onClick={() => document.execCommand("formatBlock", false, "H2")}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Heading 2"
@@ -454,7 +454,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-2 rounded-[5px] font-mono text-[9px] font-bold hover:bg-primary/20"
+                      className="h-8 px-2 rounded-[8px] font-mono text-[9px] font-bold hover:bg-primary/20"
                       onClick={() => document.execCommand("formatBlock", false, "P")}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Paragraph"
@@ -468,7 +468,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-2.5 rounded-[5px] text-xs hover:bg-primary/20"
+                      className="h-8 px-2.5 rounded-[8px] text-xs hover:bg-primary/20"
                       onClick={() => document.execCommand("insertUnorderedList")}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Bullet List"
@@ -479,7 +479,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-2.5 rounded-[5px] text-xs hover:bg-primary/20"
+                      className="h-8 px-2.5 rounded-[8px] text-xs hover:bg-primary/20"
                       onClick={() => document.execCommand("insertOrderedList")}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Numbered List"
@@ -492,7 +492,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-2.5 rounded-[5px] text-xs hover:bg-primary/20"
+                      className="h-8 px-2.5 rounded-[8px] text-xs hover:bg-primary/20"
                       onClick={insertChecklist}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Checklist"
@@ -507,7 +507,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-2 rounded-[5px] text-[9px] font-bold font-mono hover:bg-primary/20"
+                      className="h-8 px-2 rounded-[8px] text-[9px] font-bold font-mono hover:bg-primary/20"
                       onClick={insertDate}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Insert Date"
@@ -518,7 +518,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-2 rounded-[5px] text-[9px] font-bold font-mono hover:bg-primary/20"
+                      className="h-8 px-2 rounded-[8px] text-[9px] font-bold font-mono hover:bg-primary/20"
                       onClick={insertDateTime}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Insert Date & Time"
@@ -533,7 +533,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-2.5 rounded-[5px] font-bold text-xs hover:bg-primary/20"
+                      className="h-8 px-2.5 rounded-[8px] font-bold text-xs hover:bg-primary/20"
                       onClick={formatCurrency}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Format selection as Currency ($)"
@@ -570,7 +570,7 @@ export function NotesView() {
                              onMouseDown={(e) => e.preventDefault()}
                              style={{ backgroundColor: displayColor }}
                              className={cn(
-                               "w-3.5 h-3.5 rounded-[5px]-full border hover:scale-125 transition-transform border-border/50",
+                               "w-3.5 h-3.5 rounded-full border hover:scale-125 transition-transform border-border/50",
                                isDefault && "border-foreground/30"
                              )}
                              title={isDefault ? "Default Text Color" : `Color ${color}`}
@@ -585,7 +585,7 @@ export function NotesView() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-8 px-2 rounded-[5px] text-[9px] uppercase font-bold text-muted-foreground/60 hover:text-foreground"
+                      className="h-8 px-2 rounded-[8px] text-[9px] uppercase font-bold text-muted-foreground/60 hover:text-foreground"
                       onClick={() => document.execCommand("removeFormat")}
                       onMouseDown={(e) => e.preventDefault()}
                       title="Clear Formatting"
@@ -625,7 +625,7 @@ export function NotesView() {
                                 e.preventDefault();
                                 const newBlock = document.createElement(container.tagName);
                                 newBlock.className = container.className;
-                                newBlock.innerHTML = `<input type="checkbox" class="w-4 h-4 rounded-[5px] bg-background border border-border/50 text-primary focus:ring-0 focus:ring-offset-0 shrink-0 mr-2 align-middle" />&nbsp;`;
+                                newBlock.innerHTML = `<input type="checkbox" class="w-4 h-4 rounded-[8px] bg-background border border-border/50 text-primary focus:ring-0 focus:ring-offset-0 shrink-0 mr-2 align-middle" />&nbsp;`;
                                 container.parentNode?.insertBefore(newBlock, container.nextSibling);
                                 
                                 const range = document.createRange();
@@ -650,7 +650,7 @@ export function NotesView() {
                         }
                       }
                     }}
-                    className="w-full flex-1 min-h-[450px] p-6 outline-none bg-background/20 border border-border/20 rounded-[5px] font-sans text-base leading-relaxed text-foreground overflow-y-auto prose dark:prose-invert max-w-none focus:border-primary/40 transition-colors"
+                    className="w-full flex-1 min-h-[450px] p-6 outline-none bg-background/20 border border-border/20 rounded-[8px] font-sans text-base leading-relaxed text-foreground overflow-y-auto prose dark:prose-invert max-w-none focus:border-primary/40 transition-colors"
                   />
                 </div>
               ) : (
@@ -672,7 +672,7 @@ export function NotesView() {
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-20 text-center relative z-10">
-            <div className="w-24 h-24 rounded-[5px] bg-secondary/30 flex items-center justify-center mb-8 border border-border/10 shadow-2xl">
+            <div className="w-24 h-24 rounded-[8px] bg-secondary/30 flex items-center justify-center mb-8 border border-border/10 shadow-2xl">
               <FileText className="w-12 h-12 text-primary opacity-20" />
             </div>
             <h3 className="text-2xl font-bold uppercase tracking-widest mb-3">No Note Selected</h3>
@@ -683,15 +683,15 @@ export function NotesView() {
 
       {noteToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-background border border-red-500/30 p-8 rounded-[5px] max-w-sm w-full space-y-6 shadow-[0_0_50px_rgba(239,68,68,0.15)] relative overflow-hidden">
+          <div className="bg-background border border-red-500/30 p-8 rounded-[8px] max-w-sm w-full space-y-6 shadow-[0_0_50px_rgba(239,68,68,0.15)] relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-red-500" />
             
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-[5px] bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 animate-pulse">
+              <div className="w-12 h-12 rounded-[8px] bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 animate-pulse">
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <div>
-                <Badge variant="outline" className="text-red-500 border-red-500/20 bg-red-500/5 text-[8px] font-mono tracking-widest px-2 py-0.5 rounded-[5px] font-bold uppercase mb-1">Warning</Badge>
+                <Badge variant="outline" className="text-red-500 border-red-500/20 bg-red-500/5 text-[8px] font-mono tracking-widest px-2 py-0.5 rounded-[8px] font-bold uppercase mb-1">Warning</Badge>
                 <h3 className="text-lg font-bold uppercase tracking-tight text-foreground">Confirm Deletion</h3>
               </div>
             </div>
@@ -704,13 +704,13 @@ export function NotesView() {
               <Button 
                 variant="outline" 
                 onClick={() => setNoteToDelete(null)}
-                className="rounded-[5px] border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] px-5 h-10"
+                className="rounded-[8px] border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] px-5 h-10"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={handleConfirmDelete}
-                className="rounded-[5px] bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-widest text-[9px] px-6 h-10 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                className="rounded-[8px] bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-widest text-[9px] px-6 h-10 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
               >
                 Purge Note
               </Button>

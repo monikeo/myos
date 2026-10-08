@@ -527,11 +527,11 @@ export function ToolsView() {
             <div className="w-20 h-20 border border-primary bg-primary/5 flex items-center justify-center overflow-hidden">
               <Loader2 className="w-8 h-8 text-primary animate-spin" />
             </div>
-            <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 animate-ping rounded-[5px]-full" />
-            <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-[5px]-full" />
+            <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 animate-ping rounded-full" />
+            <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full" />
           </div>
           <div className="space-y-2 max-w-sm font-mono">
-            <Badge className="bg-primary/10 border-primary/30 text-primary text-[8px] tracking-[0.25em] rounded-[5px] px-3 uppercase font-bold">
+            <Badge className="bg-primary/10 border-primary/30 text-primary text-[8px] tracking-[0.25em] rounded-[8px] px-3 uppercase font-bold">
               Resolving App Node
             </Badge>
             <h3 className="text-xl font-bold uppercase text-white tracking-tighter">{tabLaunchingTool.name}</h3>
@@ -552,7 +552,7 @@ export function ToolsView() {
                   loadTools();
                 }}
                 variant="outline"
-                className="rounded-[5px] border-border/50 bg-background/50 hover:bg-secondary h-12 w-12 p-0 flex items-center justify-center shrink-0"
+                className="rounded-[8px] border-border/50 bg-background/50 hover:bg-secondary h-12 w-12 p-0 flex items-center justify-center shrink-0"
               >
                 <ArrowLeft className="w-5 h-5 text-muted-foreground" />
               </Button>
@@ -574,7 +574,7 @@ export function ToolsView() {
                 variant="ghost"
                 size="icon"
                 onClick={(e) => handleToggleFavorite(activeIframeTool, e)}
-                className="h-11 w-11 rounded-[5px] bg-secondary/30 border border-border/20 hover:bg-secondary/50"
+                className="h-11 w-11 rounded-[8px] bg-secondary/30 border border-border/20 hover:bg-secondary/50"
               >
                 <Star className={cn("w-4.5 h-4.5", activeIframeTool.is_favorite ? "text-primary fill-primary" : "text-muted-foreground")} />
               </Button>
@@ -583,14 +583,14 @@ export function ToolsView() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIframeKey(prev => prev + 1)}
-                className="h-11 w-11 rounded-[5px] bg-secondary/30 border border-border/20 hover:bg-secondary/50"
+                className="h-11 w-11 rounded-[8px] bg-secondary/30 border border-border/20 hover:bg-secondary/50"
               >
                 <RefreshCw className="w-4 h-4 text-muted-foreground" />
               </Button>
 
               <Button
                 onClick={() => window.open(activeIframeTool.host_url, "_blank")}
-                className="rounded-[5px] bg-secondary/50 hover:bg-secondary border border-border/50 text-foreground h-11 px-4 font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 shrink-0"
+                className="rounded-[8px] bg-secondary/50 hover:bg-secondary border border-border/50 text-foreground h-11 px-4 font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 shrink-0"
               >
                 <ExternalLink className="w-3.5 h-3.5 text-primary" />
                 Launch Tab
@@ -599,7 +599,7 @@ export function ToolsView() {
               {activeIframeTool.github_url && (
                 <Button
                   onClick={() => window.open(activeIframeTool.github_url, "_blank")}
-                  className="rounded-[5px] bg-secondary/50 hover:bg-secondary border border-border/50 text-foreground h-11 px-4 font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 shrink-0"
+                  className="rounded-[8px] bg-secondary/50 hover:bg-secondary border border-border/50 text-foreground h-11 px-4 font-bold text-[9px] uppercase tracking-widest flex items-center gap-2 shrink-0"
                 >
                   <Code className="w-3.5 h-3.5 text-muted-foreground" />
                   Code
@@ -616,8 +616,8 @@ export function ToolsView() {
                     <Loader2 className="w-7 h-7 text-primary animate-spin" />
                     <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent animate-pulse" />
                   </div>
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 animate-ping rounded-[5px]-full" />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-[5px]-full" />
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 animate-ping rounded-full" />
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full" />
                 </div>
                 
                 <div className="space-y-2.5 max-w-md font-mono">
@@ -677,7 +677,7 @@ export function ToolsView() {
             {(activeOrgId === "all" || activeOrgId === "standalone" || isOrgAdmin) && (
               <Button
                 onClick={() => handleOpenSheet()}
-                className="rounded-[5px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_20px_rgba(59,130,246,0.2)] h-11 px-5 font-bold text-xs uppercase tracking-[0.2em]"
+                className="rounded-[8px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_20px_rgba(59,130,246,0.2)] h-11 px-5 font-bold text-xs uppercase tracking-[0.2em]"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Tool
@@ -687,31 +687,31 @@ export function ToolsView() {
 
           {/* 4. Dashboard Statistics panel */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="border border-border/50 glass-panel rounded-[5px] group hover:border-primary/20 transition-all shadow-sm">
+            <Card className="border border-border/50 glass-panel rounded-[8px] group hover:border-primary/20 transition-all shadow-sm">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] font-mono">Total Tools</p>
                   <p className="text-2xl font-bold font-mono tracking-tighter">{stats.total}</p>
                 </div>
-                <div className="w-10 h-10 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary rounded-[5px] shadow-sm">
+                <div className="w-10 h-10 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary rounded-[8px] shadow-sm">
                   <Wrench className="w-4 h-4" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border border-border/50 glass-panel rounded-[5px] group hover:border-primary/20 transition-all shadow-sm">
+            <Card className="border border-border/50 glass-panel rounded-[8px] group hover:border-primary/20 transition-all shadow-sm">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] font-mono">Pinned Favorites</p>
                   <p className="text-2xl font-bold font-mono tracking-tighter">{stats.favs}</p>
                 </div>
-                <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 rounded-[5px] shadow-sm">
+                <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 rounded-[8px] shadow-sm">
                   <Star className="w-4 h-4 fill-amber-500/10" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border border-border/50 glass-panel rounded-[5px] group hover:border-primary/20 transition-all shadow-sm">
+            <Card className="border border-border/50 glass-panel rounded-[8px] group hover:border-primary/20 transition-all shadow-sm">
               <CardContent className="p-4 flex items-center justify-between min-w-0">
                 <div className="space-y-0.5 min-w-0 flex-1">
                   <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] font-mono">Most Used Tool</p>
@@ -719,19 +719,19 @@ export function ToolsView() {
                     {stats.popular ? stats.popular.name : "None"}
                   </p>
                 </div>
-                <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 rounded-[5px] shadow-sm font-mono text-[10px] font-bold shrink-0">
+                <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 rounded-[8px] shadow-sm font-mono text-[10px] font-bold shrink-0">
                   {stats.popular ? `${stats.popular.clicks || 0}x` : "0x"}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border border-border/50 glass-panel rounded-[5px] group hover:border-primary/20 transition-all shadow-sm">
+            <Card className="border border-border/50 glass-panel rounded-[8px] group hover:border-primary/20 transition-all shadow-sm">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em] font-mono">Active Groups</p>
                   <p className="text-2xl font-bold font-mono tracking-tighter">{stats.groups}</p>
                 </div>
-                <div className="w-10 h-10 bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 rounded-[5px] shadow-sm">
+                <div className="w-10 h-10 bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500 rounded-[8px] shadow-sm">
                   <Layout className="w-4 h-4" />
                 </div>
               </CardContent>
@@ -739,24 +739,24 @@ export function ToolsView() {
           </div>
 
           {/* 5. Filter Control Bar Row 1: Search & Active Tabs */}
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 shrink-0 bg-secondary/10 border border-border/30 p-3 sm:p-4 rounded-[5px]">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 shrink-0 bg-secondary/10 border border-border/30 p-3 sm:p-4 rounded-[8px]">
             <div className="relative flex-1 max-w-md">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
               <Input
                 placeholder="Filter and search registry..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="pl-9 h-10 bg-background/50 border-border/30 rounded-[5px] focus-visible:ring-primary font-medium"
+                className="pl-9 h-10 bg-background/50 border-border/30 rounded-[8px] focus-visible:ring-primary font-medium"
               />
             </div>
 
-            <div className="flex p-0.5 bg-background border border-border/50 min-w-max rounded-[5px] shrink-0 self-start md:self-auto">
+            <div className="flex p-0.5 bg-background border border-border/50 min-w-max rounded-[8px] shrink-0 self-start md:self-auto">
               <Button
                 size="sm"
                 variant={activeTab === "all" ? "secondary" : "ghost"}
                 onClick={() => setActiveTab("all")}
                 className={cn(
-                  "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-3.5 h-8",
+                  "rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-3.5 h-8",
                   activeTab === "all" ? "bg-secondary text-primary" : "text-muted-foreground"
                 )}
               >
@@ -767,7 +767,7 @@ export function ToolsView() {
                 variant={activeTab === "favorites" ? "secondary" : "ghost"}
                 onClick={() => setActiveTab("favorites")}
                 className={cn(
-                  "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-3.5 h-8",
+                  "rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-3.5 h-8",
                   activeTab === "favorites" ? "bg-secondary text-primary" : "text-muted-foreground"
                 )}
               >
@@ -778,7 +778,7 @@ export function ToolsView() {
                 variant={activeTab === "popular" ? "secondary" : "ghost"}
                 onClick={() => setActiveTab("popular")}
                 className={cn(
-                  "rounded-[5px] font-bold text-[9px] uppercase tracking-widest px-3.5 h-8",
+                  "rounded-[8px] font-bold text-[9px] uppercase tracking-widest px-3.5 h-8",
                   activeTab === "popular" ? "bg-secondary text-primary" : "text-muted-foreground"
                 )}
               >
@@ -788,7 +788,7 @@ export function ToolsView() {
           </div>
 
           {/* 6. Filter Control Bar Row 2: Category Groups */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 shrink-0 bg-secondary/5 border border-border/20 p-3 sm:px-4 sm:py-3 rounded-[5px]">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 shrink-0 bg-secondary/5 border border-border/20 p-3 sm:px-4 sm:py-3 rounded-[8px]">
             <div className="flex items-center gap-2 shrink-0">
               <Filter className="w-3.5 h-3.5 text-primary" />
               <span className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-[0.2em] font-mono">Filter Category:</span>
@@ -801,7 +801,7 @@ export function ToolsView() {
                   variant={filterCategory === cat ? "secondary" : "outline"}
                   onClick={() => setFilterCategory(cat)}
                   className={cn(
-                    "rounded-[5px] font-bold text-[8px] uppercase tracking-widest px-3.5 h-8 border-border/40 shrink-0",
+                    "rounded-[8px] font-bold text-[8px] uppercase tracking-widest px-3.5 h-8 border-border/40 shrink-0",
                     filterCategory === cat ? "bg-primary text-white shadow-sm border-transparent" : "text-muted-foreground bg-background/30 hover:bg-background/80"
                   )}
                 >
@@ -824,13 +824,13 @@ export function ToolsView() {
                 return (
                   <Card
                     key={tool.id || idx}
-                    className="border border-border/50 bg-secondary/5 backdrop-blur-xl rounded-[5px] overflow-hidden group hover:border-primary/40 hover:shadow-[0_0_20px_rgba(59,130,246,0.08)] transition-all duration-300 flex flex-col justify-between min-h-[220px]"
+                    className="border border-border/50 bg-secondary/5 backdrop-blur-xl rounded-[8px] overflow-hidden group hover:border-primary/40 hover:shadow-[0_0_20px_rgba(59,130,246,0.08)] transition-all duration-300 flex flex-col justify-between min-h-[220px]"
                   >
                     <CardContent className="p-5 flex flex-col h-full justify-between">
                       {/* Top Header Card Info */}
                       <div>
                         <div className="flex items-start justify-between mb-3">
-                          <div className="w-10 h-10 rounded-[5px] bg-background border border-border/50 flex items-center justify-center group-hover:border-primary/40 transition-colors shadow-sm relative shrink-0">
+                          <div className="w-10 h-10 rounded-[8px] bg-background border border-border/50 flex items-center justify-center group-hover:border-primary/40 transition-colors shadow-sm relative shrink-0">
                             <IconComponent className="w-4.5 h-4.5 text-muted-foreground group-hover:text-primary transition-colors" />
                             {tool.is_favorite && (
                               <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-amber-500 flex items-center justify-center">
@@ -841,7 +841,7 @@ export function ToolsView() {
                           
                           <div className="flex items-center gap-1">
                             <Badge variant="outline" className={cn(
-                              "text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono",
+                              "text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[8px] font-mono",
                               tool.status === "Active" ? "text-emerald-500 bg-emerald-500/5 border-emerald-500/20" :
                               tool.status === "Beta" ? "text-blue-500 bg-blue-500/5 border-blue-500/20" :
                               "text-amber-500 bg-amber-500/5 border-amber-500/20"
@@ -849,12 +849,12 @@ export function ToolsView() {
                               {tool.status}
                             </Badge>
                             
-                            <Badge variant="outline" className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono border-border/50 text-muted-foreground bg-background/30">
+                            <Badge variant="outline" className="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[8px] font-mono border-border/50 text-muted-foreground bg-background/30">
                               {tool.clicks || 0}x
                             </Badge>
 
                             <Badge variant="outline" className={cn(
-                              "text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[5px] font-mono border-border/50",
+                              "text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-[8px] font-mono border-border/50",
                               tool.launch_mode === "tab" ? "text-amber-400 border-amber-400/20 bg-amber-400/5" : 
                               tool.launch_mode === "proxy" ? "text-emerald-400 border-emerald-400/20 bg-emerald-400/5" :
                               "text-primary border-primary/20 bg-primary/5"
@@ -880,7 +880,7 @@ export function ToolsView() {
                           <Button
                             onClick={(e) => handleToggleFavorite(tool, e)}
                             variant="ghost"
-                            className="h-8 w-8 p-0 rounded-[5px] bg-background border border-border/50 hover:bg-secondary/40 text-muted-foreground"
+                            className="h-8 w-8 p-0 rounded-[8px] bg-background border border-border/50 hover:bg-secondary/40 text-muted-foreground"
                             title="Favorite"
                           >
                             <Star className={cn("w-3.5 h-3.5", tool.is_favorite ? "text-amber-500 fill-amber-500" : "text-muted-foreground")} />
@@ -890,7 +890,7 @@ export function ToolsView() {
                             <Button
                               onClick={() => handleOpenSheet(tool)}
                               variant="ghost"
-                              className="h-8 w-8 p-0 rounded-[5px] bg-background border border-border/50 hover:bg-secondary/40 text-muted-foreground"
+                              className="h-8 w-8 p-0 rounded-[8px] bg-background border border-border/50 hover:bg-secondary/40 text-muted-foreground"
                               title="Configure"
                             >
                               <Settings className="w-3.5 h-3.5 text-muted-foreground" />
@@ -901,7 +901,7 @@ export function ToolsView() {
                             <Button
                               onClick={() => window.open(tool.github_url, "_blank")}
                               variant="ghost"
-                              className="h-8 w-8 p-0 rounded-[5px] bg-background border border-border/50 hover:bg-secondary/40 text-muted-foreground"
+                              className="h-8 w-8 p-0 rounded-[8px] bg-background border border-border/50 hover:bg-secondary/40 text-muted-foreground"
                               title="GitHub Repo"
                             >
                               <Code className="w-3.5 h-3.5 text-muted-foreground" />
@@ -910,7 +910,7 @@ export function ToolsView() {
                           
                           <Button
                             onClick={() => handleLaunch(tool)}
-                            className="rounded-[5px] bg-primary text-white h-8 px-4 font-bold text-[8px] uppercase tracking-widest hover:bg-primary/90 flex items-center gap-1 shrink-0"
+                            className="rounded-[8px] bg-primary text-white h-8 px-4 font-bold text-[8px] uppercase tracking-widest hover:bg-primary/90 flex items-center gap-1 shrink-0"
                           >
                             {tool.launch_mode === "tab" ? (
                               <>
@@ -950,7 +950,7 @@ export function ToolsView() {
 
       {/* 8. Register & Configure sliding Sheet drawer */}
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-md border-l border-border/50 bg-background/95 backdrop-blur-2xl p-0 flex flex-col rounded-[5px]">
+        <SheetContent side="right" className="w-full sm:max-w-md border-l border-border/50 bg-background/95 backdrop-blur-2xl p-0 flex flex-col rounded-[8px]">
           <SheetHeader className="p-6 border-b border-border/20 bg-secondary/15 shrink-0">
             <Badge variant="outline" className="w-fit text-[9px] font-bold uppercase tracking-[0.2em] border-primary/20 text-primary mb-2 bg-primary/5">
               Tool Details
@@ -966,7 +966,7 @@ export function ToolsView() {
           {editingTool && (
             <div className="flex-1 overflow-y-auto p-6 space-y-5 custom-scrollbar">
               {validationError && (
-                <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-mono rounded-[5px]">
+                <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-mono rounded-[8px]">
                   ⚠️ {validationError}
                 </div>
               )}
@@ -978,7 +978,7 @@ export function ToolsView() {
                   value={editingTool.name || ""}
                   onChange={e => setEditingTool({...editingTool, name: e.target.value})}
                   placeholder="e.g., Markdown Editor"
-                  className="bg-secondary/20 border-border/40 focus-visible:ring-primary rounded-[5px] h-10"
+                  className="bg-secondary/20 border-border/40 focus-visible:ring-primary rounded-[8px] h-10"
                 />
               </div>
 
@@ -988,7 +988,7 @@ export function ToolsView() {
                 <select
                   value={editingTool.category || "Code Tools"}
                   onChange={e => setEditingTool({...editingTool, category: e.target.value})}
-                  className="w-full h-10 px-3 bg-secondary/20 border border-border/40 hover:border-border/60 focus:border-primary text-sm focus:outline-none rounded-[5px] text-foreground font-mono"
+                  className="w-full h-10 px-3 bg-secondary/20 border border-border/40 hover:border-border/60 focus:border-primary text-sm focus:outline-none rounded-[8px] text-foreground font-mono"
                 >
                   <option value="PDF Tools">PDF Tools</option>
                   <option value="Code Tools">Code Tools</option>
@@ -1006,7 +1006,7 @@ export function ToolsView() {
                   value={editingTool.description || ""}
                   onChange={e => setEditingTool({...editingTool, description: e.target.value})}
                   placeholder="Brief summary detailing tool features..."
-                  className="w-full min-h-[70px] p-2.5 text-xs bg-secondary/20 border border-border/40 hover:border-border/60 focus:border-primary focus:outline-none transition-colors rounded-[5px] placeholder:text-muted-foreground/45"
+                  className="w-full min-h-[70px] p-2.5 text-xs bg-secondary/20 border border-border/40 hover:border-border/60 focus:border-primary focus:outline-none transition-colors rounded-[8px] placeholder:text-muted-foreground/45"
                 />
               </div>
 
@@ -1018,7 +1018,7 @@ export function ToolsView() {
                     type="button"
                     onClick={() => setEditingTool({...editingTool, launch_mode: "iframe"})}
                     className={cn(
-                      "h-9 text-[9px] font-bold uppercase tracking-wider border rounded-[5px] transition-all flex items-center justify-center gap-2",
+                      "h-9 text-[9px] font-bold uppercase tracking-wider border rounded-[8px] transition-all flex items-center justify-center gap-2",
                       editingTool.launch_mode === "iframe"
                         ? "bg-primary/10 border-primary text-primary"
                         : "border-border/30 text-muted-foreground hover:bg-secondary"
@@ -1031,7 +1031,7 @@ export function ToolsView() {
                     type="button"
                     onClick={() => setEditingTool({...editingTool, launch_mode: "proxy"})}
                     className={cn(
-                      "h-9 text-[9px] font-bold uppercase tracking-wider border rounded-[5px] transition-all flex items-center justify-center gap-2",
+                      "h-9 text-[9px] font-bold uppercase tracking-wider border rounded-[8px] transition-all flex items-center justify-center gap-2",
                       editingTool.launch_mode === "proxy"
                         ? "bg-emerald-500/10 border-emerald-500 text-emerald-600 dark:text-emerald-400 animate-pulse"
                         : "border-border/30 text-muted-foreground hover:bg-secondary"
@@ -1044,7 +1044,7 @@ export function ToolsView() {
                     type="button"
                     onClick={() => setEditingTool({...editingTool, launch_mode: "tab"})}
                     className={cn(
-                      "h-9 text-[9px] font-bold uppercase tracking-wider border rounded-[5px] transition-all flex items-center justify-center gap-2",
+                      "h-9 text-[9px] font-bold uppercase tracking-wider border rounded-[8px] transition-all flex items-center justify-center gap-2",
                       editingTool.launch_mode === "tab"
                         ? "bg-amber-500/10 border-amber-500 text-amber-600 dark:text-amber-400"
                         : "border-border/30 text-muted-foreground hover:bg-secondary"
@@ -1066,7 +1066,7 @@ export function ToolsView() {
                   value={editingTool.host_url || ""}
                   onChange={e => setEditingTool({...editingTool, host_url: e.target.value})}
                   placeholder="https://your-tool-deployment.web.app/"
-                  className="bg-secondary/20 border-border/40 focus-visible:ring-primary rounded-[5px] h-10 font-mono text-xs"
+                  className="bg-secondary/20 border-border/40 focus-visible:ring-primary rounded-[8px] h-10 font-mono text-xs"
                 />
               </div>
 
@@ -1077,7 +1077,7 @@ export function ToolsView() {
                   value={editingTool.github_url || ""}
                   onChange={e => setEditingTool({...editingTool, github_url: e.target.value})}
                   placeholder="https://github.com/username/project"
-                  className="bg-secondary/20 border-border/40 focus-visible:ring-primary rounded-[5px] h-10 font-mono text-xs"
+                  className="bg-secondary/20 border-border/40 focus-visible:ring-primary rounded-[8px] h-10 font-mono text-xs"
                 />
               </div>
 
@@ -1094,7 +1094,7 @@ export function ToolsView() {
                         type="button"
                         onClick={() => setEditingTool({...editingTool, icon: key})}
                         className={cn(
-                          "h-9 border flex items-center justify-center transition-all hover:bg-secondary rounded-[5px]",
+                          "h-9 border flex items-center justify-center transition-all hover:bg-secondary rounded-[8px]",
                           isSelected ? "bg-primary/10 border-primary text-primary" : "border-border/30 text-muted-foreground/50"
                         )}
                         title={key}
@@ -1113,7 +1113,7 @@ export function ToolsView() {
                   <select
                     value={editingTool.status || "Active"}
                     onChange={e => setEditingTool({...editingTool, status: e.target.value as any})}
-                    className="w-full h-10 px-3 bg-secondary/20 border border-border/40 hover:border-border/60 focus:border-primary text-xs focus:outline-none rounded-[5px] text-foreground font-mono"
+                    className="w-full h-10 px-3 bg-secondary/20 border border-border/40 hover:border-border/60 focus:border-primary text-xs focus:outline-none rounded-[8px] text-foreground font-mono"
                   >
                     <option value="Active">Active</option>
                     <option value="Beta">Beta</option>
@@ -1126,7 +1126,7 @@ export function ToolsView() {
                     type="button"
                     onClick={() => setEditingTool({...editingTool, is_favorite: !editingTool.is_favorite})}
                     className={cn(
-                      "h-10 border font-bold text-[9px] uppercase tracking-widest flex items-center justify-center gap-2 rounded-[5px] transition-all",
+                      "h-10 border font-bold text-[9px] uppercase tracking-widest flex items-center justify-center gap-2 rounded-[8px] transition-all",
                       editingTool.is_favorite 
                         ? "bg-amber-500/10 border-amber-500 text-amber-600 dark:text-amber-400" 
                         : "border-border/40 text-muted-foreground hover:bg-secondary"
@@ -1146,7 +1146,7 @@ export function ToolsView() {
               <Button
                 variant="destructive"
                 onClick={() => editingTool.id && handleDeleteTool(editingTool.id)}
-                className="rounded-[5px] font-bold uppercase tracking-widest text-[9px] px-4 h-11 flex items-center gap-2"
+                className="rounded-[8px] font-bold uppercase tracking-widest text-[9px] px-4 h-11 flex items-center gap-2"
               >
                 <Trash2 className="w-4 h-4" />
                 Remove
@@ -1162,7 +1162,7 @@ export function ToolsView() {
                   setIsSheetOpen(false);
                   setEditingTool(null);
                 }}
-                className="rounded-[5px] border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] px-5 h-11"
+                className="rounded-[8px] border-border/50 bg-background/50 hover:bg-secondary font-bold uppercase tracking-widest text-[9px] px-5 h-11"
               >
                 Cancel
               </Button>
@@ -1170,7 +1170,7 @@ export function ToolsView() {
               <Button
                 onClick={handleSaveTool}
                 disabled={!editingTool?.name || !editingTool?.host_url}
-                className="rounded-[5px] shadow-md bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-[9px] px-6 h-11"
+                className="rounded-[8px] shadow-md bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-[9px] px-6 h-11"
               >
                 Save Tool
               </Button>

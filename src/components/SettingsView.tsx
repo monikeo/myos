@@ -35,12 +35,12 @@ const Toggle = ({ value, onChange }: { value?: boolean; onChange: (v: boolean) =
   <button
     onClick={() => onChange(!value)}
     className={cn(
-      "relative w-12 h-6 rounded-[5px]-full transition-all duration-300 focus:outline-none",
+      "relative w-12 h-6 rounded-full transition-all duration-300 focus:outline-none",
       value ? "bg-primary shadow-[0_0_15px_rgba(59,130,246,0.4)]" : "bg-secondary/60 border border-border/50"
     )}
   >
     <div className={cn(
-      "absolute top-0.5 w-5 h-5 bg-white rounded-[5px]-full shadow-md transition-all duration-300",
+      "absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300",
       value ? "left-6" : "left-0.5"
     )} />
   </button>
@@ -281,7 +281,7 @@ export function SettingsView({
     if (item.status === "active") {
       return (
         <div className="flex items-center gap-2 bg-emerald-500/10 px-3 py-1.5 border border-emerald-500/30">
-          <div className="w-2 h-2 rounded-[5px]-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.7)]" />
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.7)]" />
           <span className="text-[10px] font-bold font-mono text-emerald-500 uppercase tracking-widest">Active</span>
         </div>
       );
@@ -290,7 +290,7 @@ export function SettingsView({
     if (item.status === "failed") {
       return (
         <div className="flex items-center gap-2 bg-red-500/10 px-3 py-1.5 border border-red-500/30">
-          <div className="w-2 h-2 rounded-[5px]-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.7)]" />
+          <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.7)]" />
           <span className="text-[10px] font-bold font-mono text-red-500 uppercase tracking-widest">Failed</span>
         </div>
       );
@@ -298,7 +298,7 @@ export function SettingsView({
 
     return (
       <div className="flex items-center gap-2 bg-amber-500/10 px-3 py-1.5 border border-amber-500/30">
-        <div className="w-2 h-2 rounded-[5px]-full bg-amber-500/60" />
+        <div className="w-2 h-2 rounded-full bg-amber-500/60" />
         <span className="text-[10px] font-bold font-mono text-amber-500 uppercase tracking-widest">Unconfigured</span>
       </div>
     );
@@ -436,7 +436,7 @@ export function SettingsView({
           onClick={handleSave}
           disabled={saving}
           className={cn(
-            "rounded-[5px] h-12 px-8 font-bold text-xs uppercase tracking-[0.2em] transition-all",
+            "rounded-[8px] h-12 px-8 font-bold text-xs uppercase tracking-[0.2em] transition-all",
             saved
               ? "bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
               : "bg-primary shadow-[0_0_20px_rgba(59,130,246,0.2)] hover:bg-primary/90"
@@ -448,7 +448,7 @@ export function SettingsView({
       </div>
 
       {error && (
-        <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono rounded-[5px] flex items-start justify-between gap-3 animate-in fade-in duration-300">
+        <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono rounded-[8px] flex items-start justify-between gap-3 animate-in fade-in duration-300">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
             <span><strong className="uppercase font-bold tracking-wider">Validation Error:</strong> {error}</span>
@@ -467,7 +467,7 @@ export function SettingsView({
               key={s.id}
               onClick={() => setActiveSection(s.id)}
               className={cn(
-                "flex lg:w-full items-center gap-4 px-5 py-4 rounded-[5px] text-left transition-all duration-200 font-bold text-sm whitespace-nowrap shrink-0",
+                "flex lg:w-full items-center gap-4 px-5 py-4 rounded-[8px] text-left transition-all duration-200 font-bold text-sm whitespace-nowrap shrink-0",
                 activeSection === s.id
                   ? "bg-primary text-white shadow-[0_0_20px_rgba(59,130,246,0.25)]"
                   : "text-muted-foreground hover:bg-secondary/40 hover:text-foreground bg-secondary/10"
@@ -481,7 +481,7 @@ export function SettingsView({
 
         {/* Content */}
         <div className="lg:col-span-3">
-          <Card className="border border-border/50 glass-panel rounded-[5px] shadow-2xl">
+          <Card className="border border-border/50 glass-panel rounded-[8px] shadow-2xl">
             <CardHeader className="border-b border-border/20 bg-background/30 p-8">
               <CardTitle className="text-[10px] font-bold uppercase tracking-[0.4em] font-mono text-muted-foreground flex items-center gap-3">
                 {(() => { const s = SECTIONS.find(s => s.id === activeSection)!; return <><s.icon className="w-5 h-5 text-primary" />{s.label} Settings</>; })()}
@@ -496,7 +496,7 @@ export function SettingsView({
                       value={settings.profile_name || ""}
                       onChange={(e) => update({ profile_name: e.target.value })}
                       placeholder="Alex Thorne"
-                      className="w-full sm:w-64 max-w-xs bg-background/50 border-border/30 rounded-[5px] h-10"
+                      className="w-full sm:w-64 max-w-xs bg-background/50 border-border/30 rounded-[8px] h-10"
                     />
                   </Field>
                   <Field label="System Name" hint="Branding shown in the sidebar header">
@@ -504,7 +504,7 @@ export function SettingsView({
                       value={settings.system_name || ""}
                       onChange={(e) => update({ system_name: e.target.value })}
                       placeholder="MYOS"
-                      className="w-full sm:w-64 max-w-xs bg-background/50 border-border/30 rounded-[5px] h-10"
+                      className="w-full sm:w-64 max-w-xs bg-background/50 border-border/30 rounded-[8px] h-10"
                     />
                   </Field>
                   <Field label="Role / Title" hint="Your role label in the sidebar">
@@ -512,17 +512,17 @@ export function SettingsView({
                       value={settings.profile_role || ""}
                       onChange={(e) => update({ profile_role: e.target.value })}
                       placeholder="Core Protocol v1.0"
-                      className="w-full sm:w-64 max-w-xs bg-background/50 border-border/30 rounded-[5px] h-10"
+                      className="w-full sm:w-64 max-w-xs bg-background/50 border-border/30 rounded-[8px] h-10"
                     />
                   </Field>
                   <Field label="Avatar URL" hint="Link to your profile picture. Supports direct hotlinks, Google Drive sharing links, and auto-proxies on load failure.">
                     <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-[480px]">
                       {/* Avatar Preview Card */}
-                      <div className="relative group shrink-0 w-16 h-16 rounded-[5px] overflow-hidden border border-border/40 bg-secondary/30 glass-panel shadow-md transition-all duration-300 hover:scale-105">
+                      <div className="relative group shrink-0 w-16 h-16 rounded-[8px] overflow-hidden border border-border/40 bg-secondary/30 glass-panel shadow-md transition-all duration-300 hover:scale-105">
                         <img
                           src={imageSrc}
                           alt="Avatar Preview"
-                          className="w-full h-full object-cover rounded-[5px] transition-opacity duration-300"
+                          className="w-full h-full object-cover rounded-[8px] transition-opacity duration-300"
                           onError={() => {
                             if (!avatarDirectFailed) {
                               setAvatarDirectFailed(true);
@@ -546,7 +546,7 @@ export function SettingsView({
                             value={settings.profile_avatar || ""}
                             onChange={(e) => update({ profile_avatar: e.target.value })}
                             placeholder="https://drive.google.com/... or direct url"
-                            className="flex-1 bg-background/50 border-border/30 rounded-[5px] h-10 text-xs font-mono"
+                            className="flex-1 bg-background/50 border-border/30 rounded-[8px] h-10 text-xs font-mono"
                           />
                           {settings.profile_avatar && (
                             <Button
@@ -555,7 +555,7 @@ export function SettingsView({
                               onClick={() => {
                                 window.open(imageSrc, "_blank");
                               }}
-                              className="rounded-[5px] font-bold text-[9px] uppercase tracking-wider px-3 h-10 border-border/40 shrink-0 flex items-center gap-1.5"
+                              className="rounded-[8px] font-bold text-[9px] uppercase tracking-wider px-3 h-10 border-border/40 shrink-0 flex items-center gap-1.5"
                               title="Open image in new tab to test"
                             >
                               <ExternalLink className="w-3.5 h-3.5" />
@@ -565,7 +565,7 @@ export function SettingsView({
                         </div>
                         {settings.profile_avatar && (
                           <div className="flex items-center gap-2 text-[10px] text-muted-foreground/60 font-mono">
-                            <span className="w-1.5 h-1.5 rounded-[5px]-full bg-primary animate-pulse" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                             <span className="truncate max-w-[280px]">
                               Source: {avatarDirectFailed ? (avatarProxyFailed ? "Dicebear Placeholder" : "Secure OS Bypass Proxy") : "Direct Link"}
                             </span>
@@ -580,7 +580,7 @@ export function SettingsView({
                       value={settings.email || ""}
                       onChange={(e) => update({ email: e.target.value })}
                       placeholder="alex@example.com"
-                      className="w-full sm:w-64 max-w-xs bg-background/50 border-border/30 rounded-[5px] h-10"
+                      className="w-full sm:w-64 max-w-xs bg-background/50 border-border/30 rounded-[8px] h-10"
                     />
                   </Field>
                   <Field label="Date of Birth" hint="Enforces a minimum age requirement of 13">
@@ -588,14 +588,14 @@ export function SettingsView({
                       type="date"
                       value={settings.dob || ""}
                       onChange={(e) => update({ dob: e.target.value })}
-                      className="w-full sm:w-64 max-w-xs bg-background/50 border-border/30 rounded-[5px] h-10 text-foreground"
+                      className="w-full sm:w-64 max-w-xs bg-background/50 border-border/30 rounded-[8px] h-10 text-foreground"
                     />
                   </Field>
                   <Field label="Timezone" hint="Used for calendar and timestamps">
                     <select
                       value={settings.timezone || "Asia/Phnom_Penh"}
                       onChange={(e) => update({ timezone: e.target.value })}
-                      className="w-full sm:w-64 max-w-xs h-10 px-3 rounded-[5px] bg-background/50 border border-border/30 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full sm:w-64 max-w-xs h-10 px-3 rounded-[8px] bg-background/50 border border-border/30 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                     >
                       {TIMEZONES.map((tz) => <option key={tz} value={tz}>{tz}</option>)}
                     </select>
@@ -604,7 +604,7 @@ export function SettingsView({
                     <select
                       value={settings.date_format || "DD/MM/YYYY"}
                       onChange={(e) => update({ date_format: e.target.value })}
-                      className="w-full sm:w-64 max-w-xs h-10 px-3 rounded-[5px] bg-background/50 border border-border/30 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full sm:w-64 max-w-xs h-10 px-3 rounded-[8px] bg-background/50 border border-border/30 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                     >
                       {DATE_FORMATS.map((f) => <option key={f} value={f}>{f}</option>)}
                     </select>
@@ -632,7 +632,7 @@ export function SettingsView({
                               console.error("Failed to save settings on theme update:", err);
                             }
                           }}
-                          className={cn("rounded-[5px] font-bold uppercase tracking-widest text-[10px] px-4 h-10", (settings.theme || "dark") === t ? "bg-primary" : "border-border/40")}
+                          className={cn("rounded-[8px] font-bold uppercase tracking-widest text-[10px] px-4 h-10", (settings.theme || "dark") === t ? "bg-primary" : "border-border/40")}
                         >
                           {t === "light" ? <Sun className="w-3.5 h-3.5 mr-2" /> : t === "dark" ? <Moon className="w-3.5 h-3.5 mr-2" /> : <Globe className="w-3.5 h-3.5 mr-2" />}
                           {t}
@@ -647,12 +647,12 @@ export function SettingsView({
                         type="color"
                         value={settings.accent_color || "#3b82f6"}
                         onChange={(e) => update({ accent_color: e.target.value })}
-                        className="w-12 h-10 rounded-[5px] border border-border/30 bg-background/50 cursor-pointer p-0.5"
+                        className="w-12 h-10 rounded-[8px] border border-border/30 bg-background/50 cursor-pointer p-0.5"
                       />
                       <Input
                         value={settings.accent_color || "#3b82f6"}
                         onChange={(e) => update({ accent_color: e.target.value })}
-                        className="w-36 bg-background/50 border-border/30 rounded-[5px] h-10 font-mono text-sm"
+                        className="w-36 bg-background/50 border-border/30 rounded-[8px] h-10 font-mono text-sm"
                       />
                     </div>
                   </Field>
@@ -687,7 +687,7 @@ export function SettingsView({
                             onClick={() => update({ ui_font_preset: f.id as any })}
                             style={{ fontFamily: f.id === "cyber" ? "'Share Tech Mono'" : f.id === "futuristic" ? "'Outfit'" : f.id === "mono" ? "'JetBrains Mono'" : "Inter" }}
                             className={cn(
-                              "relative p-4 border rounded-[5px] text-left transition-all duration-300 hover:border-primary/50 group flex flex-col justify-between h-24 cursor-pointer",
+                              "relative p-4 border rounded-[8px] text-left transition-all duration-300 hover:border-primary/50 group flex flex-col justify-between h-24 cursor-pointer",
                               settings.ui_font_preset === f.id
                                 ? "border-primary bg-primary/5 shadow-[0_0_15px_rgba(59,130,246,0.15)] text-foreground"
                                 : "border-border/40 bg-secondary/5 text-muted-foreground"
@@ -725,7 +725,7 @@ export function SettingsView({
                           disabled={!settings.ui_grid_enabled}
                           onClick={() => update({ ui_grid_size: g.id as any })}
                           className={cn(
-                            "rounded-[5px] font-bold uppercase tracking-widest text-[9px] px-4 h-10 relative overflow-hidden flex flex-col items-center justify-center min-w-[90px] border-border/40",
+                            "rounded-[8px] font-bold uppercase tracking-widest text-[9px] px-4 h-10 relative overflow-hidden flex flex-col items-center justify-center min-w-[90px] border-border/40",
                             settings.ui_grid_size === g.id && "bg-primary text-white border-primary"
                           )}
                         >
@@ -745,7 +745,7 @@ export function SettingsView({
                           max="100"
                           value={settings.ui_glass_opacity !== undefined ? settings.ui_glass_opacity : 10}
                           onChange={(e) => update({ ui_glass_opacity: parseInt(e.target.value) })}
-                          className="flex-1 accent-primary h-1.5 bg-secondary/80 rounded-[5px] appearance-none cursor-pointer"
+                          className="flex-1 accent-primary h-1.5 bg-secondary/80 rounded-[8px] appearance-none cursor-pointer"
                         />
                         <span className="text-xs font-mono font-bold w-12 text-right shrink-0">
                           {settings.ui_glass_opacity !== undefined ? settings.ui_glass_opacity : 10}%
@@ -753,7 +753,7 @@ export function SettingsView({
                       </div>
                       
                       {/* Premium Dynamic Glass Preview Card */}
-                      <div className="mt-4 p-5 relative overflow-hidden border border-border/20 rounded-[5px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.06),transparent_70%)] bg-background/10">
+                      <div className="mt-4 p-5 relative overflow-hidden border border-border/20 rounded-[8px] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.06),transparent_70%)] bg-background/10">
                         {/* CSS grid background simulating desktop cyber look */}
                         <div className="absolute inset-0 opacity-15 bg-[linear-gradient(to_right,rgba(136,136,136,0.3)_1px,transparent_1px),linear-gradient(to_bottom,rgba(136,136,136,0.3)_1px,transparent_1px)]" style={{ backgroundSize: '16px 16px' }} />
                         
@@ -766,7 +766,7 @@ export function SettingsView({
                               backdropFilter: 'blur(16px)',
                               border: '1px solid rgba(255,255,255,0.08)'
                             }}
-                            className="px-6 py-4 shadow-xl rounded-[5px] relative z-10 text-center flex flex-col items-center justify-center min-w-[180px]"
+                            className="px-6 py-4 shadow-xl rounded-[8px] relative z-10 text-center flex flex-col items-center justify-center min-w-[180px]"
                           >
                             <span className="text-[10px] font-bold uppercase tracking-widest font-mono text-primary">Preview Pane</span>
                             <span className="text-[8px] text-muted-foreground font-mono mt-1 opacity-70 uppercase tracking-wider">Glass opacity: {settings.ui_glass_opacity !== undefined ? settings.ui_glass_opacity : 10}%</span>
@@ -784,7 +784,7 @@ export function SettingsView({
 
               {activeSection === "integrations" && (
                 <div className="space-y-8 animate-in fade-in duration-300">
-                  <div className="mb-8 p-5 bg-amber-500/5 border border-amber-500/20 rounded-[5px] flex items-start gap-3">
+                  <div className="mb-8 p-5 bg-amber-500/5 border border-amber-500/20 rounded-[8px] flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-bold text-sm text-amber-500">API keys are stored in your .env file</p>
@@ -804,7 +804,7 @@ export function SettingsView({
                       disabled={checkingIntegrations}
                       variant="outline"
                       size="sm"
-                      className="rounded-[5px] font-bold uppercase tracking-widest text-[9px] px-3 h-8 border-border/40 shrink-0 flex items-center gap-1.5"
+                      className="rounded-[8px] font-bold uppercase tracking-widest text-[9px] px-3 h-8 border-border/40 shrink-0 flex items-center gap-1.5"
                     >
                       <RefreshCw className={cn("w-3.5 h-3.5", checkingIntegrations && "animate-spin")} />
                       {checkingIntegrations ? "Checking..." : "Refresh Status"}
@@ -827,14 +827,14 @@ export function SettingsView({
                         <div className="flex items-center gap-3 shrink-0">
                           {renderStatusBadge(integrations?.supabase)}
                           <a href="https://supabase.com/dashboard" target="_blank" rel="noopener noreferrer">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-[5px] border border-border/20 hover:bg-secondary/40">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-[8px] border border-border/20 hover:bg-secondary/40">
                               <ExternalLink className="w-3.5 h-3.5 text-primary" />
                             </Button>
                           </a>
                         </div>
                       </div>
                       {integrations?.supabase?.status === "failed" && integrations.supabase.error && (
-                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-mono rounded-[5px]">
+                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-mono rounded-[8px]">
                           Error: {integrations.supabase.error}
                         </div>
                       )}
@@ -855,14 +855,14 @@ export function SettingsView({
                         <div className="flex items-center gap-3 shrink-0">
                           {renderStatusBadge(integrations?.sheets)}
                           <a href="https://sheets.google.com" target="_blank" rel="noopener noreferrer">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-[5px] border border-border/20 hover:bg-secondary/40">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-[8px] border border-border/20 hover:bg-secondary/40">
                               <ExternalLink className="w-3.5 h-3.5 text-primary" />
                             </Button>
                           </a>
                         </div>
                       </div>
                       {integrations?.sheets?.status === "failed" && integrations.sheets.error && (
-                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-mono rounded-[5px]">
+                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-mono rounded-[8px]">
                           Error: {integrations.sheets.error}
                         </div>
                       )}
@@ -883,14 +883,14 @@ export function SettingsView({
                         <div className="flex items-center gap-3 shrink-0">
                           {renderStatusBadge(integrations?.drive)}
                           <a href="https://drive.google.com" target="_blank" rel="noopener noreferrer">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-[5px] border border-border/20 hover:bg-secondary/40">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-[8px] border border-border/20 hover:bg-secondary/40">
                               <ExternalLink className="w-3.5 h-3.5 text-primary" />
                             </Button>
                           </a>
                         </div>
                       </div>
                       {integrations?.drive?.status === "failed" && integrations.drive.error && (
-                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-mono rounded-[5px]">
+                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-mono rounded-[8px]">
                           Error: {integrations.drive.error}
                         </div>
                       )}
@@ -919,11 +919,11 @@ export function SettingsView({
                           onChange={(e) => update({ gemini_api_key: e.target.value })}
                           type="password"
                           placeholder="AIzaSy..."
-                          className="w-full sm:w-80 bg-background/50 border-border/30 rounded-[5px] h-9 font-mono text-sm"
+                          className="w-full sm:w-80 bg-background/50 border-border/30 rounded-[8px] h-9 font-mono text-sm"
                         />
                       </div>
                       {integrations?.gemini?.status === "failed" && integrations.gemini.error && (
-                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-mono rounded-[5px]">
+                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-mono rounded-[8px]">
                           Error: {integrations.gemini.error}
                         </div>
                       )}
@@ -945,7 +945,7 @@ export function SettingsView({
                         max="100"
                         value={settings.sound_volume !== undefined ? settings.sound_volume : 80}
                         onChange={(e) => update({ sound_volume: parseInt(e.target.value) })}
-                        className="flex-1 accent-primary h-1.5 bg-secondary/80 rounded-[5px] appearance-none cursor-pointer"
+                        className="flex-1 accent-primary h-1.5 bg-secondary/80 rounded-[8px] appearance-none cursor-pointer"
                       />
                       <span className="text-xs font-mono font-bold w-10 text-right shrink-0">
                         {settings.sound_volume !== undefined ? settings.sound_volume : 80}%
@@ -954,7 +954,7 @@ export function SettingsView({
                         variant="outline"
                         size="sm"
                         onClick={() => playTestSound(settings.sound_volume !== undefined ? settings.sound_volume : 80)}
-                        className="rounded-[5px] font-bold uppercase tracking-widest text-[9px] px-3 h-8 border-border/40 shrink-0 flex items-center gap-1.5"
+                        className="rounded-[8px] font-bold uppercase tracking-widest text-[9px] px-3 h-8 border-border/40 shrink-0 flex items-center gap-1.5"
                       >
                         <Volume2 className="w-3.5 h-3.5" />
                         Test
@@ -966,14 +966,14 @@ export function SettingsView({
 
               {activeSection === "security" && (
                 <div className="space-y-8 animate-in fade-in duration-300">
-                  <div className="p-6 bg-background/40 border border-border/20 rounded-[5px] relative">
+                  <div className="p-6 bg-background/40 border border-border/20 rounded-[8px] relative">
                     <div className="flex items-center gap-3 border-b border-border/20 pb-4 mb-6">
                       <Key className="w-5 h-5 text-primary" />
                       <h3 className="font-bold text-sm uppercase tracking-wider font-mono">Change Account Password</h3>
                     </div>
 
                     {passwordChangeSuccess && (
-                      <div className="mb-6 p-4 rounded-[5px] border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-mono flex items-start gap-2.5 shadow-[0_0_15px_rgba(16,185,129,0.1)] animate-in fade-in duration-300">
+                      <div className="mb-6 p-4 rounded-[8px] border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-mono flex items-start gap-2.5 shadow-[0_0_15px_rgba(16,185,129,0.1)] animate-in fade-in duration-300">
                         <CheckCircle className="h-4 w-4 shrink-0 text-emerald-500" />
                         <div>
                           <div className="font-bold uppercase tracking-wider mb-1">SUCCESSFUL UPDATE</div>
@@ -983,7 +983,7 @@ export function SettingsView({
                     )}
 
                     {passwordChangeError && (
-                      <div className="mb-6 p-4 rounded-[5px] border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-mono flex items-start gap-2.5 shadow-[0_0_15px_rgba(239,68,68,0.15)] animate-in fade-in duration-300">
+                      <div className="mb-6 p-4 rounded-[8px] border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-mono flex items-start gap-2.5 shadow-[0_0_15px_rgba(239,68,68,0.15)] animate-in fade-in duration-300">
                         <AlertTriangle className="h-4 w-4 shrink-0 text-red-500" />
                         <div>
                           <div className="font-bold uppercase tracking-wider mb-1">SECURITY WARNING</div>
@@ -1004,7 +1004,7 @@ export function SettingsView({
                             value={currentPassword}
                             onChange={(e) => setCurrentPassword(e.target.value)}
                             placeholder="Enter current password..."
-                            className="bg-background/50 border-border/30 rounded-[5px] h-11 pl-4 pr-10 font-mono text-xs w-full focus:bg-background/80"
+                            className="bg-background/50 border-border/30 rounded-[8px] h-11 pl-4 pr-10 font-mono text-xs w-full focus:bg-background/80"
                           />
                           <button
                             type="button"
@@ -1028,7 +1028,7 @@ export function SettingsView({
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
                             placeholder="Min 8 chars, uppercase, lowercase, number, symbol"
-                            className="bg-background/50 border-border/30 rounded-[5px] h-11 pl-4 pr-10 font-mono text-xs w-full focus:bg-background/80"
+                            className="bg-background/50 border-border/30 rounded-[8px] h-11 pl-4 pr-10 font-mono text-xs w-full focus:bg-background/80"
                           />
                           <button
                             type="button"
@@ -1052,7 +1052,7 @@ export function SettingsView({
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             placeholder="Verify new password..."
-                            className="bg-background/50 border-border/30 rounded-[5px] h-11 pl-4 pr-10 font-mono text-xs w-full focus:bg-background/80"
+                            className="bg-background/50 border-border/30 rounded-[8px] h-11 pl-4 pr-10 font-mono text-xs w-full focus:bg-background/80"
                           />
                           <button
                             type="button"
@@ -1068,7 +1068,7 @@ export function SettingsView({
                       <Button
                         type="submit"
                         disabled={passwordChanging}
-                        className="rounded-[5px] bg-primary text-primary-foreground font-mono text-xs font-bold uppercase tracking-[0.18em] w-full h-11 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(59,130,246,0.15)] active:scale-[0.98]"
+                        className="rounded-[8px] bg-primary text-primary-foreground font-mono text-xs font-bold uppercase tracking-[0.18em] w-full h-11 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(59,130,246,0.15)] active:scale-[0.98]"
                       >
                         {passwordChanging ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -1082,7 +1082,7 @@ export function SettingsView({
                     </form>
                   </div>
 
-                  <div className="p-6 bg-secondary/10 rounded-[5px] border border-border/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="p-6 bg-secondary/10 rounded-[8px] border border-border/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <p className="font-bold text-xs uppercase tracking-wider font-mono text-muted-foreground/80 flex items-center gap-2">
                         <Shield className="w-4 h-4 text-primary" />
@@ -1093,7 +1093,7 @@ export function SettingsView({
                       </p>
                     </div>
                     <a href="https://supabase.com/docs/guides/auth" target="_blank" rel="noopener noreferrer" className="shrink-0">
-                      <Button variant="outline" size="sm" className="rounded-[5px] font-bold text-[10px] uppercase tracking-widest border-border/40">
+                      <Button variant="outline" size="sm" className="rounded-[8px] font-bold text-[10px] uppercase tracking-widest border-border/40">
                         <ExternalLink className="w-3.5 h-3.5 mr-2" />
                         Supabase RLS Guide
                       </Button>
@@ -1110,7 +1110,7 @@ export function SettingsView({
                     <div className="relative group mb-4">
                       {/* soft glowing background blur */}
                       <div className="absolute -inset-3 bg-gradient-to-r from-primary/30 to-purple-500/20 rounded-full blur-2xl opacity-60 group-hover:opacity-100 transition duration-1000" />
-                      <div className="relative w-28 h-28 rounded-2xl bg-secondary/25 border border-border/30 p-4 flex items-center justify-center backdrop-blur-xl shadow-2xl transition-transform duration-500 hover:scale-105">
+                      <div className="relative w-28 h-28 rounded-[8px] bg-secondary/25 border border-border/30 p-4 flex items-center justify-center backdrop-blur-xl shadow-2xl transition-transform duration-500 hover:scale-105">
                         <img
                           src="/logo.svg"
                           alt="MyOS Logo"

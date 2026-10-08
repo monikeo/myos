@@ -211,11 +211,11 @@ export function LoginPanel({ onAuthSuccess }: LoginPanelProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-background cyber-grid py-6 sm:py-12 px-4">
       {/* Dynamic Cyber Glow Overlays matching Corporate Design */}
-      <div className="absolute top-1/4 left-1/4 h-[30rem] w-[30rem] rounded-[5px]-full bg-primary/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 h-[30rem] w-[30rem] rounded-[5px]-full bg-primary/5 blur-[150px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 h-[30rem] w-[30rem] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 h-[30rem] w-[30rem] rounded-full bg-primary/5 blur-[150px] pointer-events-none" />
 
       {/* Main Premium Glassmorphic sharp panel */}
-      <div className="relative w-full max-w-[92vw] sm:max-w-[420px] p-6 sm:p-8 rounded-[5px] border border-border/60 glass-panel shadow-[0_0_80px_rgba(0,0,0,0.5)] transition-all duration-300 my-auto flex flex-col justify-between">
+      <div className="relative w-full max-w-[92vw] sm:max-w-[420px] p-6 sm:p-8 rounded-[8px] border border-border/60 glass-panel shadow-[0_0_80px_rgba(0,0,0,0.5)] transition-all duration-300 my-auto flex flex-col justify-between">
         
         {/* Neon laser accent line */}
         <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_15px_rgba(34,197,94,0.4)]" />
@@ -229,14 +229,14 @@ export function LoginPanel({ onAuthSuccess }: LoginPanelProps) {
             MyOS Login & Register
           </h1>
           <p className="text-[8px] sm:text-[9px] font-mono text-muted-foreground mt-2 uppercase tracking-[0.25em] flex items-center justify-center gap-1.5 font-semibold">
-            <span className={`h-1.5 w-1.5 rounded-[5px] ${lockoutRemaining > 0 ? "bg-red-500 animate-ping" : "bg-primary animate-pulse"}`} />
+            <span className={`h-1.5 w-1.5 rounded-[8px] ${lockoutRemaining > 0 ? "bg-red-500 animate-ping" : "bg-primary animate-pulse"}`} />
             {lockoutRemaining > 0 ? "SYSTEM SECURITY BLOCKED" : "Secure Login System"}
           </p>
         </div>
 
         {/* Lockout Screen Overlay inside container */}
         {lockoutRemaining > 0 ? (
-          <div className="p-5 rounded-[5px] border border-red-500/50 bg-red-950/20 text-center font-mono space-y-4 shadow-[0_0_20px_rgba(239,68,68,0.1)]">
+          <div className="p-5 rounded-[8px] border border-red-500/50 bg-red-950/20 text-center font-mono space-y-4 shadow-[0_0_20px_rgba(239,68,68,0.1)]">
             <ShieldAlert className="h-10 w-10 text-red-500 mx-auto animate-bounce" />
             <div className="font-bold tracking-wider text-red-500 uppercase text-xs">
               🚨 SECURITY ACCESS LOCKED
@@ -255,7 +255,7 @@ export function LoginPanel({ onAuthSuccess }: LoginPanelProps) {
           <>
             {/* Security Alert Segment */}
             {securityAlert && (
-              <div className="mb-5 p-4 rounded-[5px] border border-red-500/50 bg-red-950/20 text-red-400 text-xs font-mono flex items-start gap-2.5 shadow-[0_0_20px_rgba(239,68,68,0.15)] animate-pulse">
+              <div className="mb-5 p-4 rounded-[8px] border border-red-500/50 bg-red-950/20 text-red-400 text-xs font-mono flex items-start gap-2.5 shadow-[0_0_20px_rgba(239,68,68,0.15)] animate-pulse">
                 <Terminal className="h-4 w-4 shrink-0 mt-0.5 text-red-500" />
                 <div>
                   <div className="font-bold tracking-wider text-red-500 uppercase mb-1">
@@ -268,7 +268,7 @@ export function LoginPanel({ onAuthSuccess }: LoginPanelProps) {
 
             {/* Alert Segment */}
             {error && !securityAlert && (
-              <div className="mb-5 p-4 rounded-[5px] border border-destructive/30 bg-destructive/5 text-destructive text-xs font-mono flex items-start gap-2.5 shadow-[0_0_15px_rgba(239,68,68,0.03)]">
+              <div className="mb-5 p-4 rounded-[8px] border border-destructive/30 bg-destructive/5 text-destructive text-xs font-mono flex items-start gap-2.5 shadow-[0_0_15px_rgba(239,68,68,0.03)]">
                 <Terminal className="h-4 w-4 shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>
@@ -288,7 +288,7 @@ export function LoginPanel({ onAuthSuccess }: LoginPanelProps) {
                   value={username}
                   onChange={(e) => handleInputChange("Username", e.target.value, setUsername)}
                   placeholder={isRegistering ? "Enter your username..." : "Enter username or email..."}
-                  className={`w-full h-10 px-4 rounded-[5px] bg-background/40 border text-foreground placeholder:text-muted-foreground/30 font-mono text-xs focus:outline-none focus:ring-1 focus:bg-background/70 transition-all ${
+                  className={`w-full h-10 px-4 rounded-[8px] bg-background/40 border text-foreground placeholder:text-muted-foreground/30 font-mono text-xs focus:outline-none focus:ring-1 focus:bg-background/70 transition-all ${
                     securityAlert?.field === "Username"
                       ? "border-red-500 ring-1 ring-red-500 bg-red-950/10"
                       : "border-border/50 focus:border-primary/60 focus:ring-primary/50"
@@ -309,7 +309,7 @@ export function LoginPanel({ onAuthSuccess }: LoginPanelProps) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full h-10 pl-4 pr-10 rounded-[5px] bg-background/40 border text-foreground placeholder:text-muted-foreground/30 font-mono text-xs focus:outline-none focus:ring-1 focus:bg-background/70 transition-all border-border/50 focus:border-primary/60 focus:ring-primary/50"
+                    className="w-full h-10 pl-4 pr-10 rounded-[8px] bg-background/40 border text-foreground placeholder:text-muted-foreground/30 font-mono text-xs focus:outline-none focus:ring-1 focus:bg-background/70 transition-all border-border/50 focus:border-primary/60 focus:ring-primary/50"
                   />
                   <button
                     type="button"
@@ -337,7 +337,7 @@ export function LoginPanel({ onAuthSuccess }: LoginPanelProps) {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full h-10 pl-4 pr-10 rounded-[5px] bg-background/40 border text-foreground placeholder:text-muted-foreground/30 font-mono text-xs focus:outline-none focus:ring-1 focus:bg-background/70 transition-all border-border/50 focus:border-primary/60 focus:ring-primary/50"
+                        className="w-full h-10 pl-4 pr-10 rounded-[8px] bg-background/40 border text-foreground placeholder:text-muted-foreground/30 font-mono text-xs focus:outline-none focus:ring-1 focus:bg-background/70 transition-all border-border/50 focus:border-primary/60 focus:ring-primary/50"
                       />
                       <button
                         type="button"
@@ -362,7 +362,7 @@ export function LoginPanel({ onAuthSuccess }: LoginPanelProps) {
                       value={displayName}
                       onChange={(e) => handleInputChange("Your Name", e.target.value, setDisplayName)}
                       placeholder="Enter your display name..."
-                      className={`w-full h-10 px-4 rounded-[5px] bg-background/40 border text-foreground placeholder:text-muted-foreground/30 font-mono text-xs focus:outline-none focus:ring-1 focus:bg-background/70 transition-all ${
+                      className={`w-full h-10 px-4 rounded-[8px] bg-background/40 border text-foreground placeholder:text-muted-foreground/30 font-mono text-xs focus:outline-none focus:ring-1 focus:bg-background/70 transition-all ${
                         securityAlert?.field === "Your Name"
                           ? "border-red-500 ring-1 ring-red-500 bg-red-950/10"
                           : "border-border/50 focus:border-primary/60 focus:ring-primary/50"
@@ -382,7 +382,7 @@ export function LoginPanel({ onAuthSuccess }: LoginPanelProps) {
                       value={email}
                       onChange={(e) => handleInputChange("Email Address", e.target.value, setEmail)}
                       placeholder="e.g. user@myos.local"
-                      className={`w-full h-10 px-4 rounded-[5px] bg-background/40 border text-foreground placeholder:text-muted-foreground/30 font-mono text-xs focus:outline-none focus:ring-1 focus:bg-background/70 transition-all ${
+                      className={`w-full h-10 px-4 rounded-[8px] bg-background/40 border text-foreground placeholder:text-muted-foreground/30 font-mono text-xs focus:outline-none focus:ring-1 focus:bg-background/70 transition-all ${
                         securityAlert?.field === "Email Address"
                           ? "border-red-500 ring-1 ring-red-500 bg-red-950/10"
                           : "border-border/50 focus:border-primary/60 focus:ring-primary/50"
@@ -400,7 +400,7 @@ export function LoginPanel({ onAuthSuccess }: LoginPanelProps) {
                       disabled={loading}
                       value={dob}
                       onChange={(e) => setDob(e.target.value)}
-                      className="w-full h-10 px-4 rounded-[5px] bg-background/40 border border-border/50 text-foreground placeholder:text-muted-foreground/30 font-mono text-xs focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/50 focus:bg-background/70 transition-all"
+                      className="w-full h-10 px-4 rounded-[8px] bg-background/40 border border-border/50 text-foreground placeholder:text-muted-foreground/30 font-mono text-xs focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/50 focus:bg-background/70 transition-all"
                     />
                   </div>
                 </div>
@@ -409,7 +409,7 @@ export function LoginPanel({ onAuthSuccess }: LoginPanelProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-10 rounded-[5px] bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs font-bold uppercase tracking-[0.18em] flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(34,197,94,0.15)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+                className="w-full h-10 rounded-[8px] bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs font-bold uppercase tracking-[0.18em] flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(34,197,94,0.15)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-4"
               >
                 {loading ? (
                   <span className="h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />

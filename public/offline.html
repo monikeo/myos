@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyOS — Offline Mode</title>
+  <meta name="theme-color" content="#10b981" />
+  <style>
+    :root {
+      --background: #09090b;
+      --foreground: #f4f4f5;
+      --primary: #10b981;
+      --muted: #71717a;
+      --card: #18181b;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background-image: 
+        linear-gradient(to right, rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .card {
+      background-color: rgba(24, 24, 27, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2.5rem 2rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
+    .icon-container {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+    }
+    .badge {
+      display: inline-block;
+      font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 8px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    p {
+      color: var(--muted);
+      font-size: 0.875rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 44px;
+      border-radius: 8px;
+      background-color: var(--primary);
+      color: #000;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: ui-monospace, monospace;
+      text-decoration: none;
+    }
+    .btn:hover {
+      background-color: #34d399;
+      transform: translateY(-1px);
+    }
+    .status {
+      margin-top: 1.5rem;
+      font-size: 0.7rem;
+      font-family: ui-monospace, monospace;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">Connection Offline</div>
+    <div class="icon-container">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
+    </div>
+    <h1>Network Disconnected</h1>
+    <p>You appear to be offline. Cached views and local data remain secure in browser storage. Reconnect to resume live synchronization.</p>
+    <button class="btn" onclick="window.location.reload()">
+      Retry Connection
+    </button>
+    <div class="status" id="status-text">
+      STANDBY // LISTENING FOR NETWORK SIGNAL
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener("online", function() {
+      document.getElementById("status-text").innerText = "SIGNAL DETECTED // RECONNECTING...";
+      setTimeout(function() {
+        window.location.reload();
+      }, 500);
+    });
+  </script>
+</body>
+</html>

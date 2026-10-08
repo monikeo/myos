@@ -205,7 +205,7 @@ export const SearchPalette: React.FC<SearchPaletteProps> = ({ isOpen, onClose, n
     >
       <div 
         ref={containerRef}
-        className="relative w-full max-w-2xl bg-background/95 border border-border/40 rounded-[5px] shadow-[0_0_80px_rgba(0,0,0,0.6)] overflow-hidden glass-panel flex flex-col max-h-[60vh] animate-in zoom-in-95 duration-200"
+        className="relative w-full max-w-2xl bg-background/95 border border-border/40 rounded-[8px] shadow-[0_0_80px_rgba(0,0,0,0.6)] overflow-hidden glass-panel flex flex-col max-h-[60vh] animate-in zoom-in-95 duration-200"
       >
         {/* Neon laser accent line */}
         <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-80" />
@@ -257,14 +257,14 @@ export const SearchPalette: React.FC<SearchPaletteProps> = ({ isOpen, onClose, n
                           onClick={() => handleSelect({ ...item, type: "navigation" })}
                           onMouseEnter={() => setSelectedIndex(idx)}
                           className={cn(
-                            "flex items-center justify-between px-3 py-2.5 rounded-[5px] transition-all duration-150 cursor-pointer font-sans",
+                            "flex items-center justify-between px-3 py-2.5 rounded-[8px] transition-all duration-150 cursor-pointer font-sans",
                             active 
                               ? "bg-primary/10 border-l-[3px] border-primary pl-2.5" 
                               : "hover:bg-secondary/40 border-l-[3px] border-transparent"
                           )}
                         >
                           <div className="flex items-center gap-3">
-                            <div className={cn("p-1.5 rounded-[5px]", active ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground")}>
+                            <div className={cn("p-1.5 rounded-[8px]", active ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground")}>
                               <item.icon className="w-4 h-4 shrink-0" />
                             </div>
                             <div>
@@ -302,14 +302,14 @@ export const SearchPalette: React.FC<SearchPaletteProps> = ({ isOpen, onClose, n
                           onClick={() => handleSelect({ id: ws.id, type: "workspace", item: ws })}
                           onMouseEnter={() => setSelectedIndex(idx)}
                           className={cn(
-                            "flex items-center justify-between px-3 py-2.5 rounded-[5px] transition-all duration-150 cursor-pointer font-sans",
+                            "flex items-center justify-between px-3 py-2.5 rounded-[8px] transition-all duration-150 cursor-pointer font-sans",
                             active 
                               ? "bg-primary/10 border-l-[3px] border-primary pl-2.5" 
                               : "hover:bg-secondary/40 border-l-[3px] border-transparent"
                           )}
                         >
                           <div className="flex items-center gap-3">
-                            <div className={cn("p-1.5 rounded-[5px]", active ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground")}>
+                            <div className={cn("p-1.5 rounded-[8px]", active ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground")}>
                               <Layers className="w-4 h-4 shrink-0" />
                             </div>
                             <div>
@@ -347,14 +347,14 @@ export const SearchPalette: React.FC<SearchPaletteProps> = ({ isOpen, onClose, n
                           onClick={() => handleSelect({ id: proj.id, type: "project", item: proj })}
                           onMouseEnter={() => setSelectedIndex(idx)}
                           className={cn(
-                            "flex items-center justify-between px-3 py-2.5 rounded-[5px] transition-all duration-150 cursor-pointer font-sans",
+                            "flex items-center justify-between px-3 py-2.5 rounded-[8px] transition-all duration-150 cursor-pointer font-sans",
                             active 
                               ? "bg-primary/10 border-l-[3px] border-primary pl-2.5" 
                               : "hover:bg-secondary/40 border-l-[3px] border-transparent"
                           )}
                         >
                           <div className="flex items-center gap-3">
-                            <div className={cn("p-1.5 rounded-[5px]", active ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground")}>
+                            <div className={cn("p-1.5 rounded-[8px]", active ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground")}>
                               <Folder className="w-4 h-4 shrink-0" />
                             </div>
                             <div>
@@ -392,14 +392,14 @@ export const SearchPalette: React.FC<SearchPaletteProps> = ({ isOpen, onClose, n
                           onClick={() => handleSelect({ id: task.id, type: "task", item: task })}
                           onMouseEnter={() => setSelectedIndex(idx)}
                           className={cn(
-                            "flex items-center justify-between px-3 py-2.5 rounded-[5px] transition-all duration-150 cursor-pointer font-sans",
+                            "flex items-center justify-between px-3 py-2.5 rounded-[8px] transition-all duration-150 cursor-pointer font-sans",
                             active 
                               ? "bg-primary/10 border-l-[3px] border-primary pl-2.5" 
                               : "hover:bg-secondary/40 border-l-[3px] border-transparent"
                           )}
                         >
                           <div className="flex items-center gap-3">
-                            <div className={cn("p-1.5 rounded-[5px]", active ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground")}>
+                            <div className={cn("p-1.5 rounded-[8px]", active ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground")}>
                               <CheckSquare className="w-4 h-4 shrink-0" />
                             </div>
                             <div>
@@ -428,9 +428,9 @@ export const SearchPalette: React.FC<SearchPaletteProps> = ({ isOpen, onClose, n
         {/* Command palette footer info */}
         <div className="px-4 py-2 border-t border-border/30 bg-secondary/20 flex items-center justify-between font-mono text-[9px] text-muted-foreground/60 shrink-0 select-none">
           <div className="flex items-center gap-4">
-            <span><kbd className="bg-muted px-1 rounded-[5px] border border-border/30">↑↓</kbd> Navigate</span>
-            <span><kbd className="bg-muted px-1 rounded-[5px] border border-border/30">Enter</kbd> Select</span>
-            <span><kbd className="bg-muted px-1 rounded-[5px] border border-border/30">ESC</kbd> Close</span>
+            <span><kbd className="bg-muted px-1 rounded-[8px] border border-border/30">↑↓</kbd> Navigate</span>
+            <span><kbd className="bg-muted px-1 rounded-[8px] border border-border/30">Enter</kbd> Select</span>
+            <span><kbd className="bg-muted px-1 rounded-[8px] border border-border/30">ESC</kbd> Close</span>
           </div>
           <div className="font-semibold text-primary/70 uppercase tracking-wider">
             Designed by Keo Moni

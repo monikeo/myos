@@ -244,7 +244,7 @@ export function FinanceView() {
         <div className="flex gap-3">
           <Button 
             onClick={() => setShowDeployForm(!showDeployForm)}
-            className="rounded-[5px] shadow-[0_0_20px_rgba(59,130,246,0.2)] bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-[10px] px-6 h-11"
+            className="rounded-[8px] shadow-[0_0_20px_rgba(59,130,246,0.2)] bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-[10px] px-6 h-11"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Transaction
@@ -260,7 +260,7 @@ export function FinanceView() {
             variant={filterWorkspaceId === "All" ? "default" : "outline"}
             size="sm"
             onClick={() => setFilterWorkspaceId("All")}
-            className="rounded-[5px] text-[8px] uppercase tracking-widest font-bold h-8 px-4"
+            className="rounded-[8px] text-[8px] uppercase tracking-widest font-bold h-8 px-4"
           >
             All Ledgers
           </Button>
@@ -268,7 +268,7 @@ export function FinanceView() {
             variant={filterWorkspaceId === "General" ? "default" : "outline"}
             size="sm"
             onClick={() => setFilterWorkspaceId("General")}
-            className="rounded-[5px] text-[8px] uppercase tracking-widest font-bold h-8 px-4"
+            className="rounded-[8px] text-[8px] uppercase tracking-widest font-bold h-8 px-4"
           >
             General Transactions
           </Button>
@@ -283,7 +283,7 @@ export function FinanceView() {
                 color: filterWorkspaceId === ws.id ? "#ffffff" : ws.color,
                 backgroundColor: filterWorkspaceId === ws.id ? ws.color : undefined
               }}
-              className="rounded-[5px] text-[8px] uppercase tracking-widest font-bold h-8 px-4 transition-all duration-300"
+              className="rounded-[8px] text-[8px] uppercase tracking-widest font-bold h-8 px-4 transition-all duration-300"
             >
               {ws.name}
             </Button>
@@ -292,10 +292,10 @@ export function FinanceView() {
       </div>
       {/* Transaction Deployment Form */}
       {showDeployForm && (
-        <div className="border border-primary/20 bg-primary/5 rounded-[5px] p-6 space-y-5">
+        <div className="border border-primary/20 bg-primary/5 rounded-[8px] p-6 space-y-5">
           <div className="flex items-center justify-between mb-1">
             <h3 className="font-bold uppercase tracking-widest text-xs text-primary">Deploy Financial Node</h3>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-[5px]" onClick={() => setShowDeployForm(false)}>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-[8px]" onClick={() => setShowDeployForm(false)}>
               <X className="w-4 h-4" />
             </Button>
           </div>
@@ -305,19 +305,19 @@ export function FinanceView() {
               placeholder="Description (e.g. Supabase Server Premium)"
               value={newDesc}
               onChange={(e) => setNewDesc(e.target.value)}
-              className="bg-background/50 border-border/30 rounded-[5px] h-11 text-xs"
+              className="bg-background/50 border-border/30 rounded-[8px] h-11 text-xs"
             />
             <Input
               type="number"
               placeholder="Amount ($)"
               value={newAmount}
               onChange={(e) => setNewAmount(e.target.value)}
-              className="bg-background/50 border-border/30 rounded-[5px] h-11 text-xs"
+              className="bg-background/50 border-border/30 rounded-[8px] h-11 text-xs"
             />
             <select
               value={newTxType}
               onChange={(e) => setNewTxType(e.target.value as "income" | "expense")}
-              className="h-11 px-3 rounded-[5px] bg-background/50 border border-border/30 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="h-11 px-3 rounded-[8px] bg-background/50 border border-border/30 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="expense">Expense (Outflow)</option>
               <option value="income">Income (Inflow)</option>
@@ -329,18 +329,18 @@ export function FinanceView() {
               placeholder="Category (e.g. Hosting, Food, Marketing)"
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
-              className="bg-background/50 border-border/30 rounded-[5px] h-11 text-xs"
+              className="bg-background/50 border-border/30 rounded-[8px] h-11 text-xs"
             />
             <Input
               type="date"
               value={newDate}
               onChange={(e) => setNewDate(e.target.value)}
-              className="bg-background/50 border-border/30 rounded-[5px] h-11 text-xs text-muted-foreground"
+              className="bg-background/50 border-border/30 rounded-[8px] h-11 text-xs text-muted-foreground"
             />
             <select
               value={newWorkspaceId}
               onChange={(e) => setNewWorkspaceId(e.target.value)}
-              className="h-11 px-3 rounded-[5px] bg-background/50 border border-border/30 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="h-11 px-3 rounded-[8px] bg-background/50 border border-border/30 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="">General Transaction (No Workspace)</option>
               {workspaces.map((ws) => (
@@ -355,7 +355,7 @@ export function FinanceView() {
             <select
               value={newProjectId}
               onChange={(e) => setNewProjectId(e.target.value)}
-              className="h-11 px-3 rounded-[5px] bg-background/50 border border-border/30 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="h-11 px-3 rounded-[8px] bg-background/50 border border-border/30 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="">No Linked Project</option>
               {projects
@@ -380,14 +380,14 @@ export function FinanceView() {
                 setNewWorkspaceId("");
                 setNewProjectId("");
               }}
-              className="rounded-[5px] border-border/50 px-6 h-11 font-bold uppercase tracking-widest text-[9px]"
+              className="rounded-[8px] border-border/50 px-6 h-11 font-bold uppercase tracking-widest text-[9px]"
             >
               Cancel
             </Button>
             <Button
               onClick={handleCreateTransaction}
               disabled={!newDesc.trim() || !newAmount}
-              className="rounded-[5px] bg-primary px-6 h-11 font-bold uppercase tracking-widest text-[9px] shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+              className="rounded-[8px] bg-primary px-6 h-11 font-bold uppercase tracking-widest text-[9px] shadow-[0_0_20px_rgba(59,130,246,0.2)]"
             >
               <Save className="w-4 h-4 mr-2" />
               Save Transaction
@@ -397,18 +397,18 @@ export function FinanceView() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Card className="bg-primary text-white border-none shadow-2xl overflow-hidden relative group rounded-[5px] p-2">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-[5px]-full -translate-y-32 translate-x-32 blur-[80px] group-hover:scale-125 transition-transform duration-1000" />
+        <Card className="bg-primary text-white border-none shadow-2xl overflow-hidden relative group rounded-[8px] p-2">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full -translate-y-32 translate-x-32 blur-[80px] group-hover:scale-125 transition-transform duration-1000" />
           <CardContent className="p-4 sm:p-8 relative z-10">
             <div className="flex items-center gap-3 mb-6">
-               <div className="p-2 bg-white/10 rounded-[5px]">
+               <div className="p-2 bg-white/10 rounded-[8px]">
                  <Wallet className="w-5 h-5 text-white" />
                </div>
                <p className="text-white/60 text-[10px] font-bold uppercase tracking-[0.3em] font-mono">Net Balance</p>
             </div>
             <h2 className="text-3xl sm:text-5xl font-extrabold mb-8 font-mono tracking-tighter tabular-nums truncate">${(totals.income - totals.expense).toLocaleString()}</h2>
             <div className="flex items-center gap-6">
-              <Badge className="bg-white/10 text-emerald-300 font-bold text-[10px] uppercase tracking-widest px-4 py-1.5 rounded-[5px] border border-white/5">
+              <Badge className="bg-white/10 text-emerald-300 font-bold text-[10px] uppercase tracking-widest px-4 py-1.5 rounded-[8px] border border-white/5">
                 <TrendingUp className="w-3.5 h-3.5 mr-2" />
                 +12.4% PROJ
               </Badge>
@@ -417,10 +417,10 @@ export function FinanceView() {
           </CardContent>
         </Card>
         
-        <Card className="border border-border/50 bg-secondary/10 backdrop-blur-xl hover:border-primary/50 transition-all duration-700 rounded-[5px] group">
+        <Card className="border border-border/50 bg-secondary/10 backdrop-blur-xl hover:border-primary/50 transition-all duration-700 rounded-[8px] group">
           <CardContent className="p-4 sm:p-8">
             <div className="flex items-center gap-6 mb-8">
-              <div className="w-16 h-16 rounded-[5px] bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-700">
+              <div className="w-16 h-16 rounded-[8px] bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-700">
                 <TrendingUp className="w-8 h-8" />
               </div>
               <div>
@@ -428,16 +428,16 @@ export function FinanceView() {
                 <h3 className="text-3xl font-bold font-mono tabular-nums group-hover:text-emerald-500 transition-colors">${totals.income.toLocaleString()}</h3>
               </div>
             </div>
-            <div className="w-full bg-background/50 border border-border/10 h-3 rounded-[5px]-full overflow-hidden shadow-inner p-0.5">
-              <div className="bg-emerald-500 h-full rounded-[5px]-full shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000" style={{ width: '80%' }} />
+            <div className="w-full bg-background/50 border border-border/10 h-3 rounded-full overflow-hidden shadow-inner p-0.5">
+              <div className="bg-emerald-500 h-full rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000" style={{ width: '80%' }} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border border-border/50 bg-secondary/10 backdrop-blur-xl hover:border-red-500/50 transition-all duration-700 rounded-[5px] group">
+        <Card className="border border-border/50 bg-secondary/10 backdrop-blur-xl hover:border-red-500/50 transition-all duration-700 rounded-[8px] group">
           <CardContent className="p-4 sm:p-8">
             <div className="flex items-center gap-6 mb-8">
-              <div className="w-16 h-16 rounded-[5px] bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)] flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-700">
+              <div className="w-16 h-16 rounded-[8px] bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)] flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-700">
                 <TrendingDown className="w-8 h-8" />
               </div>
               <div>
@@ -445,23 +445,23 @@ export function FinanceView() {
                 <h3 className="text-3xl font-bold font-mono tabular-nums group-hover:text-red-500 transition-colors">${totals.expense.toLocaleString()}</h3>
               </div>
             </div>
-            <div className="w-full bg-background/50 border border-border/10 h-3 rounded-[5px]-full overflow-hidden shadow-inner p-0.5">
-              <div className="bg-red-500 h-full rounded-[5px]-full shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-1000" style={{ width: '45%' }} />
+            <div className="w-full bg-background/50 border border-border/10 h-3 rounded-full overflow-hidden shadow-inner p-0.5">
+              <div className="bg-red-500 h-full rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-1000" style={{ width: '45%' }} />
             </div>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <Card className="lg:col-span-2 border border-border/50 glass-panel overflow-hidden shadow-2xl rounded-[5px]">
+        <Card className="lg:col-span-2 border border-border/50 glass-panel overflow-hidden shadow-2xl rounded-[8px]">
           <CardHeader className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between border-b border-border/50 bg-background/40 p-4 sm:p-10 gap-4">
             <div className="flex items-center gap-4">
                <PieChartIcon className="w-6 h-6 text-primary" />
                <CardTitle className="text-[10px] font-bold uppercase tracking-[0.4em] font-mono text-muted-foreground">Income & Expenses Chart</CardTitle>
             </div>
-             <div className="flex bg-background/50 border border-border/20 rounded-[5px] p-1 shadow-inner w-full sm:w-auto">
-                <Button variant="ghost" size="sm" className="rounded-[5px] px-6 bg-primary text-white font-bold text-[10px] uppercase tracking-widest flex-1 sm:flex-initial">WKLY</Button>
-                <Button variant="ghost" size="sm" className="rounded-[5px] px-6 text-muted-foreground font-bold text-[10px] uppercase tracking-widest hover:text-foreground transition-colors flex-1 sm:flex-initial">MTLY</Button>
+             <div className="flex bg-background/50 border border-border/20 rounded-[8px] p-1 shadow-inner w-full sm:w-auto">
+                <Button variant="ghost" size="sm" className="rounded-[8px] px-6 bg-primary text-white font-bold text-[10px] uppercase tracking-widest flex-1 sm:flex-initial">WKLY</Button>
+                <Button variant="ghost" size="sm" className="rounded-[8px] px-6 text-muted-foreground font-bold text-[10px] uppercase tracking-widest hover:text-foreground transition-colors flex-1 sm:flex-initial">MTLY</Button>
              </div>
           </CardHeader>
           <CardContent className="p-4 sm:p-10 h-[300px] sm:h-[450px]" style={{ minWidth: 0, minHeight: 0 }}>
@@ -491,7 +491,7 @@ export function FinanceView() {
           </CardContent>
         </Card>
 
-        <Card className="border border-border/50 glass-panel overflow-hidden flex flex-col shadow-2xl rounded-[5px]">
+        <Card className="border border-border/50 glass-panel overflow-hidden flex flex-col shadow-2xl rounded-[8px]">
           <CardHeader className="border-b border-border/50 bg-background/40 p-8 space-y-4">
             <CardTitle className="text-[10px] font-bold flex items-center gap-4 uppercase tracking-[0.4em] font-mono text-muted-foreground">
                <Clock className="w-6 h-6 text-primary" />
@@ -504,10 +504,10 @@ export function FinanceView() {
                   placeholder="Search transactions..." 
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="pl-9 h-10 bg-background/50 border-border/50 text-xs rounded-[5px] placeholder:uppercase placeholder:tracking-widest placeholder:text-[9px]"
+                  className="pl-9 h-10 bg-background/50 border-border/50 text-xs rounded-[8px] placeholder:uppercase placeholder:tracking-widest placeholder:text-[9px]"
                 />
               </div>
-              <div className="flex gap-1 p-1 bg-background/50 border border-border/50 rounded-[5px] shrink-0">
+              <div className="flex gap-1 p-1 bg-background/50 border border-border/50 rounded-[8px] shrink-0">
                 {(["All", "income", "expense"] as const).map(type => (
                   <Button
                     key={type}
@@ -515,7 +515,7 @@ export function FinanceView() {
                     size="sm"
                     onClick={() => setFilterType(type)}
                     className={cn(
-                      "rounded-[5px] text-[9px] uppercase tracking-widest font-bold h-7 px-3",
+                      "rounded-[8px] text-[9px] uppercase tracking-widest font-bold h-7 px-3",
                       filterType === type ? "bg-background text-primary shadow-sm" : "text-muted-foreground opacity-70 hover:opacity-100"
                     )}
                   >
@@ -539,7 +539,7 @@ export function FinanceView() {
                     <div key={t.id} className="p-4 flex items-center justify-between hover:bg-secondary/30 transition-all group cursor-pointer border-l-4 border-transparent hover:border-primary">
                       <div className="flex items-center gap-4 overflow-hidden">
                         <div className={cn(
-                          "w-10 h-10 rounded-[5px] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500",
+                          "w-10 h-10 rounded-[8px] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500",
                           t.transaction_type === 'income' ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" : "bg-red-500/10 text-red-500 border border-red-500/20"
                         )}>
                           {t.transaction_type === 'income' ? <Plus className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
@@ -572,7 +572,7 @@ export function FinanceView() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-red-500 md:opacity-0 md:group-hover:opacity-100 opacity-100 transition-all hover:bg-red-500/10 rounded-[5px] shrink-0"
+                          className="h-8 w-8 text-red-500 md:opacity-0 md:group-hover:opacity-100 opacity-100 transition-all hover:bg-red-500/10 rounded-[8px] shrink-0"
                           onClick={(e) => { e.stopPropagation(); setTxToDelete(t.id); }}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -591,7 +591,7 @@ export function FinanceView() {
             </div>
           </CardContent>
           <CardFooter className="p-6 border-t border-border/10 bg-background/20 mt-auto">
-            <Button variant="ghost" className="w-full h-12 rounded-[5px] text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-secondary hover:text-primary transition-all shadow-inner">Generate Report</Button>
+            <Button variant="ghost" className="w-full h-12 rounded-[8px] text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-secondary hover:text-primary transition-all shadow-inner">Generate Report</Button>
           </CardFooter>
         </Card>
       </div>
@@ -599,9 +599,9 @@ export function FinanceView() {
       {/* Sleek Crimson Custom Warning Delete Modal */}
       {txToDelete && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-secondary/20 border border-red-500/40 max-w-md w-full p-8 shadow-2xl backdrop-blur-2xl rounded-[5px] relative space-y-6">
+          <div className="bg-secondary/20 border border-red-500/40 max-w-md w-full p-8 shadow-2xl backdrop-blur-2xl rounded-[8px] relative space-y-6">
             <div className="flex items-center gap-4 text-red-500 mb-2">
-              <div className="w-12 h-12 rounded-[5px] bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-[8px] bg-red-500/10 border border-red-500/20 flex items-center justify-center">
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <div>
@@ -617,13 +617,13 @@ export function FinanceView() {
             <div className="flex justify-end gap-3 pt-4 border-t border-border/10">
               <Button
                 variant="outline"
-                className="rounded-[5px] border-border/50 px-6 h-10 font-bold uppercase tracking-widest text-[9px]"
+                className="rounded-[8px] border-border/50 px-6 h-10 font-bold uppercase tracking-widest text-[9px]"
                 onClick={() => setTxToDelete(null)}
               >
                 Cancel
               </Button>
               <Button
-                className="rounded-[5px] bg-red-500 hover:bg-red-600 px-6 h-10 font-bold uppercase tracking-widest text-[9px] shadow-[0_0_20px_rgba(239,68,68,0.2)]"
+                className="rounded-[8px] bg-red-500 hover:bg-red-600 px-6 h-10 font-bold uppercase tracking-widest text-[9px] shadow-[0_0_20px_rgba(239,68,68,0.2)]"
                 onClick={handleConfirmDeleteTx}
               >
                 Confirm Purge

@@ -194,12 +194,12 @@ export function FileVaultView() {
         </div>
 
         {/* Lock Overlay */}
-        <div className="relative border border-border/20 rounded-[5px] overflow-hidden bg-background/20 p-8 sm:p-16 text-center backdrop-blur-xl min-h-[500px] flex flex-col items-center justify-center space-y-8">
+        <div className="relative border border-border/20 rounded-[8px] overflow-hidden bg-background/20 p-8 sm:p-16 text-center backdrop-blur-xl min-h-[500px] flex flex-col items-center justify-center space-y-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.06),transparent_70%)] pointer-events-none" />
           
           <div className="relative group">
             <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-xl opacity-60 animate-pulse" />
-            <div className="relative w-20 h-20 rounded-2xl bg-secondary/30 border border-border/30 flex items-center justify-center shadow-2xl backdrop-blur-2xl">
+            <div className="relative w-20 h-20 rounded-[8px] bg-secondary/30 border border-border/30 flex items-center justify-center shadow-2xl backdrop-blur-2xl">
               <FolderOpen className="w-10 h-10 text-primary" />
             </div>
           </div>
@@ -213,7 +213,7 @@ export function FileVaultView() {
             </p>
           </div>
 
-          <div className="w-full max-w-lg bg-secondary/10 border border-border/10 p-5 rounded-[5px] grid grid-cols-2 gap-4 text-left font-mono text-[10px] text-muted-foreground relative z-10">
+          <div className="w-full max-w-lg bg-secondary/10 border border-border/10 p-5 rounded-[8px] grid grid-cols-2 gap-4 text-left font-mono text-[10px] text-muted-foreground relative z-10">
             <div>
               <p className="uppercase tracking-widest text-muted-foreground/45 font-bold mb-0.5">Database Link</p>
               <p className="font-semibold text-foreground">Google Drive API v3</p>
@@ -242,7 +242,7 @@ export function FileVaultView() {
                 })
               );
             }}
-            className="relative z-10 rounded-[5px] shadow-[0_0_25px_rgba(59,130,246,0.25)] bg-primary hover:bg-primary/90 h-12 px-10 font-extrabold text-xs uppercase tracking-[0.2em] transition-all hover:scale-105"
+            className="relative z-10 rounded-[8px] shadow-[0_0_25px_rgba(59,130,246,0.25)] bg-primary hover:bg-primary/90 h-12 px-10 font-extrabold text-xs uppercase tracking-[0.2em] transition-all hover:scale-105"
           >
             Connect Google Drive
             <ExternalLink className="w-4 h-4 ml-3" />
@@ -256,7 +256,7 @@ export function FileVaultView() {
     <div className="space-y-10 animate-in fade-in duration-700 slide-in-from-bottom-4">
       {/* Resilient Drive Offline Warning */}
       {driveError && (
-        <div className="bg-amber-500/10 border border-amber-500/30 p-5 rounded-[5px] flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+        <div className="bg-amber-500/10 border border-amber-500/30 p-5 rounded-[8px] flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
           <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
           <div className="space-y-1">
             <p className="font-bold text-sm text-amber-500">Storage Offline</p>
@@ -281,7 +281,7 @@ export function FileVaultView() {
         </div>
         <Button
           onClick={() => fileInputRef.current?.click()}
-          className="rounded-[5px] shadow-[0_0_20px_rgba(59,130,246,0.2)] bg-primary hover:bg-primary/90 h-12 px-8 font-bold text-xs uppercase tracking-[0.2em]"
+          className="rounded-[8px] shadow-[0_0_20px_rgba(59,130,246,0.2)] bg-primary hover:bg-primary/90 h-12 px-8 font-bold text-xs uppercase tracking-[0.2em]"
         >
           <Upload className="w-4 h-4 mr-3" />
           Upload Files
@@ -299,14 +299,14 @@ export function FileVaultView() {
       {uploads.length > 0 && (
         <div className="space-y-2">
           {uploads.map((u) => (
-            <div key={u.id} className="flex items-center gap-4 p-4 bg-secondary/20 border border-border/30 rounded-[5px]">
+            <div key={u.id} className="flex items-center gap-4 p-4 bg-secondary/20 border border-border/30 rounded-[8px]">
               {u.status === "uploading" && <Loader2 className="w-4 h-4 text-primary animate-spin shrink-0" />}
               {u.status === "done" && <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />}
               {u.status === "error" && <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />}
               <span className="text-sm font-medium flex-1 truncate">{u.name}</span>
               {u.status === "uploading" && (
-                <div className="w-32 h-1.5 bg-secondary rounded-[5px]-full overflow-hidden">
-                  <div className="h-full bg-primary rounded-[5px]-full transition-all duration-300" style={{ width: `${u.progress}%` }} />
+                <div className="w-32 h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full transition-all duration-300" style={{ width: `${u.progress}%` }} />
                 </div>
               )}
               {u.status === "error" && <span className="text-xs text-red-500">{u.error}</span>}
@@ -323,7 +323,7 @@ export function FileVaultView() {
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
         className={cn(
-          "border-2 border-dashed rounded-[5px] p-12 text-center cursor-pointer transition-all duration-300",
+          "border-2 border-dashed rounded-[8px] p-12 text-center cursor-pointer transition-all duration-300",
           isDragging
             ? "border-primary bg-primary/5 scale-[1.01]"
             : "border-border/30 hover:border-primary/40 hover:bg-secondary/20"
@@ -346,27 +346,27 @@ export function FileVaultView() {
             placeholder="Search files..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-12 bg-secondary/30 border-border/20 rounded-[5px] h-11"
+            className="pl-12 bg-secondary/30 border-border/20 rounded-[8px] h-11"
           />
         </div>
-        <div className="flex p-1 bg-secondary/30 rounded-[5px] border border-border/50 overflow-x-auto max-w-full whitespace-nowrap scrollbar-none">
+        <div className="flex p-1 bg-secondary/30 rounded-[8px] border border-border/50 overflow-x-auto max-w-full whitespace-nowrap scrollbar-none">
           {filterButtons.map((btn) => (
             <Button
               key={btn.id}
               variant={filter === btn.id ? "secondary" : "ghost"}
               size="sm"
               onClick={() => setFilter(btn.id)}
-              className={cn("rounded-[5px] text-[10px] uppercase font-bold tracking-widest px-4 h-9 whitespace-nowrap shrink-0", filter === btn.id ? "bg-background text-primary shadow-sm" : "text-muted-foreground")}
+              className={cn("rounded-[8px] text-[10px] uppercase font-bold tracking-widest px-4 h-9 whitespace-nowrap shrink-0", filter === btn.id ? "bg-background text-primary shadow-sm" : "text-muted-foreground")}
             >
               {btn.label}
             </Button>
           ))}
         </div>
-        <div className="flex p-1 bg-secondary/30 rounded-[5px] border border-border/50 shrink-0">
-          <Button variant={viewMode === "grid" ? "secondary" : "ghost"} size="icon" className="w-9 h-9 rounded-[5px]" onClick={() => setViewMode("grid")}>
+        <div className="flex p-1 bg-secondary/30 rounded-[8px] border border-border/50 shrink-0">
+          <Button variant={viewMode === "grid" ? "secondary" : "ghost"} size="icon" className="w-9 h-9 rounded-[8px]" onClick={() => setViewMode("grid")}>
             <Grid3X3 className="w-4 h-4" />
           </Button>
-          <Button variant={viewMode === "list" ? "secondary" : "ghost"} size="icon" className="w-9 h-9 rounded-[5px]" onClick={() => setViewMode("list")}>
+          <Button variant={viewMode === "list" ? "secondary" : "ghost"} size="icon" className="w-9 h-9 rounded-[8px]" onClick={() => setViewMode("list")}>
             <List className="w-4 h-4" />
           </Button>
         </div>
@@ -388,7 +388,7 @@ export function FileVaultView() {
           {filtered.map((file) => (
             <Card
               key={file.id}
-              className="group border border-border/50 bg-secondary/10 backdrop-blur-xl hover:border-primary/50 transition-all duration-300 rounded-[5px] overflow-hidden hover:-translate-y-1"
+              className="group border border-border/50 bg-secondary/10 backdrop-blur-xl hover:border-primary/50 transition-all duration-300 rounded-[8px] overflow-hidden hover:-translate-y-1"
             >
               <div className="aspect-square bg-secondary/30 flex items-center justify-center relative overflow-hidden">
                 {getFileCategory(file.mime_type) === "image" ? (
@@ -403,16 +403,16 @@ export function FileVaultView() {
                 )}
                 <div className="absolute inset-0 bg-black/40 md:bg-black/60 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 md:gap-3">
                   <a href={file.drive_url} target="_blank" rel="noopener noreferrer">
-                    <Button size="icon" variant="ghost" className="h-9 w-9 bg-white/10 hover:bg-white/20 text-white rounded-[5px]">
+                    <Button size="icon" variant="ghost" className="h-9 w-9 bg-white/10 hover:bg-white/20 text-white rounded-[8px]">
                       <Eye className="w-4 h-4" />
                     </Button>
                   </a>
                   <a href={file.drive_download_url} target="_blank" rel="noopener noreferrer" download>
-                    <Button size="icon" variant="ghost" className="h-9 w-9 bg-white/10 hover:bg-white/20 text-white rounded-[5px]">
+                    <Button size="icon" variant="ghost" className="h-9 w-9 bg-white/10 hover:bg-white/20 text-white rounded-[8px]">
                       <Download className="w-4 h-4" />
                     </Button>
                   </a>
-                  <Button size="icon" variant="ghost" className="h-9 w-9 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-[5px]" onClick={() => handleDelete(file.id)}>
+                  <Button size="icon" variant="ghost" className="h-9 w-9 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-[8px]" onClick={() => handleDelete(file.id)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -429,9 +429,9 @@ export function FileVaultView() {
           {filtered.map((file) => (
             <div
               key={file.id}
-              className="flex items-center gap-6 p-4 bg-secondary/10 border border-border/50 rounded-[5px] hover:border-primary/50 hover:bg-secondary/20 transition-all group"
+              className="flex items-center gap-6 p-4 bg-secondary/10 border border-border/50 rounded-[8px] hover:border-primary/50 hover:bg-secondary/20 transition-all group"
             >
-              <div className="w-10 h-10 rounded-[5px] bg-background border border-border/50 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-[8px] bg-background border border-border/50 flex items-center justify-center shrink-0">
                 <FileIcon mimeType={file.mime_type} className="w-5 h-5 text-primary/60" />
               </div>
               <div className="flex-1 min-w-0">
@@ -444,12 +444,12 @@ export function FileVaultView() {
               </div>
               <div className="flex items-center gap-2 md:opacity-0 md:group-hover:opacity-100 opacity-100 transition-opacity">
                 <a href={file.drive_url} target="_blank" rel="noopener noreferrer">
-                  <Button size="icon" variant="ghost" className="h-8 w-8 rounded-[5px] hover:bg-secondary"><Eye className="w-4 h-4" /></Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 rounded-[8px] hover:bg-secondary"><Eye className="w-4 h-4" /></Button>
                 </a>
                 <a href={file.drive_download_url} target="_blank" rel="noopener noreferrer" download>
-                  <Button size="icon" variant="ghost" className="h-8 w-8 rounded-[5px] hover:bg-secondary"><Download className="w-4 h-4" /></Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 rounded-[8px] hover:bg-secondary"><Download className="w-4 h-4" /></Button>
                 </a>
-                <Button size="icon" variant="ghost" className="h-8 w-8 rounded-[5px] hover:bg-red-500/10 text-red-500" onClick={() => handleDelete(file.id)}>
+                <Button size="icon" variant="ghost" className="h-8 w-8 rounded-[8px] hover:bg-red-500/10 text-red-500" onClick={() => handleDelete(file.id)}>
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>

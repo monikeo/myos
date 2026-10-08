@@ -91,7 +91,7 @@ export function NotificationCenter({
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "rounded-[5px] relative hover:bg-secondary group h-10 w-10 shrink-0 border border-transparent transition-all",
+          "rounded-[8px] relative hover:bg-secondary group h-10 w-10 shrink-0 border border-transparent transition-all",
           isOpen && "bg-secondary border-border/50"
         )}
       >
@@ -100,7 +100,7 @@ export function NotificationCenter({
           unreadCount > 0 && "animate-[bell-swing_1.5s_ease-in-out_infinite]"
         )} />
         {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 bg-primary text-[9px] font-bold text-white px-1 flex items-center justify-center rounded-[5px] shadow-[0_0_10px_rgba(59,130,246,0.5)] font-mono animate-pulse">
+          <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 bg-primary text-[9px] font-bold text-white px-1 flex items-center justify-center rounded-[8px] shadow-[0_0_10px_rgba(59,130,246,0.5)] font-mono animate-pulse">
             {unreadCount}
           </span>
         )}
@@ -109,7 +109,7 @@ export function NotificationCenter({
       {/* Glassmorphic Dropdown Panel */}
       {isOpen && (
         <div className={cn(
-          "absolute right-0 mt-3 w-80 sm:w-96 bg-secondary/95 backdrop-blur-2xl border border-border/50 shadow-2xl rounded-[5px] z-50 overflow-hidden",
+          "absolute right-0 mt-3 w-80 sm:w-96 bg-secondary/95 backdrop-blur-2xl border border-border/50 shadow-2xl rounded-[8px] z-50 overflow-hidden",
           "animate-in fade-in slide-in-from-top-3 duration-250 ease-out"
         )}>
           {/* Header */}
@@ -119,7 +119,7 @@ export function NotificationCenter({
                 Notifications
               </span>
               {unreadCount > 0 && (
-                <Badge variant="secondary" className="text-[9px] font-bold tracking-widest uppercase bg-primary/10 text-primary border border-primary/20 rounded-[5px] px-2 py-0.5">
+                <Badge variant="secondary" className="text-[9px] font-bold tracking-widest uppercase bg-primary/10 text-primary border border-primary/20 rounded-[8px] px-2 py-0.5">
                   {unreadCount} NEW
                 </Badge>
               )}
@@ -129,14 +129,14 @@ export function NotificationCenter({
                 <Button
                   variant="ghost"
                   onClick={onMarkAllAsRead}
-                  className="h-7 px-2.5 text-[8px] font-bold uppercase tracking-widest text-primary hover:text-primary/80 hover:bg-transparent font-mono rounded-[5px]"
+                  className="h-7 px-2.5 text-[8px] font-bold uppercase tracking-widest text-primary hover:text-primary/80 hover:bg-transparent font-mono rounded-[8px]"
                 >
                   Mark all read
                 </Button>
                 <Button
                   variant="ghost"
                   onClick={onClearAll}
-                  className="h-7 px-2.5 text-[8px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-rose-500 hover:bg-transparent font-mono rounded-[5px]"
+                  className="h-7 px-2.5 text-[8px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-rose-500 hover:bg-transparent font-mono rounded-[8px]"
                 >
                   Clear all
                 </Button>
@@ -149,7 +149,7 @@ export function NotificationCenter({
             <button
               onClick={() => setFilter("all")}
               className={cn(
-                "text-[9px] font-bold uppercase tracking-widest px-3 py-1 font-mono transition-all border border-transparent rounded-[5px]",
+                "text-[9px] font-bold uppercase tracking-widest px-3 py-1 font-mono transition-all border border-transparent rounded-[8px]",
                 filter === "all" 
                   ? "bg-secondary text-primary border-border/30" 
                   : "text-muted-foreground/60 hover:text-foreground"
@@ -160,7 +160,7 @@ export function NotificationCenter({
             <button
               onClick={() => setFilter("unread")}
               className={cn(
-                "text-[9px] font-bold uppercase tracking-widest px-3 py-1 font-mono transition-all border border-transparent rounded-[5px]",
+                "text-[9px] font-bold uppercase tracking-widest px-3 py-1 font-mono transition-all border border-transparent rounded-[8px]",
                 filter === "unread" 
                   ? "bg-secondary text-primary border-border/30" 
                   : "text-muted-foreground/60 hover:text-foreground"
@@ -192,7 +192,7 @@ export function NotificationCenter({
                   )}
                 >
                   {/* Category Icon indicator */}
-                  <div className="w-8 h-8 rounded-[5px] border border-border/30 bg-background flex items-center justify-center shrink-0 self-start shadow-inner">
+                  <div className="w-8 h-8 rounded-[8px] border border-border/30 bg-background flex items-center justify-center shrink-0 self-start shadow-inner">
                     {getCategoryIcon(n.category)}
                   </div>
 
@@ -229,7 +229,7 @@ export function NotificationCenter({
                         variant="ghost"
                         size="icon"
                         onClick={() => onMarkAsRead(n.id)}
-                        className="h-6 w-6 text-emerald-500 hover:text-emerald-400 hover:bg-background border border-transparent hover:border-border/30 rounded-[5px] shrink-0"
+                        className="h-6 w-6 text-emerald-500 hover:text-emerald-400 hover:bg-background border border-transparent hover:border-border/30 rounded-[8px] shrink-0"
                         title="Mark as read"
                       >
                         <Check className="w-3 h-3" />
@@ -239,7 +239,7 @@ export function NotificationCenter({
                       variant="ghost"
                       size="icon"
                       onClick={() => onDelete(n.id)}
-                      className="h-6 w-6 text-rose-500 hover:text-rose-400 hover:bg-background border border-transparent hover:border-border/30 rounded-[5px] shrink-0"
+                      className="h-6 w-6 text-rose-500 hover:text-rose-400 hover:bg-background border border-transparent hover:border-border/30 rounded-[8px] shrink-0"
                       title="Delete notification"
                     >
                       <X className="w-3 h-3" />
