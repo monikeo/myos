@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getFiles, uploadFile, deleteFile, StorageFile } from "@/lib/api";
 import { cn, resolveDriveImage } from "@/lib/utils";
+import { FileVaultSkeleton } from "@/src/components/ViewSkeletons";
 
 type ViewMode = "grid" | "list";
 type FileFilter = "all" | "image" | "video" | "document";
@@ -374,9 +375,7 @@ export function FileVaultView() {
 
       {/* Files Grid / List */}
       {loading ? (
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        </div>
+        <FileVaultSkeleton />
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
           <HardDrive className="w-16 h-16 mb-4 opacity-10" />

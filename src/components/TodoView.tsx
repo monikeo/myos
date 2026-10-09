@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, resolveDriveImage } from "@/lib/utils";
 import { Task, Workspace, Project, Organization, RoleAssignment } from "@/src/types";
 import { getItems, createItem, updateItem, deleteItem, getSettings, getAllUsers } from "@/lib/api";
+import { KanbanViewSkeleton } from "@/src/components/ViewSkeletons";
 
 type TaskStatus = "Backlog" | "Active" | "Review" | "Completed";
 type TaskPriority = "High" | "Medium" | "Low";
@@ -1416,10 +1417,7 @@ export function TodoView() {
 
       <div className="flex-1 overflow-hidden min-h-[500px]">
         {loading ? (
-          <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-            <Clock className="w-8 h-8 animate-spin text-primary mb-3" />
-            <p className="font-mono text-xs uppercase tracking-widest">Loading tasks...</p>
-          </div>
+          <KanbanViewSkeleton />
         ) : filteredTasks.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground border-2 border-dashed border-border/30 rounded-[8px] bg-background/20 font-medium text-xs">
             No tasks found matching your filters.

@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import React from "react";
 import { Briefcase } from "lucide-react";
+import { OptimizedImage } from "@/src/components/OptimizedImage";
 
 interface SafeLogoProps {
   src?: string;
@@ -14,30 +15,17 @@ export function SafeLogo({
   alt = "Logo",
   className = "w-full h-full object-cover"
 }: SafeLogoProps) {
-  const [hasError, setHasError] = useState(false);
-
-  // Reset error state if src changes
-  useEffect(() => {
-    setHasError(false);
-  }, [src]);
-
   const defaultFallback = fallbackIcon || (
     <Briefcase className="w-4 h-4 text-muted-foreground" />
   );
 
-  if (!src || hasError) {
-    return <>{defaultFallback}</>;
-  }
-
   return (
-    <img
+    <OptimizedImage
       src={src}
       alt={alt}
+      fallbackIcon={defaultFallback}
       className={className}
-      onError={() => {
-        console.warn(`SafeLogo failed to load image src: "${src}". Falling back to default icon.`);
-        setHasError(true);
-      }}
+      containerClassName="w-full h-full"
     />
   );
 }

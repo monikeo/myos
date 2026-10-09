@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { FinancialTransaction, Workspace, Project } from "@/src/types";
 import { getItems, createItem, deleteItem } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { FinanceViewSkeleton } from "@/src/components/ViewSkeletons";
 import { 
   AreaChart, 
   Area, 
@@ -41,12 +42,14 @@ export function FinanceView() {
 
   // Deletion modal state
   const [txToDelete, setTxToDelete] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     loadData();
   }, []);
 
-  const loadData = async () => {
+  const loadData = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const [txData, wsData, projData] = await Promise.all([
         getItems<FinancialTransaction>("transaction"),
@@ -58,6 +61,8 @@ export function FinanceView() {
       setProjects(projData);
     } catch (err) {
       console.error(err);
+    } finally {
+      if (!silent) setLoading(false);
     }
   };
 
@@ -231,6 +236,10 @@ export function FinanceView() {
   };
 
   const COLORS = ['#10b981', '#ef4444', '#3b82f6', '#f59e0b', '#8b5cf6'];
+
+  if (loading && transactions.length === 0) {
+    return <FinanceViewSkeleton />;
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700 slide-in-from-bottom-4">

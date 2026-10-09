@@ -31,20 +31,18 @@ export function ThemeToggle({
   if (collapsed) {
     return (
       <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            onClick={cycleTheme}
-            className="w-9 h-9 rounded-[8px] border border-border/30 bg-secondary/40 hover:bg-secondary/70 flex items-center justify-center text-foreground transition-all duration-200 active:scale-95 shadow-sm"
-            aria-label="Toggle theme mode"
-          >
-            {currentTheme === "system" ? (
-              <Laptop className="w-4 h-4 text-primary transition-transform duration-300" />
-            ) : isDarkMode ? (
-              <Moon className="w-4 h-4 text-blue-400 transition-transform duration-300" />
-            ) : (
-              <Sun className="w-4 h-4 text-amber-500 transition-transform duration-300" />
-            )}
-          </button>
+        <TooltipTrigger
+          onClick={cycleTheme}
+          className="w-9 h-9 rounded-[8px] border border-border/30 bg-secondary/40 hover:bg-secondary/70 flex items-center justify-center text-foreground transition-all duration-200 active:scale-95 shadow-sm"
+          aria-label="Toggle theme mode"
+        >
+          {currentTheme === "system" ? (
+            <Laptop className="w-4 h-4 text-primary transition-transform duration-300" />
+          ) : isDarkMode ? (
+            <Moon className="w-4 h-4 text-blue-400 transition-transform duration-300" />
+          ) : (
+            <Sun className="w-4 h-4 text-amber-500 transition-transform duration-300" />
+          )}
         </TooltipTrigger>
         <TooltipContent side="right" className="font-mono text-[9px] uppercase tracking-wider rounded-[8px]">
           Theme: {currentTheme.toUpperCase()}

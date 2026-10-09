@@ -11,6 +11,7 @@ import remarkGfm from "remark-gfm";
 import { Note } from "@/src/types";
 import { getItems, createItem, updateItem, deleteItem } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { NotesViewSkeleton } from "@/src/components/ViewSkeletons";
 
 // Configure DOMPurify to mitigate reverse tabnabbing (target hijacking) on all anchor links
 if (typeof window !== "undefined") {
@@ -50,6 +51,7 @@ export function NotesView() {
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState<"All" | "Pinned">("All");
   const [noteToDelete, setNoteToDelete] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const editorRef = useRef<HTMLDivElement | null>(null);
 
   const [editTitle, setEditTitle] = useState("");
@@ -140,12 +142,15 @@ export function NotesView() {
     return () => window.removeEventListener("myos:data-changed", handleDataChanged);
   }, []);
 
-  const loadNotes = async () => {
+  const loadNotes = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const data = await getItems<Note>("note");
       setNotes(data);
     } catch (err) {
       console.error(err);
+    } finally {
+      if (!silent) setLoading(false);
     }
   };
 
@@ -200,6 +205,10 @@ export function NotesView() {
     const matchesPinned = filterType === "All" || (filterType === "Pinned" && n.pinned);
     return matchesSearch && matchesPinned;
   });
+
+  if (loading && notes.length === 0) {
+    return <NotesViewSkeleton />;
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-10 h-auto md:h-[calc(100vh-14rem)] animate-in fade-in duration-700 slide-in-from-bottom-4">

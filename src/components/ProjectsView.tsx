@@ -36,6 +36,7 @@ import { Badge } from "@/components/ui/badge";
 import { Project, Workspace, Task, Organization, RoleAssignment, FinancialTransaction } from "@/src/types";
 import { getItems, createItem, deleteItem, updateItem, getAllUsers, getCurrentSession } from "@/lib/api";
 import { cn, resolveDriveImage } from "@/lib/utils";
+import { ProjectsViewSkeleton } from "@/src/components/ViewSkeletons";
 
 const SPECTRUM_COLORS = [
   { hex: "#3b82f6", name: "Indigo Protocol" },
@@ -849,10 +850,7 @@ export function ProjectsView() {
 
       {/* CORE CONTENT LOADING OR POPULATED */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-          <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
-          <p className="text-xs uppercase tracking-widest font-mono font-bold">Synchronizing core systems...</p>
-        </div>
+        <ProjectsViewSkeleton />
       ) : filteredProjects.length === 0 ? (
         <div className="p-20 text-center border border-dashed border-border/50 bg-secondary/5 rounded-[8px]">
           <FolderKanban className="w-16 h-16 mx-auto mb-4 opacity-20 text-muted-foreground" />

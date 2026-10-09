@@ -9,6 +9,7 @@ import { Workspace, Task, QuickLink, Project, RoleAssignment, Organization, Fina
 import { getItems, createItem, deleteItem, updateItem, uploadFile, getAllUsers, getCurrentSession } from "@/lib/api";
 import { cn, resolveDriveImage } from "@/lib/utils";
 import { SafeLogo } from "@/src/components/SafeLogo";
+import { WorkspacesViewSkeleton } from "@/src/components/ViewSkeletons";
 
 
 // Curated Sleek Corporate Palettes for Workspace Node Tints
@@ -55,6 +56,7 @@ export function WorkspacesView() {
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [filterScope, setFilterScope] = useState<'all' | 'personal' | 'org'>('all');
   const [filterOwnership, setFilterOwnership] = useState<'all' | 'owned' | 'shared'>('all');
+  const [loading, setLoading] = useState(true);
 
   // Big workspace modal states
   const [activeWorkspace, setActiveWorkspace] = useState<ExtendedWorkspace | null>(null);
@@ -162,7 +164,8 @@ export function WorkspacesView() {
   const [workspaceToDelete, setWorkspaceToDelete] = useState<string | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
-  const loadWorkspaces = useCallback(async () => {
+  const loadWorkspaces = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const data = await getItems<ExtendedWorkspace>("workspace");
       setWorkspaces(data);
@@ -186,6 +189,8 @@ export function WorkspacesView() {
       setAllUsers(users);
     } catch (err) {
       console.error("Failed to load workspaces, tasks, links, projects, and RBAC mappings:", err);
+    } finally {
+      if (!silent) setLoading(false);
     }
   }, []);
 
@@ -844,6 +849,10 @@ export function WorkspacesView() {
       </Card>
     );
   };
+
+  if (loading && workspaces.length === 0) {
+    return <WorkspacesViewSkeleton />;
+  }
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700 slide-in-from-bottom-4">

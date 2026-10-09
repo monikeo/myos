@@ -79,6 +79,8 @@ import {
 } from "@/lib/api";
 import { Task, Workspace, MyOSNotification } from "@/src/types";
 import { NotificationCenter } from "@/src/components/NotificationCenter";
+import { RouteErrorBoundary } from "@/src/components/RouteErrorBoundary";
+import { ViewLoadingFallback, DashboardViewSkeleton } from "@/src/components/ViewSkeletons";
 
 function ViewLoader() {
   return (
@@ -1171,9 +1173,15 @@ function AppContent() {
 
             <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 scroll-smooth custom-scrollbar pb-24 md:pb-8">
               <div className="max-w-[1600px] mx-auto">
-                <React.Suspense fallback={<ViewLoader />}>
-                  {renderContent()}
-                </React.Suspense>
+                <RouteErrorBoundary
+                  viewName={activePage}
+                  onNavigateHome={() => navigateToPage("dashboard")}
+                  key={activePage}
+                >
+                  <React.Suspense fallback={<ViewLoadingFallback view={activePage} />}>
+                    {renderContent()}
+                  </React.Suspense>
+                </RouteErrorBoundary>
               </div>
             </main>
           </SidebarInset>
@@ -1240,8 +1248,10 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
   const [realTasks, setRealTasks] = useState<Task[]>([]);
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
+  const [loading, setLoading] = useState(true);
 
-  const loadData = async () => {
+  const loadData = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const [statsData, tasksData, wsData] = await Promise.all([
         getStats(),
@@ -1253,6 +1263,8 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
       setWorkspaces(wsData);
     } catch (err) {
       console.error(err);
+    } finally {
+      if (!silent) setLoading(false);
     }
   };
 
@@ -1260,7 +1272,7 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
     loadData();
 
     const handleDataChanged = () => {
-      loadData();
+      loadData(true);
     };
 
     window.addEventListener("myos:data-changed", handleDataChanged);
@@ -1274,6 +1286,10 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
       clearInterval(interval);
     };
   }, []);
+
+  if (loading && realTasks.length === 0 && workspaces.length === 0) {
+    return <DashboardViewSkeleton />;
+  }
 
   const activeIncompleteTasks = useMemo(() => {
     return realTasks.filter(t => t.status !== "completed" && t.status !== "archived");
@@ -1414,7 +1430,7 @@ function DashboardView({ profile, sessionUser }: { profile: AppSettings; session
                  <h3 className="text-2xl font-bold tracking-tight">Your Workspace</h3>
               </div>
               <p className="text-primary-foreground/90 text-xs font-bold mb-6 leading-relaxed tracking-tight">Manage all your workspaces, tasks, files, and notes in one convenient place.</p>
-              <Button onClick={loadData} className="w-full font-bold uppercase tracking-[0.25em] text-[9px] h-11 shadow-2xl bg-white text-primary hover:bg-white/90 transition-all hover:scale-[1.03] active:scale-95 rounded-[8px]">Refresh Data</Button>
+              <Button onClick={() => loadData()} className="w-full font-bold uppercase tracking-[0.25em] text-[9px] h-11 shadow-2xl bg-white text-primary hover:bg-white/90 transition-all hover:scale-[1.03] active:scale-95 rounded-[8px]">Refresh Data</Button>
             </CardContent>
           </Card>
 

@@ -8,6 +8,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { CalendarEvent, Workspace, Task } from "@/src/types";
 import { getItems, createItem, deleteItem, updateItem } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { CalendarViewSkeleton } from "@/src/components/ViewSkeletons";
 
 // Curated Sleek Corporate Palettes for Events
 const SPECTRUM_COLORS = [
@@ -47,8 +48,10 @@ export function CalendarView() {
   const [form, setForm] = useState(emptyForm);
   const [activeEvent, setActiveEvent] = useState<CalendarEvent | null>(null);
   const [viewType, setViewType] = useState<"month" | "week">("month");
+  const [loading, setLoading] = useState(true);
 
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const [eventsData, workspacesData, tasksData] = await Promise.all([
         getItems<CalendarEvent>("event"),
@@ -93,6 +96,8 @@ export function CalendarView() {
       setWorkspaces(workspacesData);
     } catch (err) {
       console.error("Failed to load Calendar data:", err);
+    } finally {
+      if (!silent) setLoading(false);
     }
   }, []);
 
@@ -267,6 +272,10 @@ export function CalendarView() {
     if (category === "BETA") return "bg-amber-500/10 border-amber-500/30 text-amber-800 dark:text-amber-400 font-extrabold";
     return "bg-blue-500/10 border-blue-500/30 text-blue-700 dark:text-blue-400 font-extrabold";
   };
+
+  if (loading && events.length === 0) {
+    return <CalendarViewSkeleton />;
+  }
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700 slide-in-from-bottom-4">
